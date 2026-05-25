@@ -177,3 +177,25 @@ test("normalizeSupersetEntry: entry legacy singola finisce nella traccia A, B vu
 test("normalizeSupersetEntry: vuoto -> due tracce vuote", () => {
   assert.deepEqual(normalizeSupersetEntry(""), { a: { sets: [], note: "" }, b: { sets: [], note: "" }, note: "" });
 });
+import { prefillSets } from "../store.js";
+
+test("prefillSets: copia le serie della settimana precedente con done=false", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "8", kg: "70", done: true }, { reps: "8", kg: "70", done: true }] }, "t1");
+  const pre = prefillSets(d, "2026-W22", "A", 0);
+  assert.deepEqual(pre, [
+    { reps: "8", kg: "70", done: false },
+    { reps: "8", kg: "70", done: false },
+  ]);
+});
+
+test("prefillSets: usa la settimana loggata più recente fra le precedenti", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W20", "A", 0, { sets: [{ reps: "8", kg: "60" }] }, "t1");
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "8", kg: "65" }] }, "t2");
+  assert.deepEqual(prefillSets(d, "2026-W22", "A", 0), [{ reps: "8", kg: "65", done: false }]);
+});
+
+test("prefillSets: nessuno storico -> array vuoto", () => {
+  assert.deepEqual(prefillSets(emptyData(), "2026-W22", "A", 0), []);
+});

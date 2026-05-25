@@ -82,6 +82,15 @@ export function normalizeSupersetEntry(v) {
   return { a: base, b: { sets: [], note: "" }, note: base.note };
 }
 
+export function prefillSets(data, weekKey, day, idx) {
+  const keys = Object.keys(data?.weeks ?? {}).filter((k) => k < weekKey).sort();
+  for (let i = keys.length - 1; i >= 0; i--) {
+    const e = normalizeEntry(getEntry(data, keys[i], day, idx));
+    if (e.sets.length) return e.sets.map((s) => ({ reps: s.reps, kg: s.kg, done: false }));
+  }
+  return [];
+}
+
 // ---- Base64 helpers (UTF-8 safe). btoa/atob + TextEncoder/Decoder exist
 //      both in modern browsers and in Node >= 16. ----
 
