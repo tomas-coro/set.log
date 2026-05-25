@@ -45,3 +45,12 @@ test("setEntry merges without clobbering sibling entries", () => {
 test("getEntry returns empty string when missing", () => {
   assert.equal(getEntry(emptyData(), "2026-W22", "A", 0), "");
 });
+import { toBase64, fromBase64 } from "../store.js";
+
+test("toBase64/fromBase64 round-trip UTF-8 text", () => {
+  const original = JSON.stringify({ note: "60kg à è 8/8/7 ×" });
+  const encoded = toBase64(original);
+  assert.equal(typeof encoded, "string");
+  assert.notEqual(encoded, original);
+  assert.equal(fromBase64(encoded), original);
+});

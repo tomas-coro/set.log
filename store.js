@@ -34,3 +34,19 @@ export function setEntry(data, weekKey, day, exIndex, value, nowIso) {
 export function getEntry(data, weekKey, day, exIndex) {
   return data?.weeks?.[weekKey]?.entries?.[day]?.[String(exIndex)] ?? "";
 }
+
+// ---- Base64 helpers (UTF-8 safe). btoa/atob + TextEncoder/Decoder exist
+//      both in modern browsers and in Node >= 16. ----
+
+export function toBase64(str) {
+  const bytes = new TextEncoder().encode(str);
+  let bin = "";
+  for (const b of bytes) bin += String.fromCharCode(b);
+  return btoa(bin);
+}
+
+export function fromBase64(b64) {
+  const bin = atob(b64);
+  const bytes = Uint8Array.from(bin, (c) => c.charCodeAt(0));
+  return new TextDecoder().decode(bytes);
+}
