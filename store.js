@@ -48,8 +48,8 @@ function zipSets(repsStr, kgStr) {
   const sets = [];
   for (let i = 0; i < n; i++) {
     sets.push({
-      reps: reps[i] ?? reps[reps.length - 1] ?? "",
-      kg: kgs[i] ?? kgs[kgs.length - 1] ?? "",
+      reps: reps[i] ?? (reps.length > 0 ? reps[reps.length - 1] : ""),
+      kg: kgs[i] ?? (kgs.length > 0 ? kgs[kgs.length - 1] : ""),
       done: false,
     });
   }
