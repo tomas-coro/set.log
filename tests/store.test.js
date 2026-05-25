@@ -54,3 +54,64 @@ test("toBase64/fromBase64 round-trip UTF-8 text", () => {
   assert.notEqual(encoded, original);
   assert.equal(fromBase64(encoded), original);
 });
+import { GitHubStore, ConflictError } from "../store.js";
+
+// Build a fake fetch that records calls and returns scripted responses.
+function fakeResponse({ ok = true, status = 200, body = {} }) {
+  return {
+    ok,
+    status,
+    async json() { return body; },
+    async text() { return JSON.stringify(body); },
+  };
+}
+
+test("GitHubStore.load returns parsed data and sha", async () => {
+  const remote = { updatedAt: "t1", weeks: { "2026-W22": { label: "S1", entries: {} } } };
+  const calls = [];
+  const fakeFetch = async (url, opts) => {
+    calls.push({ url, opts });
+    return fakeResponse({ body: { content: toBase64(JSON.stringify(remote)), sha: "abc123" } });
+  };
+  const store = new GitHubStore({ owner: "x", repo: "r", token: "T", fetchImpl: fakeFetch });
+  const { data, sha } = await store.load();
+  assert.deepEqual(data, remote);
+  assert.equal(sha, "abc123");
+  assert.match(calls[0].url, /repos\/x\/r\/contents\/data\.json/);
+  assert.equal(calls[0].opts.headers.Authorization, "Bearer T");
+});
+
+test("GitHubStore.load returns emptyData and null sha on 404", async () => {
+  const fakeFetch = async () => fakeResponse({ ok: false, status: 404, body: { message: "Not Found" } });
+  const store = new GitHubStore({ owner: "x", repo: "r", fetchImpl: fakeFetch });
+  const { data, sha } = await store.load();
+  assert.deepEqual(data, emptyData());
+  assert.equal(sha, null);
+});
+
+test("GitHubStore.save PUTs base64 content with sha and returns new sha", async () => {
+  const calls = [];
+  const fakeFetch = async (url, opts) => {
+    calls.push({ url, opts });
+    return fakeResponse({ body: { content: { sha: "newsha" } } });
+  };
+  const store = new GitHubStore({ owner: "x", repo: "r", token: "T", fetchImpl: fakeFetch });
+  const data = setEntry(emptyData(), "2026-W22", "A", 0, "60kg", "t1");
+  const newSha = await store.save(data, "oldsha", "log: test");
+  assert.equal(newSha, "newsha");
+  const put = calls[0];
+  assert.equal(put.opts.method, "PUT");
+  const sent = JSON.parse(put.opts.body);
+  assert.equal(sent.sha, "oldsha");
+  assert.equal(sent.message, "log: test");
+  assert.deepEqual(JSON.parse(fromBase64(sent.content)), data);
+});
+
+test("GitHubStore.save throws ConflictError on 409", async () => {
+  const fakeFetch = async () => fakeResponse({ ok: false, status: 409, body: { message: "conflict" } });
+  const store = new GitHubStore({ owner: "x", repo: "r", token: "T", fetchImpl: fakeFetch });
+  await assert.rejects(
+    () => store.save(emptyData(), "oldsha", "msg"),
+    (err) => err instanceof ConflictError
+  );
+});
