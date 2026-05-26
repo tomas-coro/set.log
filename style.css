@@ -304,3 +304,26 @@ dialog::backdrop{background:rgba(0,0,0,.6);}
 
 /* il timer (fixed) non deve più coprire le note del focus */
 body.timer-on .focus-body{padding-bottom:160px;}
+
+/* ---- Lotto 2 Task 4: serie non riuscita ---- */
+/* Badge rosso "✗ non riuscita" nella riga serie */
+.rpe.fail{color:var(--down);border:1px solid #633a24;}
+
+/* Nota della serie non riuscita (sotto la riga, come .cmt) */
+.srow .fail-note{flex-basis:100%;font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--down);margin:2px 0 0 27px;}
+
+/* Toggle "Non riuscita" nel popup serie */
+.failtoggle{width:100%;margin-top:14px;border-radius:11px;padding:11px 8px;font-family:inherit;font-weight:700;font-size:13px;cursor:pointer;
+  border:1px solid var(--line);background:var(--surf2);color:var(--dim);text-align:center;}
+.failtoggle.on{color:var(--down);border-color:#633a24;background:rgba(224,132,63,.08);}
+
+/* Textarea nota motivo nel popup */
+.failnote{width:100%;margin-top:8px;border-radius:11px;padding:10px 12px;font-family:"JetBrains Mono",monospace;font-size:13px;
+  background:var(--field);border:1px solid #633a24;color:var(--ink);resize:vertical;line-height:1.4;}
+.failnote::placeholder{color:var(--faint);}
+.failnote.hidden{display:none;}
+
+/* Link "serie non riuscita" nell'editor della serie corrente */
+.fail-link{background:transparent;border:none;color:var(--faint);font-family:"JetBrains Mono",monospace;font-size:11px;
+  cursor:pointer;padding:8px 0 0;display:block;text-align:left;letter-spacing:.03em;}
+.fail-link:hover,.fail-link:active{color:var(--down);}

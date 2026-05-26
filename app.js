@@ -458,11 +458,17 @@ function buildMiniStepper(label, state, field, step) {
 // volta in wireSetDialog; openSetDialog riempie stato + callback e mostra.
 let setDlgState = null, setDlgCbs = null, setDlgAction = null;
 
-// opts: { title, reps, kg, feel, onApply(reps,kg,feel), onUndo(), onDelete() }
+// opts: { title, reps, kg, feel, failed, failNote, done, onApply(reps,kg,feel,failed,failNote), onUndo(), onDelete() }
 function openSetDialog(opts) {
   const dlg = document.getElementById("setDialog");
   setDlgCbs = opts;
-  setDlgState = { reps: String(opts.reps ?? ""), kg: String(opts.kg ?? ""), feel: opts.feel || "" };
+  setDlgState = {
+    reps: String(opts.reps ?? ""),
+    kg: String(opts.kg ?? ""),
+    feel: opts.feel || "",
+    failed: !!opts.failed,
+    failNote: opts.failNote || "",
+  };
   setDlgAction = null;
   document.getElementById("setDlgTitle").textContent = opts.title;
 
@@ -477,6 +483,18 @@ function openSetDialog(opts) {
     buildMiniStepper("reps", setDlgState, "reps", 1),
     buildMiniStepper("kg", setDlgState, "kg", 0.5),
   );
+
+  // Sync fail toggle UI
+  const failBtn = document.getElementById("setDlgFail");
+  const failNote = document.getElementById("setDlgFailNote");
+  failBtn.classList.toggle("on", setDlgState.failed);
+  failNote.value = setDlgState.failNote;
+  failNote.classList.toggle("hidden", !setDlgState.failed);
+
+  // Show/hide "Annulla conferma" based on whether set is already done
+  const undoBtn = document.getElementById("setDlgUndo");
+  undoBtn.classList.toggle("hidden", !opts.done);
+
   dlg.showModal();
 }
 
@@ -485,6 +503,21 @@ function wireSetDialog() {
   document.getElementById("setDlgUndo").addEventListener("click", () => { setDlgAction = "undo"; dlg.close(); });
   document.getElementById("setDlgDelete").addEventListener("click", () => { setDlgAction = "delete"; dlg.close(); });
   document.getElementById("setDlgClose").addEventListener("click", () => { setDlgAction = "cancel"; dlg.close(); });
+
+  // Toggle "Non riuscita"
+  document.getElementById("setDlgFail").addEventListener("click", () => {
+    if (!setDlgState) return;
+    setDlgState.failed = !setDlgState.failed;
+    const failBtn = document.getElementById("setDlgFail");
+    const failNote = document.getElementById("setDlgFailNote");
+    failBtn.classList.toggle("on", setDlgState.failed);
+    failNote.classList.toggle("hidden", !setDlgState.failed);
+    if (setDlgState.failed) failNote.focus();
+  });
+  document.getElementById("setDlgFailNote").addEventListener("input", (e) => {
+    if (setDlgState) setDlgState.failNote = e.target.value;
+  });
+
   // tap sullo sfondo = chiudi applicando i valori correnti
   dlg.addEventListener("click", (e) => { if (e.target === dlg) dlg.close(); });
   dlg.addEventListener("cancel", (e) => { e.preventDefault(); setDlgAction = "cancel"; dlg.close(); });
@@ -494,7 +527,7 @@ function wireSetDialog() {
     const a = setDlgAction; setDlgAction = null;
     if (a === "undo") onUndo();
     else if (a === "delete") onDelete();
-    else if (a !== "cancel") onApply(setDlgState.reps, setDlgState.kg, setDlgState.feel);
+    else if (a !== "cancel") onApply(setDlgState.reps, setDlgState.kg, setDlgState.feel, setDlgState.failed, setDlgState.failNote);
     setDlgCbs = null; setDlgState = null;
   });
 }
@@ -598,7 +631,14 @@ function setRow(i, set, prev, isCurrent, onRemove, onOpen) {
       row.appendChild(tag);
     }
   }
-  if (set.done && !set.warmup && set.feel) {
+  if (set.done && !set.warmup && set.failed) {
+    const fl = document.createElement("span");
+    fl.className = "rpe fail";
+    fl.textContent = "✗ non riuscita";
+    fl.title = "Tocca per modificare";
+    if (onOpen) fl.addEventListener("click", (e) => { e.stopPropagation(); onOpen(); });
+    row.appendChild(fl);
+  } else if (set.done && !set.warmup && set.feel) {
     const fl = document.createElement("span");
     fl.className = "rpe " + set.feel;
     fl.textContent = RPE_LABEL[set.feel] ?? "giusta";
@@ -615,6 +655,11 @@ function setRow(i, set, prev, isCurrent, onRemove, onOpen) {
     const c = document.createElement("div"); c.className = "cmt";
     c.textContent = set.comments.join(" · ");
     row.appendChild(c);
+  }
+  if (set.done && set.failed && set.failNote) {
+    const fn = document.createElement("div"); fn.className = "cmt fail-note";
+    fn.textContent = set.failNote;
+    row.appendChild(fn);
   }
   return row;
 }
@@ -665,8 +710,9 @@ function renderFocusNormal(ex, idx, container, footer) {
     const onOpen = set.done ? () => openSetDialog({
       title: `Serie ${i + 1} · ${set.reps || "—"} × ${set.kg || "—"} kg`,
       reps: set.reps, kg: set.kg, feel: set.feel,
-      onApply: (reps, kg, feel) => {
-        data = setEntry(data, currentWeek, currentDay, idx, withSet(v, i, { reps, kg, feel }), new Date().toISOString());
+      failed: set.failed, failNote: set.failNote, done: set.done,
+      onApply: (reps, kg, feel, failed, failNote) => {
+        data = setEntry(data, currentWeek, currentDay, idx, withSet(v, i, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) }), new Date().toISOString());
         persist(idx); render();
       },
       onUndo: () => {
@@ -704,6 +750,34 @@ function renderFocusNormal(ex, idx, container, footer) {
       draft.reps = reps; draft.kg = kg; edit.refresh();
     });
     if (repChips) container.appendChild(repChips);
+
+    // "Serie non riuscita" entry for the current (not-done) set
+    const failLink = document.createElement("button");
+    failLink.type = "button";
+    failLink.className = "fail-link";
+    failLink.textContent = "✗ Serie non riuscita";
+    failLink.addEventListener("click", () => {
+      const curSet = entry.sets[curIdx] || {};
+      openSetDialog({
+        title: `Serie ${curIdx + 1} — non riuscita`,
+        reps: draft.reps || curSet.reps || "",
+        kg: draft.kg || curSet.kg || "",
+        feel: curSet.feel || "",
+        failed: curSet.failed || false,
+        failNote: curSet.failNote || "",
+        done: false,
+        onApply: (reps, kg, feel, failed, failNote) => {
+          data = setEntry(data, currentWeek, currentDay, idx, withSet(v, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) }), new Date().toISOString());
+          persist(idx); render();
+        },
+        onUndo: () => {},
+        onDelete: () => {
+          data = setEntry(data, currentWeek, currentDay, idx, withoutSet(v, curIdx), new Date().toISOString());
+          persist(idx); render();
+        },
+      });
+    });
+    container.appendChild(failLink);
   }
 
   const dots = document.createElement("div");
@@ -788,8 +862,9 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
     const onOpen = set.done ? () => openSetDialog({
       title: `${trackKey.toUpperCase()} · Serie ${i + 1} · ${set.reps || "—"} × ${set.kg || "—"} kg`,
       reps: set.reps, kg: set.kg, feel: set.feel,
-      onApply: (reps, kg, feel) => {
-        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { reps, kg, feel });
+      failed: set.failed, failNote: set.failNote, done: set.done,
+      onApply: (reps, kg, feel, failed, failNote) => {
+        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) });
         data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
         persist(idx); render();
       },
@@ -843,6 +918,36 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
     const prevWk = previousWeekSet(data, currentDay, idx, currentWeek, curIdx, trackKey);
     const chips = buildRepeatChips(inSess, prevWk, ({ reps, kg }) => { state.reps = reps; state.kg = kg; edit.refresh(); });
     if (chips) wrap.appendChild(chips);
+
+    // "Serie non riuscita" entry for the current (not-done) superset set
+    const failLink = document.createElement("button");
+    failLink.type = "button";
+    failLink.className = "fail-link";
+    failLink.textContent = "✗ Serie non riuscita";
+    failLink.addEventListener("click", () => {
+      const curSet = trackEntry.sets[curIdx] || {};
+      openSetDialog({
+        title: `${trackKey.toUpperCase()} · Serie ${curIdx + 1} — non riuscita`,
+        reps: state.reps || curSet.reps || "",
+        kg: state.kg || curSet.kg || "",
+        feel: curSet.feel || "",
+        failed: curSet.failed || false,
+        failNote: curSet.failNote || "",
+        done: false,
+        onApply: (reps, kg, feel, failed, failNote) => {
+          const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) });
+          data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+          persist(idx); render();
+        },
+        onUndo: () => {},
+        onDelete: () => {
+          const nv = withoutSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, curIdx);
+          data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+          persist(idx); render();
+        },
+      });
+    });
+    wrap.appendChild(failLink);
   }
   return { wrap, curIdx, allDone };
 }
