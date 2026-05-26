@@ -123,7 +123,7 @@ export function bestKg(data, day, idx) {
   for (const k of Object.keys(data?.weeks ?? {})) {
     const e = normalizeEntry(getEntry(data, k, day, idx));
     for (const s of e.sets) {
-      if (s.warmup) continue;
+      if (s.warmup || s.failed) continue;
       const v = parseFloat(String(s.kg).replace(",", "."));
       if (Number.isFinite(v) && (best === null || v > best)) best = v;
     }
@@ -150,7 +150,7 @@ export function previousSetInSession(entry, index, track = null) {
   const t = entryTrack(entry, track);
   const start = Math.min(index, t.sets.length) - 1;
   for (let i = start; i >= 0; i--) {
-    if (t.sets[i].done && !t.sets[i].warmup) return { reps: t.sets[i].reps, kg: t.sets[i].kg };
+    if (t.sets[i].done && !t.sets[i].warmup && !t.sets[i].failed) return { reps: t.sets[i].reps, kg: t.sets[i].kg };
   }
   return null;
 }
@@ -162,7 +162,7 @@ export function previousWeekSet(data, day, idx, weekKey, setIndex, track = null)
     .filter((k) => /^\d{4}-W\d{2}(\.\d+)?$/.test(k) && k < weekKey).sort();
   for (let i = keys.length - 1; i >= 0; i--) {
     const t = entryTrack(getEntry(data, keys[i], day, idx), track);
-    const working = t.sets.filter((s) => !s.warmup);
+    const working = t.sets.filter((s) => !s.warmup && !s.failed);
     if (working.length) {
       const s = working[setIndex] ?? working[working.length - 1];
       return { reps: s.reps, kg: s.kg, week: keys[i] };
@@ -180,7 +180,7 @@ function parseNum(x) {
 function trackVolume(track) {
   let v = 0;
   for (const s of track.sets) {
-    if (!s.done || s.warmup) continue;
+    if (!s.done || s.warmup || s.failed) continue;
     const r = parseNum(s.reps), k = parseNum(s.kg);
     if (r !== null && k !== null) v += r * k;
   }
@@ -212,7 +212,7 @@ function weekTopKg(data, weekKey, day, idx, superset) {
   let best = null;
   for (const t of tracks) {
     for (const s of t.sets) {
-      if (s.warmup) continue;
+      if (s.warmup || s.failed) continue;
       const k = parseNum(s.kg);
       if (k !== null && (best === null || k > best)) best = k;
     }

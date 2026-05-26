@@ -120,7 +120,7 @@ import { normalizeEntry } from "../store.js";
 test("normalizeEntry: oggetto già strutturato resta tale (con default done/note)", () => {
   const v = { sets: [{ reps: "8", kg: "72.5", done: true }], note: "presa media" };
   assert.deepEqual(normalizeEntry(v), {
-    sets: [{ reps: "8", kg: "72.5", done: true, feel: "", warmup: false, comments: [] }],
+    sets: [{ reps: "8", kg: "72.5", done: true, feel: "", warmup: false, failed: false, failNote: "", comments: [] }],
     note: "presa media",
   });
 });
@@ -163,7 +163,7 @@ import { normalizeSupersetEntry } from "../store.js";
 test("normalizeSupersetEntry: forma {a,b,note} normalizza entrambe le tracce", () => {
   const v = { a: { sets: [{ reps: "15", kg: "25", done: true }] }, b: { reps: "15", kg: "12" }, note: "ok" };
   const out = normalizeSupersetEntry(v);
-  assert.deepEqual(out.a.sets, [{ reps: "15", kg: "25", done: true, feel: "", warmup: false, comments: [] }]);
+  assert.deepEqual(out.a.sets, [{ reps: "15", kg: "25", done: true, feel: "", warmup: false, failed: false, failNote: "", comments: [] }]);
   assert.deepEqual(out.b.sets, [{ reps: "15", kg: "12", done: false }]);
   assert.equal(out.note, "ok");
 });
@@ -280,7 +280,7 @@ test("normalizeSet: feel mancante o non valido -> stringa vuota", () => {
 
 test("normalizeSet: non altera reps/kg/done aggiungendo feel", () => {
   assert.deepEqual(normalizeSet({ reps: 8, kg: 72.5, done: true, feel: "ok" }),
-    { reps: "8", kg: "72.5", done: true, feel: "ok", warmup: false, comments: [] });
+    { reps: "8", kg: "72.5", done: true, feel: "ok", warmup: false, failed: false, failNote: "", comments: [] });
 });
 
 test("normalizeSet: warmup default false, preserva true", () => {
@@ -326,4 +326,21 @@ test("toggleComment: trim e niente duplicati", () => {
 });
 test("toggleComment: input vuoto non cambia nulla", () => {
   assert.deepEqual(toggleComment(["a"], "   "), ["a"]);
+});
+
+test("normalizeSet: failed default false, preserva true", () => {
+  assert.equal(normalizeSet({ reps: 8, kg: 50 }).failed, false);
+  assert.equal(normalizeSet({ reps: 8, kg: 50, failed: true }).failed, true);
+  assert.equal(normalizeSet({ failed: 1 }).failed, true); // coercizione booleana
+});
+
+test("normalizeSet: failNote default stringa vuota, preserva stringa", () => {
+  assert.equal(normalizeSet({ reps: 8, kg: 50 }).failNote, "");
+  assert.equal(normalizeSet({ reps: 8, kg: 50, failed: true, failNote: "niente forza" }).failNote, "niente forza");
+});
+
+test("normalizeSet: failNote non-stringa (numero/undefined/null) normalizza a stringa vuota", () => {
+  assert.equal(normalizeSet({ failNote: 42 }).failNote, "");
+  assert.equal(normalizeSet({ failNote: undefined }).failNote, "");
+  assert.equal(normalizeSet({ failNote: null }).failNote, "");
 });

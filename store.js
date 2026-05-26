@@ -67,7 +67,8 @@ export function normalizeSet(s) {
     const t = c.trim();
     if (t && !comments.includes(t)) comments.push(t);
   }
-  return { reps: String(s?.reps ?? ""), kg: String(s?.kg ?? ""), done: !!s?.done, feel, warmup: !!s?.warmup, comments };
+  const failNote = typeof s?.failNote === "string" ? s.failNote : "";
+  return { reps: String(s?.reps ?? ""), kg: String(s?.kg ?? ""), done: !!s?.done, feel, warmup: !!s?.warmup, failed: !!s?.failed, failNote, comments };
 }
 
 // Toggle immutabile di un commento in una lista: aggiunge se assente, rimuove se presente.

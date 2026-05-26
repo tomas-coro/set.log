@@ -111,14 +111,14 @@ test("activeExerciseIndex: tutti completi -> 0 (wrap, non solo perché è il pri
 test("withSet: aggiorna una serie esistente (merge del patch)", () => {
   const e = { sets: [{ reps: "8", kg: "70", done: false }], note: "n" };
   assert.deepEqual(withSet(e, 0, { kg: "72.5", done: true }), {
-    sets: [{ reps: "8", kg: "72.5", done: true, feel: "", warmup: false, comments: [] }],
+    sets: [{ reps: "8", kg: "72.5", done: true, feel: "", warmup: false, failed: false, failNote: "", comments: [] }],
     note: "n",
   });
 });
 
 test("withSet: estende l'array se l'indice supera la lunghezza", () => {
   assert.deepEqual(withSet("", 0, { reps: "8", kg: "70", done: true }), {
-    sets: [{ reps: "8", kg: "70", done: true, feel: "", warmup: false, comments: [] }],
+    sets: [{ reps: "8", kg: "70", done: true, feel: "", warmup: false, failed: false, failNote: "", comments: [] }],
     note: "",
   });
   const e = { sets: [{ reps: "8", kg: "70", done: true }] };
@@ -127,7 +127,7 @@ test("withSet: estende l'array se l'indice supera la lunghezza", () => {
 
 test("withoutSet: rimuove la serie all'indice", () => {
   const e = { sets: [{ reps: "8", kg: "70", done: true }, { reps: "6", kg: "70", done: false }] };
-  assert.deepEqual(withoutSet(e, 0).sets, [{ reps: "6", kg: "70", done: false, feel: "", warmup: false, comments: [] }]);
+  assert.deepEqual(withoutSet(e, 0).sets, [{ reps: "6", kg: "70", done: false, feel: "", warmup: false, failed: false, failNote: "", comments: [] }]);
 });
 
 test("withSupersetSet: aggiorna solo la traccia indicata", () => {
@@ -372,4 +372,59 @@ test("previousWeekSet si allinea ai soli working set", () => {
   ] });
   // setIndex 0 -> primo working (70), non il warmup
   assert.deepEqual(previousWeekSet(d, "A", 0, "2026-W22", 0), { reps: "8", kg: "70", week: "2026-W21" });
+});
+
+// ── failed set ────────────────────────────────────────────────────────────────
+
+test("failed escluso da volume, PR e trend (esattamente come warmup)", () => {
+  const dayPlan = { exercises: [{ name: "Panca", setsReps: "3 × 8" }] };
+  let d = emptyData();
+  d = setEntry(d, "2026-W22", "A", 0, { sets: [
+    { reps: 8, kg: 50,   done: true, failed: true },   // fallita: NON conta nelle stats
+    { reps: 8, kg: 72.5, done: true, failed: false },
+    { reps: 8, kg: 72.5, done: true, failed: false },
+  ] });
+  // volume: solo le due working = 8*72.5*2 = 1160 (la failed 8*50=400 esclusa)
+  assert.equal(sessionVolume(d, "2026-W22", "A", dayPlan), 1160);
+  // PR: la failed da 90 NON deve comparire come record
+  let d2 = emptyData();
+  d2 = setEntry(d2, "2026-W22", "A", 0, { sets: [
+    { reps: 3, kg: 90, done: true, failed: true },
+    { reps: 8, kg: 72.5, done: true, failed: false },
+  ] });
+  assert.equal(bestKg(d2, "A", 0), 72.5);
+  // trend: top-set deve essere 72.5, non 90
+  const tr = exerciseTrend(d2, "A", 0, "2026-W22", 3);
+  assert.equal(tr[tr.length - 1].kg, 72.5);
+});
+
+test("failed escluso da previousSetInSession", () => {
+  const entry = { sets: [
+    { reps: 8, kg: 72.5, done: true, failed: false },
+    { reps: 8, kg: 80,   done: true, failed: true },  // failed: da saltare
+    { reps: "", kg: "",  done: false, failed: false },
+  ] };
+  // dalla serie index 2: l'ultima non-failed done è la index 0 (72.5)
+  assert.deepEqual(previousSetInSession(entry, 2), { reps: "8", kg: "72.5" });
+});
+
+test("failed escluso da previousWeekSet", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [
+    { reps: 8, kg: 70,  done: true, failed: false },  // working #0
+    { reps: 8, kg: 100, done: true, failed: true },   // failed: ignorato nell'allineamento
+  ] });
+  // setIndex 0 -> primo working non-failed (70), non la failed da 100
+  assert.deepEqual(previousWeekSet(d, "A", 0, "2026-W22", 0), { reps: "8", kg: "70", week: "2026-W21" });
+});
+
+test("isEntryComplete: la serie failed (done+failed) conta per il completamento", () => {
+  // target 3 × 8: 2 normali done + 1 done+failed = 3 done totali -> completo
+  const ex = { setsReps: "3 × 8", superset: false };
+  const entry = { sets: [
+    { reps: "8", kg: "72.5", done: true,  failed: false },
+    { reps: "8", kg: "72.5", done: true,  failed: false },
+    { reps: "6", kg: "72.5", done: true,  failed: true  }, // non riuscita ma done
+  ] };
+  assert.equal(isEntryComplete(entry, ex), true);
 });
