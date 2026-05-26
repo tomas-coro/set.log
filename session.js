@@ -92,6 +92,31 @@ export function withoutSupersetSet(entry, track, index) {
   return { ...e, [t]: withoutSet(e[t], index) };
 }
 
+// Imposta la nota (a livello esercizio) preservando le serie. `superset` sceglie
+// la forma dell'entry. La nota è sempre top-level, sia normale sia superset.
+export function withNote(entry, note, superset = false) {
+  const text = String(note ?? "");
+  if (superset) {
+    const e = normalizeSupersetEntry(entry);
+    return { ...e, note: text };
+  }
+  const e = normalizeEntry(entry);
+  return { sets: e.sets, note: text };
+}
+
+// Nota più recente loggata in una settimana precedente per quell'esercizio
+// (le note sono persistenti tra le settimane). "" se nessuna.
+export function previousNote(data, day, idx, weekKey, superset = false) {
+  const keys = Object.keys(data?.weeks ?? {})
+    .filter((k) => /^\d{4}-W\d{2}(\.\d+)?$/.test(k) && k < weekKey).sort();
+  for (let i = keys.length - 1; i >= 0; i--) {
+    const v = getEntry(data, keys[i], day, idx);
+    const e = superset ? normalizeSupersetEntry(v) : normalizeEntry(v);
+    if (e.note && e.note.trim()) return e.note;
+  }
+  return "";
+}
+
 // Max kg loggato per un esercizio normale su tutte le settimane (null se assente).
 export function bestKg(data, day, idx) {
   let best = null;

@@ -6,7 +6,7 @@ import {
 } from "./store.js";
 import {
   parseTarget, activeExerciseIndex, activeSetIndex, isEntryComplete, bestKg, progressionDelta,
-  withSet, withoutSet, withSupersetSet,
+  withSet, withoutSet, withSupersetSet, withNote, previousNote,
 } from "./session.js";
 import { RestTimer, formatTime } from "./timer.js";
 import { ScreenWakeLock } from "./wakelock.js";
@@ -303,6 +303,30 @@ function buildEditBlock(label, state, prev) {
   return block;
 }
 
+// Campo nota per esercizio (persistente tra le settimane). Mostra la nota della
+// settimana corrente; se vuota, suggerisce in placeholder quella precedente.
+function buildNoteField(superset) {
+  const v = getEntry(data, currentWeek, currentDay, focusIndex);
+  const e = superset ? normalizeSupersetEntry(v) : normalizeEntry(v);
+  const prev = previousNote(data, currentDay, focusIndex, currentWeek, superset);
+
+  const wrap = document.createElement("div");
+  wrap.className = "noteblock";
+  const lab = document.createElement("label");
+  lab.className = "notelabel"; lab.textContent = "Nota";
+  const ta = document.createElement("textarea");
+  ta.className = "note"; ta.rows = 1;
+  ta.placeholder = prev ? `↳ ${prev}` : "presa, set-up, sensazioni…";
+  ta.value = e.note || "";
+  ta.addEventListener("change", () => {
+    const cur = getEntry(data, currentWeek, currentDay, focusIndex);
+    data = setEntry(data, currentWeek, currentDay, focusIndex, withNote(cur, ta.value.trim(), superset), new Date().toISOString());
+    persist();
+  });
+  wrap.append(lab, ta);
+  return wrap;
+}
+
 function setRow(i, set, prev, isCurrent, onRemove, onEditSet) {
   const row = document.createElement("div");
   row.className = "srow" + (isCurrent ? " cur" : "");
@@ -434,6 +458,7 @@ function renderFocusNormal(ex) {
     render();
   });
   card.appendChild(cta);
+  card.appendChild(buildNoteField(false));
 
   root.appendChild(card);
 }
@@ -514,6 +539,7 @@ function renderFocusSuperset(ex) {
     render();
   });
   card.appendChild(cta);
+  card.appendChild(buildNoteField(true));
 
   root.appendChild(card);
 }

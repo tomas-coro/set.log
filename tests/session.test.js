@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { parseTargetTrack, parseTarget, activeSetIndex, isEntryComplete, activeExerciseIndex } from "../session.js";
 import { withSet, withoutSet, withSupersetSet, withoutSupersetSet } from "../session.js";
-import { bestKg, progressionDelta } from "../session.js";
+import { bestKg, progressionDelta, withNote, previousNote } from "../session.js";
 import { emptyData, setEntry } from "../store.js";
 
 test("parseTargetTrack: 'NxR' con range", () => {
@@ -176,4 +176,33 @@ test("progressionDelta: differenza arrotondata o null", () => {
   assert.equal(progressionDelta("70", "70"), 0);
   assert.equal(progressionDelta("", "70"), null);
   assert.equal(progressionDelta("70", ""), null);
+});
+
+test("withNote imposta la nota preservando le serie (normale)", () => {
+  const entry = { sets: [{ reps: "8", kg: "70", done: true }], note: "" };
+  const out = withNote(entry, "presa stretta", false);
+  assert.equal(out.note, "presa stretta");
+  assert.equal(out.sets.length, 1);
+  assert.equal(out.sets[0].kg, "70");
+});
+
+test("withNote su superset preserva entrambe le tracce", () => {
+  const entry = { a: { sets: [{ reps: "12", kg: "20", done: true }] }, b: { sets: [] }, note: "" };
+  const out = withNote(entry, "spalla tirava", true);
+  assert.equal(out.note, "spalla tirava");
+  assert.equal(out.a.sets.length, 1);
+  assert.equal(out.b.sets.length, 0);
+});
+
+test("previousNote prende la nota della settimana precedente più recente", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "8", kg: "70", done: true }], note: "presa media" }, "t");
+  d = setEntry(d, "2026-W22", "A", 0, { sets: [], note: "" }, "t");
+  assert.equal(previousNote(d, "A", 0, "2026-W22", false), "presa media");
+});
+
+test("previousNote ritorna '' se non c'è nota precedente", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "8", kg: "70", done: true }], note: "" }, "t");
+  assert.equal(previousNote(d, "A", 0, "2026-W22", false), "");
 });
