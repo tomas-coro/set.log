@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { parseTargetTrack, parseTarget, activeSetIndex, isEntryComplete, activeExerciseIndex } from "../session.js";
 import { withSet, withoutSet, withSupersetSet, withoutSupersetSet } from "../session.js";
-import { bestKg, progressionDelta, withNote, previousNote, previousSetInSession, previousWeekSet } from "../session.js";
+import { bestKg, progressionDelta, withNote, previousNote, previousSetInSession, previousWeekSet, sessionVolume, exerciseTrend } from "../session.js";
 import { emptyData, setEntry } from "../store.js";
 
 test("parseTargetTrack: 'NxR' con range", () => {
@@ -258,4 +258,53 @@ test("previousWeekSet: salta settimane vuote e senza storico -> null", () => {
   d = setEntry(d, "2026-W21", "A", 0, { sets: [] });
   assert.equal(previousWeekSet(d, "A", 0, "2026-W22", 0).kg, "65");
   assert.equal(previousWeekSet(d, "A", 0, "2026-W20", 0), null);
+});
+
+const PLAN_AB = { exercises: [
+  { name: "Panca", setsReps: "4 × 8" },
+  { name: "Croci", setsReps: "3 × 12", superset: true },
+] };
+
+test("sessionVolume: somma reps*kg delle serie done (normale + superset)", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W22", "A", 0, { sets: [
+    { reps: "8", kg: "70", done: true },   // 560
+    { reps: "8", kg: "70", done: false },  // esclusa (non done)
+  ] });
+  d = setEntry(d, "2026-W22", "A", 1, {
+    a: { sets: [{ reps: "12", kg: "20", done: true }] },  // 240
+    b: { sets: [{ reps: "15", kg: "10", done: true }] },  // 150
+  });
+  assert.equal(sessionVolume(d, "2026-W22", "A", PLAN_AB), 560 + 240 + 150);
+});
+
+test("sessionVolume: 0 senza serie done e ignora valori non numerici", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W22", "A", 0, { sets: [{ reps: "max", kg: "", done: true }] });
+  assert.equal(sessionVolume(d, "2026-W22", "A", PLAN_AB), 0);
+});
+
+test("exerciseTrend: top-set kg delle ultime n settimane, ordine crescente", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W20", "A", 0, { sets: [{ reps: "8", kg: "65", done: true }, { reps: "8", kg: "67.5", done: true }] });
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "8", kg: "70", done: true }] });
+  d = setEntry(d, "2026-W22", "A", 0, { sets: [{ reps: "8", kg: "72.5", done: true }] });
+  assert.deepEqual(exerciseTrend(d, "A", 0, "2026-W22", 3), [
+    { week: "2026-W20", kg: 67.5 }, { week: "2026-W21", kg: 70 }, { week: "2026-W22", kg: 72.5 },
+  ]);
+});
+
+test("exerciseTrend: salta settimane senza kg e limita a n", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W19", "A", 0, { sets: [{ reps: "8", kg: "60", done: true }] });
+  d = setEntry(d, "2026-W20", "A", 0, { sets: [{ reps: "8", kg: "", done: true }] });
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "8", kg: "70", done: true }] });
+  d = setEntry(d, "2026-W22", "A", 0, { sets: [{ reps: "8", kg: "72.5", done: true }] });
+  assert.deepEqual(exerciseTrend(d, "A", 0, "2026-W22", 2), [
+    { week: "2026-W21", kg: 70 }, { week: "2026-W22", kg: 72.5 },
+  ]);
+});
+
+test("exerciseTrend: nessuno storico -> array vuoto", () => {
+  assert.deepEqual(exerciseTrend(emptyData(), "A", 0, "2026-W22", 3), []);
 });

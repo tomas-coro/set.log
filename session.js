@@ -168,3 +168,63 @@ export function previousWeekSet(data, day, idx, weekKey, setIndex, track = null)
   }
   return null;
 }
+
+// Parsing numerico tollerante alla virgola decimale; null se non numerico.
+function parseNum(x) {
+  const v = parseFloat(String(x).replace(",", "."));
+  return Number.isFinite(v) ? v : null;
+}
+
+function trackVolume(track) {
+  let v = 0;
+  for (const s of track.sets) {
+    if (!s.done) continue;
+    const r = parseNum(s.reps), k = parseNum(s.kg);
+    if (r !== null && k !== null) v += r * k;
+  }
+  return v;
+}
+
+// Volume totale (Σ reps*kg sulle serie done) del giorno; somma entrambe le tracce superset.
+export function sessionVolume(data, weekKey, day, dayPlan) {
+  const exs = dayPlan?.exercises ?? [];
+  let total = 0;
+  for (let i = 0; i < exs.length; i++) {
+    const v = getEntry(data, weekKey, day, i);
+    if (exs[i]?.superset) {
+      const e = normalizeSupersetEntry(v);
+      total += trackVolume(e.a) + trackVolume(e.b);
+    } else {
+      total += trackVolume(normalizeEntry(v));
+    }
+  }
+  return total;
+}
+
+// Top-set (kg max) di una settimana per quell'esercizio; null se nessun kg numerico.
+function weekTopKg(data, weekKey, day, idx, superset) {
+  const v = getEntry(data, weekKey, day, idx);
+  const tracks = superset
+    ? [normalizeSupersetEntry(v).a, normalizeSupersetEntry(v).b]
+    : [normalizeEntry(v)];
+  let best = null;
+  for (const t of tracks) {
+    for (const s of t.sets) {
+      const k = parseNum(s.kg);
+      if (k !== null && (best === null || k > best)) best = k;
+    }
+  }
+  return best;
+}
+
+// Ultime n settimane <= weekKey con dato: [{week, kg}] in ordine crescente. Salta le vuote.
+export function exerciseTrend(data, day, idx, weekKey, n = 3, superset = false) {
+  const keys = Object.keys(data?.weeks ?? {})
+    .filter((k) => /^\d{4}-W\d{2}(\.\d+)?$/.test(k) && k <= weekKey).sort();
+  const out = [];
+  for (let i = keys.length - 1; i >= 0 && out.length < n; i--) {
+    const kg = weekTopKg(data, keys[i], day, idx, superset);
+    if (kg !== null) out.unshift({ week: keys[i], kg });
+  }
+  return out;
+}
