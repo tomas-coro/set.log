@@ -688,3 +688,10 @@ async function boot() {
 }
 
 boot();
+
+// PWA: registra il service worker (best-effort, solo se supportato).
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("./sw.js").catch(() => { /* SW non disponibile */ });
+  });
+}

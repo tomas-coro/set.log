@@ -1,0 +1,43 @@
+// Service worker: cache dell'app-shell per l'uso offline. data.json NON è qui
+// dentro (vive su api.github.com, cross-origin): la sync resta gestita da app.js.
+// NB: bumpare CACHE (es. -v2) quando cambia un file dell'app-shell, per
+// invalidare la cache vecchia ed evitare codice stantio.
+const CACHE = "gymsched-v1";
+const SHELL = [
+  "./",
+  "./index.html",
+  "./style.css",
+  "./app.js",
+  "./store.js",
+  "./session.js",
+  "./timer.js",
+  "./plan.js",
+  "./wakelock.js",
+  "./manifest.json",
+  "./icon.svg",
+];
+
+self.addEventListener("install", (e) => {
+  e.waitUntil(caches.open(CACHE).then((c) => c.addAll(SHELL)).then(() => self.skipWaiting()));
+});
+
+self.addEventListener("activate", (e) => {
+  e.waitUntil(
+    caches.keys()
+      .then((keys) => Promise.all(keys.filter((k) => k !== CACHE).map((k) => caches.delete(k))))
+      .then(() => self.clients.claim())
+  );
+});
+
+self.addEventListener("fetch", (e) => {
+  const req = e.request;
+  // Solo GET same-origin: API GitHub e font passano diretti alla rete.
+  if (req.method !== "GET" || new URL(req.url).origin !== self.location.origin) return;
+  e.respondWith(
+    caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+      const copy = res.clone();
+      caches.open(CACHE).then((c) => c.put(req, copy));
+      return res;
+    }).catch(() => caches.match("./index.html")))
+  );
+});

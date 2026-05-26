@@ -1,0 +1,15 @@
+{
+  "name": "Gym Schedule",
+  "short_name": "Gym",
+  "description": "Diario di allenamento — log per-serie con progressione.",
+  "lang": "it",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0E0F0E",
+  "theme_color": "#0E0F0E",
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}
