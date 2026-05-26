@@ -23,7 +23,7 @@ let data = emptyData();
 let sha = null;
 let currentWeek = isoWeekKey(new Date());
 let currentDay = "A";
-let focusIndex = 0;          // esercizio in focus nel giorno corrente
+let openIndex = null;        // esercizio aperto nella fisarmonica (null = nessuno)
 let store = null;
 let saveTimer = null;
 
@@ -161,52 +161,18 @@ function renderProgress() {
   dp.exercises.forEach((ex, i) => {
     const seg = document.createElement("span");
     seg.className = "seg";
-    if (i === focusIndex) seg.classList.add("cur");
+    if (i === openIndex) seg.classList.add("cur");
     else if (isComplete(i)) seg.classList.add("done");
     bar.appendChild(seg);
   });
   const lbl = document.createElement("span");
   lbl.className = "lbl";
-  lbl.textContent = `${String(focusIndex + 1).padStart(2, "0")}/${String(dp.exercises.length).padStart(2, "0")}`;
+  const total = String(dp.exercises.length).padStart(2, "0");
+  const left = openIndex === null
+    ? String(dp.exercises.filter((ex, i) => isComplete(i)).length).padStart(2, "0")
+    : String(openIndex + 1).padStart(2, "0");
+  lbl.textContent = `${left}/${total}`;
   bar.appendChild(lbl);
-}
-
-function renderUpNext() {
-  const dp = dayPlan();
-  document.getElementById("upnextLabel").textContent =
-    `— prossimi · ${dp.exercises.length - 1} esercizi —`;
-  const root = document.getElementById("upnext");
-  root.textContent = "";
-  dp.exercises.forEach((ex, i) => {
-    if (i === focusIndex) return;
-    const row = document.createElement("div");
-    row.className = "nrow" + (isComplete(i) ? " done" : "");
-    row.addEventListener("click", () => { focusIndex = i; render(); window.scrollTo({ top: 0, behavior: "smooth" }); });
-
-    const id = document.createElement("span");
-    id.className = "id"; id.textContent = String(i + 1).padStart(2, "0");
-
-    const mid = document.createElement("div");
-    const nm = document.createElement("div");
-    nm.className = "nm"; nm.textContent = ex.name;
-    if (ex.superset) { const b = document.createElement("span"); b.className = "ssbadge"; b.textContent = "superset"; nm.appendChild(b); }
-    const sub = document.createElement("div");
-    sub.className = "sub"; sub.textContent = `${ex.setsReps} · rec ${getRest(currentDay, i, ex.restSeconds)}″`;
-    mid.append(nm, sub);
-
-    const right = document.createElement("div");
-    right.className = "right";
-    const best = document.createElement("div");
-    best.className = "best";
-    const bl = document.createElement("div");
-    bl.className = "bl";
-    if (ex.superset) { best.textContent = "A·B"; bl.textContent = "2 tracce"; }
-    else { const bk = bestKg(data, currentDay, i); best.textContent = bk === null ? "—" : bk + " kg"; bl.textContent = "best"; }
-    right.append(best, bl);
-
-    row.append(id, mid, right);
-    root.appendChild(row);
-  });
 }
 
 // Tap = un passo; tenuto premuto = ripetizione che accelera. step() muta e ridipinge il valore.
@@ -411,14 +377,14 @@ function buildEditBlock(label, state, prev) {
 
 // Campo nota per esercizio (persistente tra le settimane). Mostra la nota della
 // settimana corrente; se vuota, suggerisce in placeholder quella precedente.
-function buildNoteField(superset) {
-  const v = getEntry(data, currentWeek, currentDay, focusIndex);
+function buildNoteField(superset, idx) {
+  const v = getEntry(data, currentWeek, currentDay, idx);
   const e = superset ? normalizeSupersetEntry(v) : normalizeEntry(v);
-  const prev = previousNote(data, currentDay, focusIndex, currentWeek, superset);
+  const prev = previousNote(data, currentDay, idx, currentWeek, superset);
 
   const wrap = document.createElement("div");
   wrap.className = "noteblock";
-  const id = `note-${currentDay}-${focusIndex}`;
+  const id = `note-${currentDay}-${idx}`;
   const lab = document.createElement("label");
   lab.className = "notelabel"; lab.textContent = "Nota"; lab.htmlFor = id;
   const ta = document.createElement("textarea");
@@ -426,9 +392,9 @@ function buildNoteField(superset) {
   ta.placeholder = prev ? `↳ ${prev}` : "presa, set-up, sensazioni…";
   ta.value = e.note || "";
   ta.addEventListener("change", () => {
-    const cur = getEntry(data, currentWeek, currentDay, focusIndex);
-    data = setEntry(data, currentWeek, currentDay, focusIndex, withNote(cur, ta.value.trim(), superset), new Date().toISOString());
-    persist();
+    const cur = getEntry(data, currentWeek, currentDay, idx);
+    data = setEntry(data, currentWeek, currentDay, idx, withNote(cur, ta.value.trim(), superset), new Date().toISOString());
+    persist(idx);
   });
   wrap.append(lab, ta);
   return wrap;
@@ -496,21 +462,19 @@ function setRow(i, set, prev, isCurrent, onRemove, onEditSet, onFeel) {
   return row;
 }
 
-// Bufferizza l'entry corrente del focus e schedula il salvataggio cloud.
-function persist() {
-  const value = getEntry(data, currentWeek, currentDay, focusIndex);
-  bufferEdit(currentWeek, currentDay, focusIndex, value);
+// Bufferizza l'entry dell'esercizio `idx` e schedula il salvataggio cloud.
+function persist(idx) {
+  bufferEdit(currentWeek, currentDay, idx, getEntry(data, currentWeek, currentDay, idx));
   setStatus("in attesa ⧗", "pending");
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveToCloud, 1500);
 }
 
-function renderFocusNormal(ex) {
-  const root = document.getElementById("focus");
-  const v = getEntry(data, currentWeek, currentDay, focusIndex);
+function renderFocusNormal(ex, idx, container) {
+  const v = getEntry(data, currentWeek, currentDay, idx);
   const entry = normalizeEntry(v);
   const tgt = parseTarget(ex.setsReps, false);
-  const prev = prefillSets(data, currentWeek, currentDay, focusIndex); // [{reps,kg,done:false}]
+  const prev = prefillSets(data, currentWeek, currentDay, idx); // [{reps,kg,done:false}]
   const curIdx = activeSetIndex(entry.sets);
 
   draft = {
@@ -518,22 +482,8 @@ function renderFocusNormal(ex) {
     reps: prev[curIdx]?.reps ?? repsLow(tgt.reps),
   };
 
-  const card = document.createElement("div");
-  card.className = "focus";
-
-  const head = document.createElement("div");
-  head.className = "exhead";
-  const exn = document.createElement("div");
-  exn.className = "exn";
-  const id = document.createElement("span"); id.className = "id"; id.textContent = String(focusIndex + 1).padStart(2, "0");
-  exn.append(id, document.createTextNode(ex.name));
-  const tg = document.createElement("div");
-  tg.className = "tgt"; tg.textContent = `obj ${tgt.sets}×${tgt.reps}`;
-  head.append(exn, tg);
-  card.appendChild(head);
-
-  const trendRow = buildTrendRow(exerciseTrend(data, currentDay, focusIndex, currentWeek, 3), currentWeek);
-  if (trendRow) card.appendChild(trendRow);
+  const trendRow = buildTrendRow(exerciseTrend(data, currentDay, idx, currentWeek, 3), currentWeek);
+  if (trendRow) container.appendChild(trendRow);
 
   const setsBox = document.createElement("div");
   setsBox.className = "sets";
@@ -543,34 +493,34 @@ function renderFocusNormal(ex) {
     const isCurrent = i === curIdx;
     const canRemove = i < entry.sets.length && entry.sets.length > 0;
     setsBox.appendChild(setRow(i, set, prev[i] || null, isCurrent, canRemove ? () => {
-      data = setEntry(data, currentWeek, currentDay, focusIndex, withoutSet(v, i), new Date().toISOString());
-      persist(); render();
+      data = setEntry(data, currentWeek, currentDay, idx, withoutSet(v, i), new Date().toISOString());
+      persist(idx); render();
     } : null, (patch) => {
-      data = setEntry(data, currentWeek, currentDay, focusIndex, withSet(v, i, { ...patch, done: true }), new Date().toISOString());
-      persist(); render();
+      data = setEntry(data, currentWeek, currentDay, idx, withSet(v, i, { ...patch, done: true }), new Date().toISOString());
+      persist(idx); render();
     }, set.done ? () => {
       const next = nextFeel(set.feel);
-      data = setEntry(data, currentWeek, currentDay, focusIndex, withSet(v, i, { feel: next }), new Date().toISOString());
-      persist(); render();
+      data = setEntry(data, currentWeek, currentDay, idx, withSet(v, i, { feel: next }), new Date().toISOString());
+      persist(idx); render();
     } : null));
   }
-  card.appendChild(setsBox);
+  container.appendChild(setsBox);
 
   const edit = buildEditBlock(`Serie ${curIdx + 1} — carico · step 0.5 kg`, draft, prev[curIdx] || null);
-  card.appendChild(edit.block);
+  container.appendChild(edit.block);
 
-  card.appendChild(buildRpeBar(entry.sets[curIdx]?.feel ?? "", (feel) => {
-    data = setEntry(data, currentWeek, currentDay, focusIndex,
+  container.appendChild(buildRpeBar(entry.sets[curIdx]?.feel ?? "", (feel) => {
+    data = setEntry(data, currentWeek, currentDay, idx,
       withSet(v, curIdx, { feel }), new Date().toISOString());
-    persist(); render();
+    persist(idx); render();
   }));
 
   const repInSession = previousSetInSession(v, curIdx);
-  const repPrevWeek = previousWeekSet(data, currentDay, focusIndex, currentWeek, curIdx);
+  const repPrevWeek = previousWeekSet(data, currentDay, idx, currentWeek, curIdx);
   const repChips = buildRepeatChips(repInSession, repPrevWeek, ({ reps, kg }) => {
     draft.reps = reps; draft.kg = kg; edit.refresh();
   });
-  if (repChips) card.appendChild(repChips);
+  if (repChips) container.appendChild(repChips);
 
   const dots = document.createElement("div");
   dots.className = "dots";
@@ -587,44 +537,41 @@ function renderFocusNormal(ex) {
   const addW = document.createElement("button");
   addW.className = "addset warm"; addW.textContent = "+ riscald.";
   addW.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, focusIndex, withSet(v, entry.sets.length, { reps: "", kg: "", done: false, warmup: true }), new Date().toISOString());
-    persist(); render();
+    data = setEntry(data, currentWeek, currentDay, idx, withSet(v, entry.sets.length, { reps: "", kg: "", done: false, warmup: true }), new Date().toISOString());
+    persist(idx); render();
   });
   const add = document.createElement("button");
   add.className = "addset"; add.textContent = "+ serie";
   add.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, focusIndex, withSet(v, entry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
-    persist(); render();
+    data = setEntry(data, currentWeek, currentDay, idx, withSet(v, entry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
+    persist(idx); render();
   });
   dots.appendChild(addW);
   dots.appendChild(add);
-  card.appendChild(dots);
+  container.appendChild(dots);
 
   const cta = document.createElement("button");
   cta.className = "cta"; cta.textContent = "Serie fatta · avvia recupero ▸";
   cta.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, focusIndex,
+    data = setEntry(data, currentWeek, currentDay, idx,
       withSet(v, curIdx, { reps: draft.reps, kg: draft.kg, done: true, feel: entry.sets[curIdx]?.feel ?? "" }), new Date().toISOString());
-    persist();
-    startRest(getRest(currentDay, focusIndex, ex.restSeconds), ex.name);
-    if (isComplete(focusIndex)) focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+    persist(idx);
+    startRest(getRest(currentDay, idx, ex.restSeconds), ex.name);
     render();
+    if (isEntryComplete(getEntry(data, currentWeek, currentDay, idx), ex)) {
+      openIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+      render();
+    }
   });
-  card.appendChild(cta);
-  card.appendChild(buildNoteField(false));
-
-  const vol = sessionVolume(data, currentWeek, currentDay, dayPlan());
-  const prevVol = sessionVolume(data, prevWeekKey(), currentDay, dayPlan());
-  card.appendChild(buildVolumeRow(vol, prevVol));
-
-  root.appendChild(card);
+  container.appendChild(cta);
+  container.appendChild(buildNoteField(false, idx));
 }
 
 // Bozze separate per traccia A e B della serie corrente del superset.
 let draftA = { kg: "", reps: "" };
 let draftB = { kg: "", reps: "" };
 
-function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state) {
+function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, idx) {
   const wrap = document.createElement("div");
   wrap.className = "track";
 
@@ -646,14 +593,14 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state) 
   for (let i = 0; i < total; i++) {
     const set = trackEntry.sets[i] || { reps: "", kg: "", done: false };
     setsBox.appendChild(setRow(i, set, prevSets[i] || null, i === curIdx, null, (patch) => {
-      const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, focusIndex), trackKey, i, { ...patch, done: true });
-      data = setEntry(data, currentWeek, currentDay, focusIndex, nv, new Date().toISOString());
-      persist(); render();
+      const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { ...patch, done: true });
+      data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+      persist(idx); render();
     }, set.done ? () => {
       const next = nextFeel(set.feel);
-      const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, focusIndex), trackKey, i, { feel: next });
-      data = setEntry(data, currentWeek, currentDay, focusIndex, nv, new Date().toISOString());
-      persist(); render();
+      const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { feel: next });
+      data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+      persist(idx); render();
     } : null));
   }
   wrap.appendChild(setsBox);
@@ -662,66 +609,48 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state) 
   wrap.appendChild(edit.block);
 
   wrap.appendChild(buildRpeBar(trackEntry.sets[curIdx]?.feel ?? "", (feel) => {
-    const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, focusIndex), trackKey, curIdx, { feel });
-    data = setEntry(data, currentWeek, currentDay, focusIndex, nv, new Date().toISOString());
-    persist(); render();
+    const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, curIdx, { feel });
+    data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+    persist(idx); render();
   }));
   const inSess = previousSetInSession(trackEntry, curIdx);
-  const prevWk = previousWeekSet(data, currentDay, focusIndex, currentWeek, curIdx, trackKey);
+  const prevWk = previousWeekSet(data, currentDay, idx, currentWeek, curIdx, trackKey);
   const chips = buildRepeatChips(inSess, prevWk, ({ reps, kg }) => { state.reps = reps; state.kg = kg; edit.refresh(); });
   if (chips) wrap.appendChild(chips);
   return { wrap, curIdx };
 }
 
-function renderFocusSuperset(ex) {
-  const root = document.getElementById("focus");
-  const v = getEntry(data, currentWeek, currentDay, focusIndex);
+function renderFocusSuperset(ex, idx, container) {
+  const v = getEntry(data, currentWeek, currentDay, idx);
   const e = normalizeSupersetEntry(v);
   const tgt = parseTarget(ex.setsReps, true);
   const [nameA, nameB] = ex.name.includes(" + ") ? ex.name.split(" + ") : [ex.name, ex.name];
 
-  const prev = previousSupersetSets(currentWeek, currentDay, focusIndex);
+  const prev = previousSupersetSets(currentWeek, currentDay, idx);
 
-  const card = document.createElement("div");
-  card.className = "focus";
+  const trendRow = buildTrendRow(exerciseTrend(data, currentDay, idx, currentWeek, 3, true), currentWeek);
+  if (trendRow) container.appendChild(trendRow);
 
-  const head = document.createElement("div");
-  head.className = "exhead";
-  const exn = document.createElement("div");
-  exn.className = "exn";
-  const id = document.createElement("span"); id.className = "id"; id.textContent = String(focusIndex + 1).padStart(2, "0");
-  exn.append(id, document.createTextNode(ex.name));
-  const badge = document.createElement("span"); badge.className = "ssbadge"; badge.textContent = "superset";
-  exn.appendChild(badge);
-  head.appendChild(exn);
-  card.appendChild(head);
-
-  const trendRow = buildTrendRow(exerciseTrend(data, currentDay, focusIndex, currentWeek, 3, true), currentWeek);
-  if (trendRow) card.appendChild(trendRow);
-
-  const a = trackBlock("a", nameA.trim(), e.a, tgt.a, prev.a, draftA);
-  const b = trackBlock("b", nameB.trim(), e.b, tgt.b, prev.b, draftB);
-  card.append(a.wrap, b.wrap);
+  const a = trackBlock("a", nameA.trim(), e.a, tgt.a, prev.a, draftA, idx);
+  const b = trackBlock("b", nameB.trim(), e.b, tgt.b, prev.b, draftB, idx);
+  container.append(a.wrap, b.wrap);
 
   const cta = document.createElement("button");
   cta.className = "cta"; cta.textContent = "Serie fatta (A+B) · avvia recupero ▸";
   cta.addEventListener("click", () => {
     let nv = withSupersetSet(v, "a", a.curIdx, { reps: draftA.reps, kg: draftA.kg, done: true, feel: e.a.sets[a.curIdx]?.feel ?? "" });
     nv = withSupersetSet(nv, "b", b.curIdx, { reps: draftB.reps, kg: draftB.kg, done: true, feel: e.b.sets[b.curIdx]?.feel ?? "" });
-    data = setEntry(data, currentWeek, currentDay, focusIndex, nv, new Date().toISOString());
-    persist();
-    startRest(getRest(currentDay, focusIndex, ex.restSeconds), ex.name);
-    if (isComplete(focusIndex)) focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+    data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+    persist(idx);
+    startRest(getRest(currentDay, idx, ex.restSeconds), ex.name);
     render();
+    if (isEntryComplete(getEntry(data, currentWeek, currentDay, idx), ex)) {
+      openIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+      render();
+    }
   });
-  card.appendChild(cta);
-  card.appendChild(buildNoteField(true));
-
-  const vol = sessionVolume(data, currentWeek, currentDay, dayPlan());
-  const prevVol = sessionVolume(data, prevWeekKey(), currentDay, dayPlan());
-  card.appendChild(buildVolumeRow(vol, prevVol));
-
-  root.appendChild(card);
+  container.appendChild(cta);
+  container.appendChild(buildNoteField(true, idx));
 }
 
 // Sets della settimana loggata più recente, per entrambe le tracce ({a:[...], b:[...]}).
@@ -740,20 +669,53 @@ function previousSupersetSets(weekKey, day, idx) {
   return { a: [], b: [] };
 }
 
-function renderFocus() {
-  const root = document.getElementById("focus");
+function renderList() {
+  const root = document.getElementById("list");
   root.textContent = "";
-  const ex = dayPlan().exercises[focusIndex];
-  if (!ex) return;
-  if (ex.superset) renderFocusSuperset(ex);
-  else renderFocusNormal(ex);
+  const dp = dayPlan();
+  dp.exercises.forEach((ex, i) => {
+    const item = document.createElement("div");
+    item.className = "item" + (isComplete(i) ? " done" : "") + (i === openIndex ? " open" : "");
+    const r = document.createElement("div");
+    r.className = "r";
+    r.addEventListener("click", () => { openIndex = (openIndex === i ? null : i); render(); });
+    const id = document.createElement("span"); id.className = "id"; id.textContent = String(i + 1).padStart(2, "0");
+    const mid = document.createElement("div"); mid.className = "mid";
+    const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = ex.name;
+    if (ex.superset) { const b = document.createElement("span"); b.className = "ssbadge"; b.textContent = "superset"; nm.appendChild(b); }
+    const sub = document.createElement("div"); sub.className = "sub";
+    sub.textContent = `${ex.setsReps} · rec ${getRest(currentDay, i, ex.restSeconds)}″`;
+    mid.append(nm, sub);
+    const right = document.createElement("div"); right.className = "right";
+    if (isComplete(i)) { const c = document.createElement("span"); c.className = "chk"; c.textContent = "✓"; right.appendChild(c); }
+    else if (ex.superset) { const best = document.createElement("div"); best.className = "best"; best.textContent = "A·B"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "2 tracce"; right.append(best, bl); }
+    else { const bk = bestKg(data, currentDay, i); const best = document.createElement("div"); best.className = "best"; best.textContent = bk === null ? "—" : bk + " kg"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "best"; right.append(best, bl); }
+    const caret = document.createElement("span"); caret.className = "caret"; caret.textContent = "▾";
+    r.append(id, mid, right, caret);
+    item.appendChild(r);
+    const body = document.createElement("div"); body.className = "body";
+    if (i === openIndex) {
+      if (ex.superset) renderFocusSuperset(ex, i, body);
+      else renderFocusNormal(ex, i, body);
+    }
+    item.appendChild(body);
+    root.appendChild(item);
+  });
+}
+
+function renderVolRow() {
+  const root = document.getElementById("volRow");
+  root.textContent = "";
+  const vol = sessionVolume(data, currentWeek, currentDay, dayPlan());
+  const prevVol = sessionVolume(data, prevWeekKey(), currentDay, dayPlan());
+  root.appendChild(buildVolumeRow(vol, prevVol));
 }
 
 function render() {
   renderHeader();
   renderProgress();
-  renderFocus();
-  renderUpNext();
+  renderList();
+  renderVolRow();
 }
 
 // ---- Editing + saving ----
@@ -802,13 +764,13 @@ function flushPending() {
 function changeWeek(key) {
   currentWeek = key;
   data = ensureWeek(data, currentWeek, data.weeks[currentWeek]?.label);
-  focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+  openIndex = null;
   renderWeekSelect();
   render();
 }
 function changeDay(day) {
   currentDay = day;
-  focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+  openIndex = null;
   render();
 }
 function newWeek() {
@@ -891,7 +853,7 @@ async function boot() {
     setStatus(err instanceof AuthError ? "token non valido ⚠" : "offline ⧗", err instanceof AuthError ? "error" : "pending");
   }
   data = ensureWeek(data, currentWeek);
-  focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+  openIndex = null;
   renderWeekSelect();
   render();
   wakeLock.enable();

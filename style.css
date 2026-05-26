@@ -119,16 +119,23 @@ h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:8px 0 0;}
 .noteblock .note::placeholder{color:var(--faint);}
 .noteblock .note:focus{outline:none;border-color:var(--acc);}
 
-/* up next */
-.upnext{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--dim);margin:24px 4px 8px;}
-.nrow{display:flex;align-items:center;gap:12px;padding:14px;background:var(--surf);border:1px solid var(--line);border-radius:14px;margin-bottom:9px;cursor:pointer;}
-.nrow.done{opacity:.5;}
-.nrow .id{font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--faint);}
-.nrow .nm{font-weight:600;font-size:15px;}
-.nrow .sub{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--dim);margin-top:2px;}
-.nrow .right{margin-left:auto;text-align:right;}
-.nrow .best{font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:700;}
-.nrow .bl{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);}
+/* lista esercizi a fisarmonica */
+#list,.list{margin-top:16px;display:flex;flex-direction:column;gap:10px;}
+.item{background:var(--surf);border:1px solid var(--line);border-radius:16px;overflow:hidden;position:relative;}
+.item.open{border-color:var(--acc);}
+.item.open::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--acc);}
+.item .r{display:flex;align-items:center;gap:12px;padding:14px;cursor:pointer;}
+.item .r .id{font-family:"JetBrains Mono",monospace;color:var(--acc);font-size:13px;width:20px;}
+.item .r .mid{flex:1;min-width:0;}
+.item .r .nm{font-size:16px;font-weight:700;letter-spacing:-.01em;}
+.item .r .sub{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--dim);margin-top:2px;}
+.item .r .right{text-align:right;font-family:"JetBrains Mono",monospace;}
+.item .r .best{font-size:14px;font-weight:700;} .item .r .bl{font-size:8px;color:var(--faint);text-transform:uppercase;letter-spacing:.1em;}
+.item.done .nm{color:var(--dim);} .item .chk{color:var(--acc);font-size:16px;}
+.item .caret{color:var(--faint);font-size:13px;transition:transform .15s;}
+.item.open .caret{transform:rotate(180deg);color:var(--acc);}
+.item .body{display:none;padding:0 14px 16px;border-top:1px solid var(--line);}
+.item.open .body{display:block;}
 
 /* timer bar */
 .timerbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;
