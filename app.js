@@ -1,7 +1,7 @@
 import { PLAN } from "./plan.js";
 import {
   isoWeekKey, emptyData, ensureWeek, setEntry, getEntry,
-  normalizeEntry, prefillSets,
+  normalizeEntry, normalizeSupersetEntry, prefillSets,
   GitHubStore, ConflictError, AuthError,
 } from "./store.js";
 import {
@@ -422,14 +422,96 @@ function renderFocusNormal(ex) {
   root.appendChild(card);
 }
 
+// Bozze separate per traccia A e B della serie corrente del superset.
+let draftA = { kg: "", reps: "" };
+let draftB = { kg: "", reps: "" };
+
+function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state) {
+  const wrap = document.createElement("div");
+  wrap.className = "track";
+
+  const h = document.createElement("div");
+  h.className = "track-h";
+  const tA = document.createElement("span"); tA.className = "tA"; tA.textContent = trackKey.toUpperCase();
+  const nm = document.createElement("span"); nm.className = "tnm"; nm.textContent = trackName;
+  const tt = document.createElement("span"); tt.className = "ttgt"; tt.textContent = tgtTrack.reps;
+  h.append(tA, nm, tt);
+  wrap.appendChild(h);
+
+  const curIdx = activeSetIndex(trackEntry.sets);
+  state.kg = prevSets[curIdx]?.kg ?? "";
+  state.reps = prevSets[curIdx]?.reps ?? repsLow(tgtTrack.reps);
+
+  const setsBox = document.createElement("div");
+  setsBox.className = "sets";
+  const total = Math.max(trackEntry.sets.length, tgtTrack.sets, curIdx + 1);
+  for (let i = 0; i < total; i++) {
+    const set = trackEntry.sets[i] || { reps: "", kg: "", done: false };
+    setsBox.appendChild(setRow(i, set, prevSets[i] || null, i === curIdx, null));
+  }
+  wrap.appendChild(setsBox);
+
+  wrap.appendChild(buildEditBlock(`Serie ${curIdx + 1} ${trackKey.toUpperCase()} — step 0.5 kg`, state, prevSets[curIdx] || null));
+  return { wrap, curIdx };
+}
+
 function renderFocusSuperset(ex) {
   const root = document.getElementById("focus");
+  const v = getEntry(data, currentWeek, currentDay, focusIndex);
+  const e = normalizeSupersetEntry(v);
+  const tgt = parseTarget(ex.setsReps, true);
+  const [nameA, nameB] = ex.name.includes(" + ") ? ex.name.split(" + ") : [ex.name, ex.name];
+
+  const prev = previousSupersetSets(currentWeek, currentDay, focusIndex);
+
   const card = document.createElement("div");
   card.className = "focus";
-  const p = document.createElement("div");
-  p.className = "tgt"; p.textContent = `superset "${ex.name}" — in arrivo`;
-  card.appendChild(p);
+
+  const head = document.createElement("div");
+  head.className = "exhead";
+  const exn = document.createElement("div");
+  exn.className = "exn";
+  const id = document.createElement("span"); id.className = "id"; id.textContent = String(focusIndex + 1).padStart(2, "0");
+  exn.append(id, document.createTextNode(ex.name));
+  const badge = document.createElement("span"); badge.className = "ssbadge"; badge.textContent = "superset";
+  exn.appendChild(badge);
+  head.appendChild(exn);
+  card.appendChild(head);
+
+  const a = trackBlock("a", nameA.trim(), e.a, tgt.a, prev.a, draftA);
+  const b = trackBlock("b", nameB.trim(), e.b, tgt.b, prev.b, draftB);
+  card.append(a.wrap, b.wrap);
+
+  const cta = document.createElement("button");
+  cta.className = "cta"; cta.textContent = "Serie fatta (A+B) · avvia recupero ▸";
+  cta.addEventListener("click", () => {
+    let nv = withSupersetSet(v, "a", a.curIdx, { reps: draftA.reps, kg: draftA.kg, done: true });
+    nv = withSupersetSet(nv, "b", b.curIdx, { reps: draftB.reps, kg: draftB.kg, done: true });
+    data = setEntry(data, currentWeek, currentDay, focusIndex, nv, new Date().toISOString());
+    persist();
+    startRest(getRest(currentDay, focusIndex, ex.restSeconds), ex.name);
+    if (isComplete(focusIndex)) focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+    render();
+  });
+  card.appendChild(cta);
+
   root.appendChild(card);
+}
+
+// Sets della settimana loggata più recente, per entrambe le tracce ({a:[...], b:[...]}).
+function previousSupersetSets(weekKey, day, idx) {
+  const keys = Object.keys(data?.weeks ?? {})
+    .filter((k) => /^\d{4}-W\d{2}(\.\d+)?$/.test(k) && k < weekKey).sort();
+  for (let i = keys.length - 1; i >= 0; i--) {
+    const e = normalizeSupersetEntry(getEntry(data, keys[i], day, idx));
+    if (e.a.sets.length || e.b.sets.length) {
+      return {
+        a: e.a.sets.map(({ reps, kg }) => ({ reps, kg })),
+        b: e.b.sets.map(({ reps, kg }) => ({ reps, kg })),
+      };
+    }
+  }
+  return { a: [], b: [] };
 }
 
 function renderFocus() {
