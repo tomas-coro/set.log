@@ -1,8 +1,8 @@
 :root{
-  --bg:#0E0F0E; --surf:#151715; --surf2:#1B1E1B; --line:#242824;
-  --ink:#ECEAE5; --dim:#8A8E86; --faint:#73766C;
-  --acc:#3FE0A8; --acc-ink:#07231B; --ok:#3FE0A8; --down:#E0843F;
-  --field:#23271f;
+  --bg:#100E0A; --surf:#181511; --surf2:#1E1A14; --line:#2A2620;
+  --ink:#EFEBE3; --dim:#938B7B; --faint:#6F685B;
+  --acc:#E8A93C; --acc-ink:#241803; --ok:#E8A93C; --down:#E0843F;
+  --field:#221D14;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;padding:0;}
@@ -28,7 +28,7 @@ h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:8px 0 0;}
 .btn-icon{background:transparent;border:1px solid var(--line);border-radius:12px;padding:9px 12px;font-size:16px;color:var(--ink);cursor:pointer;min-height:44px;}
 .status{font-family:"JetBrains Mono",monospace;font-size:10px;font-weight:700;padding:5px 9px;border-radius:20px;
   background:var(--surf2);color:var(--dim);border:1px solid var(--line);white-space:nowrap;}
-.status.ok{color:var(--acc);border-color:#1e4a3b;}
+.status.ok{color:var(--acc);border-color:#4a3a1e;}
 .status.pending{color:var(--down);}
 .status.error{color:#0a0b0a;background:var(--down);border-color:var(--down);}
 
@@ -45,7 +45,7 @@ h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:8px 0 0;}
 .exn{font-size:19px;font-weight:700;letter-spacing:-.01em;}
 .exn .id{font-family:"JetBrains Mono",monospace;color:var(--acc);font-size:14px;margin-right:6px;}
 .tgt{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--dim);text-align:right;line-height:1.4;white-space:nowrap;}
-.ssbadge{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);border:1px solid #1e4a3b;border-radius:5px;padding:1px 6px;margin-left:7px;}
+.ssbadge{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:var(--acc);border:1px solid #4a3a1e;border-radius:5px;padding:1px 6px;margin-left:7px;}
 
 /* serie fatte */
 .sets{margin-top:14px;}
@@ -103,11 +103,11 @@ h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:8px 0 0;}
 .dots{display:flex;gap:7px;justify-content:center;margin-top:16px;align-items:center;flex-wrap:wrap;}
 .dt{width:9px;height:9px;border-radius:50%;background:var(--line);}
 .dt.on{background:var(--ink);}
-.dt.cur{background:var(--acc);box-shadow:0 0 0 3px rgba(63,224,168,.22);}
+.dt.cur{background:var(--acc);box-shadow:0 0 0 3px rgba(232,169,60,.22);}
 .dt.warm{background:transparent;box-shadow:0 0 0 2px var(--bg),0 0 0 3px var(--acc);}
 .addset{background:transparent;border:1px dashed var(--line);color:var(--dim);border-radius:10px;padding:4px 9px;
   font-family:"JetBrains Mono",monospace;font-size:11px;cursor:pointer;margin-left:6px;}
-.addset.warm{border-style:solid;border-color:rgba(63,224,168,.4);color:var(--acc);}
+.addset.warm{border-style:solid;border-color:rgba(232,169,60,.4);color:var(--acc);}
 .cta{margin-top:15px;width:100%;background:var(--acc);color:var(--acc-ink);border:none;border-radius:14px;padding:15px;
   font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;letter-spacing:.01em;}
 
@@ -159,12 +159,12 @@ dialog::backdrop{background:rgba(0,0,0,.6);}
 .rpebar .rb{flex:1;background:transparent;border:1px solid var(--line);border-radius:11px;padding:10px 0;
   font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;color:var(--dim);cursor:pointer;min-height:44px;}
 .rpebar .rb.easy.on{color:#7FC8FF;border-color:#244a63;background:rgba(127,200,255,.07);}
-.rpebar .rb.ok.on{color:var(--acc);border-color:#1e4a3b;background:rgba(63,224,168,.07);}
+.rpebar .rb.ok.on{color:var(--acc);border-color:#4a3a1e;background:rgba(232,169,60,.07);}
 .rpebar .rb.hard.on{color:#FFB37F;border-color:#633a24;background:rgba(255,179,127,.07);}
 .rpe{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.07em;text-transform:uppercase;
   border-radius:5px;padding:2px 7px;margin-left:auto;cursor:pointer;}
 .rpe.easy{color:#7FC8FF;border:1px solid #244a63;}
-.rpe.ok{color:var(--acc);border:1px solid #1e4a3b;}
+.rpe.ok{color:var(--acc);border:1px solid #4a3a1e;}
 .rpe.hard{color:#FFB37F;border:1px solid #633a24;}
 
 /* Scorciatoie "ripeti serie precedente" */
