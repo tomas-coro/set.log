@@ -123,6 +123,7 @@ export function bestKg(data, day, idx) {
   for (const k of Object.keys(data?.weeks ?? {})) {
     const e = normalizeEntry(getEntry(data, k, day, idx));
     for (const s of e.sets) {
+      if (s.warmup) continue;
       const v = parseFloat(String(s.kg).replace(",", "."));
       if (Number.isFinite(v) && (best === null || v > best)) best = v;
     }
@@ -178,7 +179,7 @@ function parseNum(x) {
 function trackVolume(track) {
   let v = 0;
   for (const s of track.sets) {
-    if (!s.done) continue;
+    if (!s.done || s.warmup) continue;
     const r = parseNum(s.reps), k = parseNum(s.kg);
     if (r !== null && k !== null) v += r * k;
   }
@@ -210,6 +211,7 @@ function weekTopKg(data, weekKey, day, idx, superset) {
   let best = null;
   for (const t of tracks) {
     for (const s of t.sets) {
+      if (s.warmup) continue;
       const k = parseNum(s.kg);
       if (k !== null && (best === null || k > best)) best = k;
     }

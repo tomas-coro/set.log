@@ -308,3 +308,24 @@ test("exerciseTrend: salta settimane senza kg e limita a n", () => {
 test("exerciseTrend: nessuno storico -> array vuoto", () => {
   assert.deepEqual(exerciseTrend(emptyData(), "A", 0, "2026-W22", 3), []);
 });
+
+test("warmup escluso da volume, PR e trend", () => {
+  const dayPlan = { exercises: [{ name: "Panca", setsReps: "4 × 8" }] };
+  let d = emptyData();
+  d = setEntry(d, "2026-W22", "A", 0, { sets: [
+    { reps: 8, kg: 40,   done: true, warmup: true },   // riscaldamento: NON conta
+    { reps: 8, kg: 72.5, done: true, warmup: false },
+    { reps: 8, kg: 72.5, done: true, warmup: false },
+  ] });
+  // volume: solo le due working = 8*72.5*2 = 1160 (il warmup 8*40=320 escluso)
+  assert.equal(sessionVolume(d, "2026-W22", "A", dayPlan), 1160);
+  // PR e trend con un warmup "pesante" fittizio (90): NON deve risultare
+  let d2 = emptyData();
+  d2 = setEntry(d2, "2026-W22", "A", 0, { sets: [
+    { reps: 3, kg: 90, done: true, warmup: true },
+    { reps: 8, kg: 72.5, done: true, warmup: false },
+  ] });
+  assert.equal(bestKg(d2, "A", 0), 72.5);
+  const tr = exerciseTrend(d2, "A", 0, "2026-W22", 3);
+  assert.equal(tr[tr.length - 1].kg, 72.5);
+});
