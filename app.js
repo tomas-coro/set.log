@@ -432,8 +432,8 @@ function buildNoteField(superset) {
 
 function setRow(i, set, prev, isCurrent, onRemove, onEditSet, onFeel) {
   const row = document.createElement("div");
-  row.className = "srow" + (isCurrent ? " cur" : "");
-  const idx = document.createElement("span"); idx.className = "i"; idx.textContent = String(i + 1);
+  row.className = "srow" + (isCurrent ? " cur" : "") + (set.warmup ? " warm" : "");
+  const idx = document.createElement("span"); idx.className = "i"; idx.textContent = set.warmup ? "W" : String(i + 1);
   const v = document.createElement("span"); v.className = "v";
   if (set.reps || set.kg) {
     v.append(document.createTextNode(set.reps || "—"));
@@ -456,22 +456,27 @@ function setRow(i, set, prev, isCurrent, onRemove, onEditSet, onFeel) {
     });
   }
 
-  const delta = prev ? progressionDelta(set.kg, prev.kg) : null;
-  if (set.done && delta !== null && delta > 0) {
-    const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = `▲ +${delta}`;
-    row.appendChild(tag);
-  } else if (set.done && delta !== null && delta < 0) {
-    const tag = document.createElement("span"); tag.className = "tag down"; tag.textContent = `▼ ${delta}`;
-    row.appendChild(tag);
-  } else if (set.done) {
-    const chk = document.createElement("span"); chk.className = "chk"; chk.textContent = "✓";
-    if (!set.feel) chk.style.marginLeft = "auto";
-    row.appendChild(chk);
-  } else if (isCurrent) {
-    const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = "in corso"; tag.style.marginLeft = "auto";
-    row.appendChild(tag);
+  if (set.warmup && set.done) {
+    const b = document.createElement("span"); b.className = "wbadge"; b.textContent = "RISCALD.";
+    row.appendChild(b);
+  } else {
+    const delta = prev ? progressionDelta(set.kg, prev.kg) : null;
+    if (set.done && delta !== null && delta > 0) {
+      const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = `▲ +${delta}`;
+      row.appendChild(tag);
+    } else if (set.done && delta !== null && delta < 0) {
+      const tag = document.createElement("span"); tag.className = "tag down"; tag.textContent = `▼ ${delta}`;
+      row.appendChild(tag);
+    } else if (set.done) {
+      const chk = document.createElement("span"); chk.className = "chk"; chk.textContent = "✓";
+      if (!set.feel) chk.style.marginLeft = "auto";
+      row.appendChild(chk);
+    } else if (isCurrent) {
+      const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = "in corso"; tag.style.marginLeft = "auto";
+      row.appendChild(tag);
+    }
   }
-  if (set.done && set.feel && onFeel) {
+  if (set.done && !set.warmup && set.feel && onFeel) {
     const fl = document.createElement("span");
     fl.className = "rpe " + set.feel;
     fl.textContent = RPE_LABEL[set.feel] ?? "giusta";

@@ -60,6 +60,11 @@ h1{font-size:26px;font-weight:800;letter-spacing:-.03em;margin:8px 0 0;}
 .srow .rm{color:var(--faint);font-size:13px;cursor:pointer;padding:0 4px;}
 .srow.cur .v{color:var(--ink);}
 .srow.cur .tag{color:var(--dim);}
+.srow.warm{opacity:.62;}
+.srow.warm .i{color:var(--acc);}
+.srow.warm .v{color:var(--dim);}
+.srow .wbadge{margin-left:auto;font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.09em;
+  color:var(--faint);border:1px solid var(--line);border-radius:6px;padding:1px 6px;}
 
 /* track header (superset) */
 .track{margin-top:14px;}
