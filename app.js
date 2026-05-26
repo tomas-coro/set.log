@@ -1,9 +1,13 @@
 import { PLAN } from "./plan.js";
 import {
   isoWeekKey, emptyData, ensureWeek, setEntry, getEntry,
-  normalizeEntry,
+  normalizeEntry, normalizeSupersetEntry, prefillSets,
   GitHubStore, ConflictError, AuthError,
 } from "./store.js";
+import {
+  parseTarget, activeExerciseIndex, activeSetIndex, bestKg, progressionDelta,
+  withSet, withoutSet, withSupersetSet, withoutSupersetSet,
+} from "./session.js";
 import { RestTimer, formatTime } from "./timer.js";
 
 const OWNER = "xBacco";
@@ -15,6 +19,8 @@ const PENDING_KEY = "gymsched_pending"; // local buffer of unsynced edits
 let data = emptyData();
 let sha = null;
 let currentWeek = isoWeekKey(new Date());
+let currentDay = "A";
+let focusIndex = 0;          // esercizio in focus nel giorno corrente
 let store = null;
 let saveTimer = null;
 
@@ -47,42 +53,6 @@ function setRest(day, idx, seconds) {
   localStorage.setItem(REST_KEY, JSON.stringify(m));
 }
 
-// Adattatore Fase 1: appiattisce {sets} nel vecchio {kg, reps} slash per la UI attuale.
-// (La Fase 2 sostituirà il render e userà direttamente le serie.)
-function flatEntry(v) {
-  const { sets } = normalizeEntry(v);
-  if (!sets.length) return { kg: "", reps: "" };
-  const reps = sets.map((s) => s.reps).filter(Boolean).join("/");
-  const kgs = [...new Set(sets.map((s) => s.kg).filter(Boolean))];
-  const kg = kgs.length <= 1 ? (kgs[0] ?? "") : sets.map((s) => s.kg).join("/");
-  return { kg, reps };
-}
-function entrySummary(v) {
-  const e = flatEntry(v);
-  if (!e.kg && !e.reps) return "";
-  return [e.kg ? e.kg + " kg" : "", e.reps].filter(Boolean).join(" · ");
-}
-
-// Compact week label for progression chips: "Settimana 1" -> "S1", "2026-W22" -> "W22".
-function shortLabel(label) {
-  const s = String(label);
-  let m = s.match(/W(\d+)/i);
-  if (m) return "W" + m[1];
-  m = s.match(/(\d+)/);
-  return m ? "S" + m[1] : s.slice(0, 6);
-}
-
-// History of an exercise across weeks (optionally only those before `beforeWeek`),
-// oldest first, skipping weeks with no logged value.
-function exerciseHistory(day, idx, beforeWeek) {
-  const out = [];
-  for (const k of Object.keys(data.weeks).sort()) {
-    if (beforeWeek && k >= beforeWeek) continue;
-    const e = flatEntry(getEntry(data, k, day, idx));
-    if (e.kg || e.reps) out.push({ key: k, label: data.weeks[k]?.label || k, kg: e.kg, reps: e.reps });
-  }
-  return out;
-}
 
 // ---- Status indicator ----
 function setStatus(text, kind = "") {
@@ -152,135 +122,101 @@ function prevWeekKey() {
   return keys.length ? keys[keys.length - 1] : null;
 }
 
-function renderDays() {
-  const root = document.getElementById("days");
-  root.textContent = "";
-  const prev = prevWeekKey();
-  for (let di = 0; di < PLAN.length; di++) {
-    const day = PLAN[di];
-    const block = document.createElement("div");
-    block.className = "day";
+const dayPlan = () => PLAN.find((d) => d.day === currentDay) || PLAN[0];
 
-    const head = document.createElement("div");
-    head.className = "day-head";
-    const tag = document.createElement("span");
-    tag.className = "day-tag"; tag.textContent = "GIORNO " + day.day;
-    const title = document.createElement("h3");
-    title.className = "day-title"; title.textContent = day.title;
-    head.append(tag, title);
-    block.appendChild(head);
+function weekLabel(key) {
+  const m = String(key).match(/W(\d+)/i);
+  return m ? "SETT. " + m[1] : String(data.weeks[key]?.label || key);
+}
 
-    day.exercises.forEach((ex, ei) => {
-      const card = document.createElement("div");
-      card.className = "ex";
-
-      const top = document.createElement("div");
-      top.className = "ex-top";
-      const n = document.createElement("span");
-      n.className = "ex-n"; n.textContent = ei + 1;
-      const name = document.createElement("span");
-      name.className = "ex-name";
-      if (ex.superset && ex.name.includes(" + ")) {
-        const [a, ...rest] = ex.name.split(" + ");
-        name.append(document.createTextNode(a + " "));
-        const ss = document.createElement("span");
-        ss.className = "ss"; ss.textContent = "superset";
-        name.append(ss, document.createTextNode(" + " + rest.join(" + ")));
-      } else {
-        name.textContent = ex.name;
-      }
-      top.append(n, name);
-      card.appendChild(top);
-
-      const meta = document.createElement("div");
-      meta.className = "ex-meta";
-      const b = document.createElement("b"); b.textContent = ex.setsReps;
-      meta.append(b, document.createTextNode("  ·  rec "));
-      const restIn = document.createElement("input");
-      restIn.type = "number"; restIn.className = "in-rest";
-      restIn.min = "5"; restIn.step = "5";
-      restIn.value = getRest(day.day, ei, ex.restSeconds);
-      restIn.setAttribute("aria-label", "Secondi di recupero");
-      restIn.addEventListener("change", () => {
-        let v = parseInt(restIn.value, 10);
-        if (!Number.isFinite(v) || v < 5) { v = ex.restSeconds; restIn.value = v; }
-        setRest(day.day, ei, v);
-      });
-      meta.append(restIn, document.createTextNode(" s"));
-      card.appendChild(meta);
-
-      const cur = flatEntry(getEntry(data, currentWeek, day.day, ei));
-      const row = document.createElement("div");
-      row.className = "ex-row";
-
-      // Reps first, then kg — each in a labelled field.
-      const repsField = document.createElement("label");
-      repsField.className = "field reps";
-      const reps = document.createElement("input");
-      reps.type = "text"; reps.inputMode = "numeric"; reps.className = "in-reps";
-      reps.placeholder = "es. 8/8/7"; reps.value = cur.reps;
-      reps.setAttribute("aria-label", "Ripetizioni");
-      const repsCap = document.createElement("span");
-      repsCap.className = "cap"; repsCap.textContent = "reps";
-      repsField.append(repsCap, reps);
-
-      const kgField = document.createElement("label");
-      kgField.className = "field kg";
-      const kg = document.createElement("input");
-      kg.type = "text"; kg.inputMode = "decimal"; kg.className = "in-kg";
-      kg.placeholder = "es. 60"; kg.value = cur.kg;
-      kg.setAttribute("aria-label", "Carico in kg");
-      const kgCap = document.createElement("span");
-      kgCap.className = "cap"; kgCap.textContent = "kg";
-      kgField.append(kgCap, kg);
-
-      const tBtn = document.createElement("button");
-      tBtn.className = "timer-btn"; tBtn.type = "button"; tBtn.textContent = "⏱";
-      tBtn.title = "Avvia recupero";
-      tBtn.addEventListener("click", () => startRest(getRest(day.day, ei, ex.restSeconds), ex.name));
-
-      const commit = () => onEdit(day.day, ei, { kg: kg.value.trim(), reps: reps.value.trim() });
-      reps.addEventListener("input", commit);
-      kg.addEventListener("input", commit);
-      kg.addEventListener("blur", () => {
-        if (kg.value.trim() || reps.value.trim()) startRest(getRest(day.day, ei, ex.restSeconds), ex.name);
-      });
-
-      row.append(repsField, kgField, tBtn);
-      card.appendChild(row);
-
-      // Progression: previous weeks' values, oldest→newest. Chip turns green when the
-      // load went up vs the prior logged week, amber when it dropped.
-      const hist = exerciseHistory(day.day, ei, currentWeek);
-      if (hist.length) {
-        const prog = document.createElement("div");
-        prog.className = "prog";
-        const lbl = document.createElement("span");
-        lbl.className = "prog-label"; lbl.textContent = "andamento";
-        prog.appendChild(lbl);
-        let prevKg = null;
-        for (const h of hist.slice(-5)) {
-          const chip = document.createElement("span");
-          chip.className = "prog-chip";
-          const curKg = parseFloat(String(h.kg).replace(",", "."));
-          if (prevKg !== null && Number.isFinite(curKg) && Number.isFinite(prevKg)) {
-            if (curKg > prevKg) chip.classList.add("up");
-            else if (curKg < prevKg) chip.classList.add("down");
-          }
-          if (Number.isFinite(curKg)) prevKg = curKg;
-          const parts = [shortLabel(h.label)];
-          if (h.reps) parts.push(h.reps);
-          if (h.kg) parts.push(h.kg + " kg");
-          chip.textContent = parts.join(" · ");
-          prog.appendChild(chip);
-        }
-        card.appendChild(prog);
-      }
-
-      block.appendChild(card);
-    });
-    root.appendChild(block);
+function renderHeader() {
+  const dp = dayPlan();
+  document.getElementById("kickDay").textContent = currentDay;
+  document.getElementById("kickWeek").textContent = weekLabel(currentWeek);
+  document.getElementById("dayTitle").textContent = dp.title;
+  for (const b of document.querySelectorAll("#dayTabs button")) {
+    b.classList.toggle("on", b.dataset.day === currentDay);
   }
+}
+
+function isComplete(idx) {
+  const ex = dayPlan().exercises[idx];
+  const v = getEntry(data, currentWeek, currentDay, idx);
+  if (ex.superset) {
+    const e = normalizeSupersetEntry(v);
+    const has = e.a.sets.length || e.b.sets.length;
+    const ok = (t) => t.sets.length === 0 || t.sets.every((s) => s.done);
+    return !!has && ok(e.a) && ok(e.b);
+  }
+  const e = normalizeEntry(v);
+  return e.sets.length > 0 && e.sets.every((s) => s.done);
+}
+
+function renderProgress() {
+  const dp = dayPlan();
+  const bar = document.getElementById("progBar");
+  bar.textContent = "";
+  dp.exercises.forEach((ex, i) => {
+    const seg = document.createElement("span");
+    seg.className = "seg";
+    if (i === focusIndex) seg.classList.add("cur");
+    else if (isComplete(i)) seg.classList.add("done");
+    bar.appendChild(seg);
+  });
+  const lbl = document.createElement("span");
+  lbl.className = "lbl";
+  lbl.textContent = `${String(focusIndex + 1).padStart(2, "0")}/${String(dp.exercises.length).padStart(2, "0")}`;
+  bar.appendChild(lbl);
+}
+
+function renderUpNext() {
+  const dp = dayPlan();
+  document.getElementById("upnextLabel").textContent =
+    `— prossimi · ${dp.exercises.length - 1} esercizi —`;
+  const root = document.getElementById("upnext");
+  root.textContent = "";
+  dp.exercises.forEach((ex, i) => {
+    if (i === focusIndex) return;
+    const row = document.createElement("div");
+    row.className = "nrow" + (isComplete(i) ? " done" : "");
+    row.addEventListener("click", () => { focusIndex = i; render(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+
+    const id = document.createElement("span");
+    id.className = "id"; id.textContent = String(i + 1).padStart(2, "0");
+
+    const mid = document.createElement("div");
+    const nm = document.createElement("div");
+    nm.className = "nm"; nm.textContent = ex.name;
+    if (ex.superset) { const b = document.createElement("span"); b.className = "ssbadge"; b.textContent = "superset"; nm.appendChild(b); }
+    const sub = document.createElement("div");
+    sub.className = "sub"; sub.textContent = `${ex.setsReps} · rec ${getRest(currentDay, i, ex.restSeconds)}″`;
+    mid.append(nm, sub);
+
+    const right = document.createElement("div");
+    right.className = "right";
+    const best = document.createElement("div");
+    best.className = "best";
+    const bl = document.createElement("div");
+    bl.className = "bl";
+    if (ex.superset) { best.textContent = "A·B"; bl.textContent = "2 tracce"; }
+    else { const bk = bestKg(data, currentDay, i); best.textContent = bk === null ? "—" : bk + " kg"; bl.textContent = "best"; }
+    right.append(best, bl);
+
+    row.append(id, mid, right);
+    root.appendChild(row);
+  });
+}
+
+function renderFocus() {
+  // riempito nei Task 8 (normale) e 9 (superset)
+  document.getElementById("focus").textContent = "";
+}
+
+function render() {
+  renderHeader();
+  renderProgress();
+  renderFocus();
+  renderUpNext();
 }
 
 // ---- Editing + saving ----
@@ -314,7 +250,7 @@ async function saveToCloud() {
         sha = await store.save(data, sha, `log: ${currentWeek} (merge)`);
         setPending([]);
         setStatus("salvato ✓", "ok");
-        renderDays();
+        render();
       } catch (e2) {
         setStatus("errore ⚠ (riprova)", "error");
       }
@@ -330,8 +266,14 @@ async function saveToCloud() {
 function changeWeek(key) {
   currentWeek = key;
   data = ensureWeek(data, currentWeek, data.weeks[currentWeek]?.label);
+  focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
   renderWeekSelect();
-  renderDays();
+  render();
+}
+function changeDay(day) {
+  currentDay = day;
+  focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
+  render();
 }
 function newWeek() {
   const label = prompt("Nome della nuova settimana:", "Settimana");
@@ -389,6 +331,9 @@ async function boot() {
   wireTimerControls();
   document.getElementById("weekSelect").addEventListener("change", (e) => changeWeek(e.target.value));
   document.getElementById("newWeekBtn").addEventListener("click", newWeek);
+  for (const b of document.querySelectorAll("#dayTabs button")) {
+    b.addEventListener("click", () => changeDay(b.dataset.day));
+  }
   initStore();
   setStatus("carico…");
   try {
@@ -401,8 +346,9 @@ async function boot() {
     setStatus(err instanceof AuthError ? "token non valido ⚠" : "offline ⧗", err instanceof AuthError ? "error" : "pending");
   }
   data = ensureWeek(data, currentWeek);
+  focusIndex = activeExerciseIndex(data, currentWeek, currentDay, dayPlan());
   renderWeekSelect();
-  renderDays();
+  render();
   if (getPending().length && getToken()) saveToCloud();
 }
 
