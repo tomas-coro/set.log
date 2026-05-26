@@ -120,7 +120,7 @@ import { normalizeEntry } from "../store.js";
 test("normalizeEntry: oggetto già strutturato resta tale (con default done/note)", () => {
   const v = { sets: [{ reps: "8", kg: "72.5", done: true }], note: "presa media" };
   assert.deepEqual(normalizeEntry(v), {
-    sets: [{ reps: "8", kg: "72.5", done: true, feel: "", warmup: false }],
+    sets: [{ reps: "8", kg: "72.5", done: true, feel: "", warmup: false, comments: [] }],
     note: "presa media",
   });
 });
@@ -163,7 +163,7 @@ import { normalizeSupersetEntry } from "../store.js";
 test("normalizeSupersetEntry: forma {a,b,note} normalizza entrambe le tracce", () => {
   const v = { a: { sets: [{ reps: "15", kg: "25", done: true }] }, b: { reps: "15", kg: "12" }, note: "ok" };
   const out = normalizeSupersetEntry(v);
-  assert.deepEqual(out.a.sets, [{ reps: "15", kg: "25", done: true, feel: "", warmup: false }]);
+  assert.deepEqual(out.a.sets, [{ reps: "15", kg: "25", done: true, feel: "", warmup: false, comments: [] }]);
   assert.deepEqual(out.b.sets, [{ reps: "15", kg: "12", done: false }]);
   assert.equal(out.note, "ok");
 });
@@ -280,7 +280,7 @@ test("normalizeSet: feel mancante o non valido -> stringa vuota", () => {
 
 test("normalizeSet: non altera reps/kg/done aggiungendo feel", () => {
   assert.deepEqual(normalizeSet({ reps: 8, kg: 72.5, done: true, feel: "ok" }),
-    { reps: "8", kg: "72.5", done: true, feel: "ok", warmup: false });
+    { reps: "8", kg: "72.5", done: true, feel: "ok", warmup: false, comments: [] });
 });
 
 test("normalizeSet: warmup default false, preserva true", () => {
@@ -299,4 +299,16 @@ test("prefillSets: porta il flag warmup dalle serie precedenti", () => {
   assert.equal(pre[0].warmup, true);
   assert.equal(pre[1].warmup, false);
   assert.equal(pre[0].done, false);
+});
+
+test("normalizeSet: comments di default è array vuoto", () => {
+  assert.deepEqual(normalizeSet({ reps: "8", kg: "50", done: true }).comments, []);
+});
+test("normalizeSet: preserva array di commenti, trim e scarta vuoti/non-stringhe", () => {
+  const s = normalizeSet({ reps: "6", kg: "55", comments: [" alzare 1kg ", "", 5, "sporca"] });
+  assert.deepEqual(s.comments, ["alzare 1kg", "sporca"]);
+});
+test("normalizeSet: deduplica i commenti mantenendo l'ordine", () => {
+  const s = normalizeSet({ comments: ["a", "a", "b"] });
+  assert.deepEqual(s.comments, ["a", "b"]);
 });
