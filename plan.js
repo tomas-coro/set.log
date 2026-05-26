@@ -39,7 +39,7 @@ export const PLAN = [
       { name: "Spinte manubri panca piana (o chest press)", setsReps: "3 × 10-12", recText: "90 sec", restSeconds: 90, superset: false },
       { name: "Rematore al cavo, presa neutra", setsReps: "3 × 10-12", recText: "90 sec", restSeconds: 90, superset: false },
       { name: "Curl EZ + Skullcrusher", setsReps: "3 × 8-10 / 3 × 10-12", recText: "75 sec", restSeconds: 75, superset: true },
-      { name: "Curl concentrato + Pushdown", setsReps: "2 × 15 / 2 × 15", recText: "60 sec", restSeconds: 60, superset: true },
+      { name: "Curl concentrato + Pushdown", setsReps: "3 × 15 / 3 × 15", recText: "60 sec", restSeconds: 60, superset: true },
       { name: "Crunch inverso + Plank laterale", setsReps: "3 × 15 / 3 × max/lato", recText: "60 sec", restSeconds: 60, superset: true },
     ],
   },

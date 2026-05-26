@@ -814,13 +814,13 @@ function buildRestEditor(idx, ex) {
   const wrap = document.createElement("div");
   wrap.className = "restedit";
   const lab = document.createElement("span"); lab.className = "rl"; lab.textContent = "recupero";
-  const minus = document.createElement("button"); minus.type = "button"; minus.className = "rstep"; minus.textContent = "−15";
+  const minus = document.createElement("button"); minus.type = "button"; minus.className = "rstep"; minus.textContent = "−10";
   const val = document.createElement("span"); val.className = "rval";
-  const plus = document.createElement("button"); plus.type = "button"; plus.className = "rstep"; plus.textContent = "+15";
+  const plus = document.createElement("button"); plus.type = "button"; plus.className = "rstep"; plus.textContent = "+10";
   const paint = () => { val.textContent = `${getRest(currentDay, idx, ex.restSeconds)}″`; };
-  const step = (d) => { setRest(currentDay, idx, Math.max(15, getRest(currentDay, idx, ex.restSeconds) + d)); paint(); renderList(); };
-  minus.addEventListener("click", step.bind(null, -15));
-  plus.addEventListener("click", step.bind(null, 15));
+  const step = (d) => { setRest(currentDay, idx, Math.max(10, getRest(currentDay, idx, ex.restSeconds) + d)); paint(); renderList(); };
+  minus.addEventListener("click", step.bind(null, -10));
+  plus.addEventListener("click", step.bind(null, 10));
   paint();
   wrap.append(lab, minus, val, plus);
   return wrap;
@@ -979,8 +979,8 @@ function wireSettings() {
 
 // ---- Timer controls ----
 function wireTimerControls() {
-  document.getElementById("tMinus").addEventListener("click", () => timer.addSeconds(-15));
-  document.getElementById("tPlus").addEventListener("click", () => timer.addSeconds(15));
+  document.getElementById("tMinus").addEventListener("click", () => timer.addSeconds(-10));
+  document.getElementById("tPlus").addEventListener("click", () => timer.addSeconds(10));
   document.getElementById("tStop").addEventListener("click", () => {
     timer.stop();
     document.getElementById("timerBar").classList.add("hidden");
