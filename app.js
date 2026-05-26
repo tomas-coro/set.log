@@ -571,16 +571,28 @@ function renderFocusNormal(ex) {
   const dots = document.createElement("div");
   dots.className = "dots";
   for (let i = 0; i < total; i++) {
+    const s = entry.sets[i];
     const d = document.createElement("span");
-    d.className = "dt" + (i < curIdx ? " on" : i === curIdx ? " cur" : "");
+    let cls = "dt";
+    if (s && s.warmup) cls = "dt warm";
+    else if (i < curIdx) cls = "dt on";
+    else if (i === curIdx) cls = "dt cur";
+    d.className = cls;
     dots.appendChild(d);
   }
+  const addW = document.createElement("button");
+  addW.className = "addset warm"; addW.textContent = "+ riscald.";
+  addW.addEventListener("click", () => {
+    data = setEntry(data, currentWeek, currentDay, focusIndex, withSet(v, entry.sets.length, { reps: "", kg: "", done: false, warmup: true }), new Date().toISOString());
+    persist(); render();
+  });
   const add = document.createElement("button");
   add.className = "addset"; add.textContent = "+ serie";
   add.addEventListener("click", () => {
     data = setEntry(data, currentWeek, currentDay, focusIndex, withSet(v, entry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
     persist(); render();
   });
+  dots.appendChild(addW);
   dots.appendChild(add);
   card.appendChild(dots);
 
