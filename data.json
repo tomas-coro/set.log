@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-26T16:00:00.000Z",
+  "updatedAt": "2026-05-26T14:52:19.435Z",
   "weeks": {
     "2026-W22": {
       "label": "2026-W22",
@@ -7,50 +7,139 @@
         "A": {
           "0": {
             "sets": [
-              { "reps": "8", "kg": "50", "done": true },
-              { "reps": "6", "kg": "55", "done": true },
-              { "reps": "6", "kg": "55", "done": true }
+              {
+                "reps": "8",
+                "kg": "50",
+                "done": true
+              },
+              {
+                "reps": "6",
+                "kg": "55",
+                "done": true
+              },
+              {
+                "reps": "6",
+                "kg": "55",
+                "done": true
+              }
             ],
             "note": ""
           },
           "1": {
             "sets": [
-              { "reps": "8", "kg": "12,5", "done": true },
-              { "reps": "8", "kg": "15", "done": true },
-              { "reps": "8", "kg": "15", "done": true }
+              {
+                "reps": "8",
+                "kg": "12,5",
+                "done": true,
+                "feel": "",
+                "warmup": false,
+                "comments": []
+              },
+              {
+                "reps": "8",
+                "kg": "15",
+                "done": true,
+                "feel": "",
+                "warmup": false,
+                "comments": []
+              },
+              {
+                "reps": "8",
+                "kg": "15",
+                "done": true,
+                "feel": "",
+                "warmup": false,
+                "comments": []
+              },
+              {
+                "reps": "",
+                "kg": "",
+                "done": false,
+                "feel": "ok",
+                "warmup": false,
+                "comments": []
+              }
             ],
             "note": ""
           },
           "2": {
             "sets": [
-              { "reps": "12", "kg": "6", "done": true },
-              { "reps": "12", "kg": "7", "done": true },
-              { "reps": "12", "kg": "7", "done": true }
+              {
+                "reps": "12",
+                "kg": "6",
+                "done": true
+              },
+              {
+                "reps": "12",
+                "kg": "7",
+                "done": true
+              },
+              {
+                "reps": "12",
+                "kg": "7",
+                "done": true
+              }
             ],
             "note": ""
           },
           "3": {
             "sets": [
-              { "reps": "10", "kg": "13,5", "done": true },
-              { "reps": "10", "kg": "13,5", "done": true },
-              { "reps": "10", "kg": "15", "done": true }
+              {
+                "reps": "10",
+                "kg": "13,5",
+                "done": true
+              },
+              {
+                "reps": "10",
+                "kg": "13,5",
+                "done": true
+              },
+              {
+                "reps": "10",
+                "kg": "15",
+                "done": true
+              }
             ],
             "note": ""
           },
           "4": {
             "a": {
               "sets": [
-                { "reps": "10", "kg": "13,5", "done": true },
-                { "reps": "10", "kg": "13,5", "done": true },
-                { "reps": "10", "kg": "13,5", "done": true }
+                {
+                  "reps": "10",
+                  "kg": "13,5",
+                  "done": true
+                },
+                {
+                  "reps": "10",
+                  "kg": "13,5",
+                  "done": true
+                },
+                {
+                  "reps": "10",
+                  "kg": "13,5",
+                  "done": true
+                }
               ],
               "note": ""
             },
             "b": {
               "sets": [
-                { "reps": "10", "kg": "10", "done": true },
-                { "reps": "10", "kg": "10", "done": true },
-                { "reps": "10", "kg": "10", "done": true }
+                {
+                  "reps": "10",
+                  "kg": "10",
+                  "done": true
+                },
+                {
+                  "reps": "10",
+                  "kg": "10",
+                  "done": true
+                },
+                {
+                  "reps": "10",
+                  "kg": "10",
+                  "done": true
+                }
               ],
               "note": ""
             },
@@ -58,26 +147,62 @@
           },
           "5": {
             "sets": [
-              { "reps": "12", "kg": "20", "done": true },
-              { "reps": "12", "kg": "30", "done": true },
-              { "reps": "12", "kg": "30", "done": true }
+              {
+                "reps": "12",
+                "kg": "20",
+                "done": true
+              },
+              {
+                "reps": "12",
+                "kg": "30",
+                "done": true
+              },
+              {
+                "reps": "12",
+                "kg": "30",
+                "done": true
+              }
             ],
             "note": ""
           },
           "6": {
             "a": {
               "sets": [
-                { "reps": "15", "kg": "", "done": true },
-                { "reps": "15", "kg": "", "done": true },
-                { "reps": "15", "kg": "", "done": true }
+                {
+                  "reps": "15",
+                  "kg": "",
+                  "done": true
+                },
+                {
+                  "reps": "15",
+                  "kg": "",
+                  "done": true
+                },
+                {
+                  "reps": "15",
+                  "kg": "",
+                  "done": true
+                }
               ],
               "note": ""
             },
             "b": {
               "sets": [
-                { "reps": "40", "kg": "", "done": true },
-                { "reps": "40", "kg": "", "done": true },
-                { "reps": "40", "kg": "", "done": true }
+                {
+                  "reps": "40",
+                  "kg": "",
+                  "done": true
+                },
+                {
+                  "reps": "40",
+                  "kg": "",
+                  "done": true
+                },
+                {
+                  "reps": "40",
+                  "kg": "",
+                  "done": true
+                }
               ],
               "note": "plank in secondi"
             },
