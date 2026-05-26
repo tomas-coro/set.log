@@ -34,3 +34,13 @@ test("rest times are calibrated to [60, 120] seconds", () => {
     }
   }
 });
+
+test("no exercise has more than 3 sets (also per superset track)", () => {
+  for (const day of PLAN) {
+    for (const ex of day.exercises) {
+      for (const m of ex.setsReps.matchAll(/(\d+)\s*×/g)) {
+        assert.ok(Number(m[1]) <= 3, `${ex.name}: ${ex.setsReps} ha più di 3 serie`);
+      }
+    }
+  }
+});

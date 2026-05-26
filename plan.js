@@ -20,7 +20,7 @@ export const PLAN = [
     title: "Dorso + Bicipiti + Gambe",
     exercises: [
       { name: "Stacco rumeno", setsReps: "3 × 8-10", recText: "2 min", restSeconds: 120, superset: false },
-      { name: "Rematore bilanciere", setsReps: "4 × 8-10", recText: "2 min", restSeconds: 120, superset: false },
+      { name: "Rematore bilanciere", setsReps: "3 × 8-10", recText: "2 min", restSeconds: 120, superset: false },
       { name: "Pullover con manubrio", setsReps: "3 × 12-15", recText: "75 sec", restSeconds: 75, superset: false },
       { name: "Affondi camminata o Goblet squat", setsReps: "3 × 10-12", recText: "90-120 s", restSeconds: 120, superset: false },
       { name: "Panca inclinata manubri", setsReps: "3 × 8-10", recText: "90 sec", restSeconds: 90, superset: false },
@@ -33,7 +33,7 @@ export const PLAN = [
     day: "C",
     title: "Spalle + Braccia",
     exercises: [
-      { name: "Lento avanti bilanciere", setsReps: "4 × 6-8", recText: "2 min", restSeconds: 120, superset: false },
+      { name: "Lento avanti bilanciere", setsReps: "3 × 6-8", recText: "2 min", restSeconds: 120, superset: false },
       { name: "Alzate laterali (manubri o cavo)", setsReps: "3 × 12-15", recText: "60 sec", restSeconds: 60, superset: false },
       { name: "Alzate posteriori (reverse fly)", setsReps: "3 × 15-20", recText: "60 sec", restSeconds: 60, superset: false },
       { name: "Spinte manubri panca piana (o chest press)", setsReps: "3 × 10-12", recText: "90 sec", restSeconds: 90, superset: false },
