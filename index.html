@@ -34,9 +34,8 @@
 
     <div class="prog" id="progBar"></div>
 
-    <div id="focus"></div>
-    <div class="upnext" id="upnextLabel"></div>
-    <div id="upnext"></div>
+    <div id="list"></div>
+    <div id="volRow"></div>
 
     <dialog id="settingsDialog">
       <form method="dialog" class="settings">
@@ -49,6 +48,14 @@
         <label for="platesInput">Dischi per lato (kg)</label>
         <input id="platesInput" type="text" inputmode="decimal" placeholder="20, 15, 10, 5, 2.5, 1.25">
         <p class="hint">Usati dal calcolatore dischi. Separa i dischi con virgola o spazio; i decimali vanno bene col punto o con la virgola (es. 2.5 o 2,5).</p>
+        <fieldset class="setblock">
+          <legend>Commenti veloci</legend>
+          <div id="qcList"></div>
+          <div class="qc-add">
+            <input id="qcInput" type="text" placeholder="nuovo commento…" autocomplete="off">
+            <button type="button" id="qcAdd">+</button>
+          </div>
+        </fieldset>
         <menu>
           <button id="tokenSave" value="save">Salva token</button>
           <button id="tokenClear" value="clear" class="btn-soft">Rimuovi</button>
