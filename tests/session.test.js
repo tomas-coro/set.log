@@ -111,14 +111,14 @@ test("activeExerciseIndex: tutti completi -> 0 (wrap, non solo perché è il pri
 test("withSet: aggiorna una serie esistente (merge del patch)", () => {
   const e = { sets: [{ reps: "8", kg: "70", done: false }], note: "n" };
   assert.deepEqual(withSet(e, 0, { kg: "72.5", done: true }), {
-    sets: [{ reps: "8", kg: "72.5", done: true, feel: "" }],
+    sets: [{ reps: "8", kg: "72.5", done: true, feel: "", warmup: false }],
     note: "n",
   });
 });
 
 test("withSet: estende l'array se l'indice supera la lunghezza", () => {
   assert.deepEqual(withSet("", 0, { reps: "8", kg: "70", done: true }), {
-    sets: [{ reps: "8", kg: "70", done: true, feel: "" }],
+    sets: [{ reps: "8", kg: "70", done: true, feel: "", warmup: false }],
     note: "",
   });
   const e = { sets: [{ reps: "8", kg: "70", done: true }] };
@@ -127,7 +127,7 @@ test("withSet: estende l'array se l'indice supera la lunghezza", () => {
 
 test("withoutSet: rimuove la serie all'indice", () => {
   const e = { sets: [{ reps: "8", kg: "70", done: true }, { reps: "6", kg: "70", done: false }] };
-  assert.deepEqual(withoutSet(e, 0).sets, [{ reps: "6", kg: "70", done: false, feel: "" }]);
+  assert.deepEqual(withoutSet(e, 0).sets, [{ reps: "6", kg: "70", done: false, feel: "", warmup: false }]);
 });
 
 test("withSupersetSet: aggiorna solo la traccia indicata", () => {

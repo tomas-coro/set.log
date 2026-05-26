@@ -120,7 +120,7 @@ import { normalizeEntry } from "../store.js";
 test("normalizeEntry: oggetto già strutturato resta tale (con default done/note)", () => {
   const v = { sets: [{ reps: "8", kg: "72.5", done: true }], note: "presa media" };
   assert.deepEqual(normalizeEntry(v), {
-    sets: [{ reps: "8", kg: "72.5", done: true, feel: "" }],
+    sets: [{ reps: "8", kg: "72.5", done: true, feel: "", warmup: false }],
     note: "presa media",
   });
 });
@@ -163,7 +163,7 @@ import { normalizeSupersetEntry } from "../store.js";
 test("normalizeSupersetEntry: forma {a,b,note} normalizza entrambe le tracce", () => {
   const v = { a: { sets: [{ reps: "15", kg: "25", done: true }] }, b: { reps: "15", kg: "12" }, note: "ok" };
   const out = normalizeSupersetEntry(v);
-  assert.deepEqual(out.a.sets, [{ reps: "15", kg: "25", done: true, feel: "" }]);
+  assert.deepEqual(out.a.sets, [{ reps: "15", kg: "25", done: true, feel: "", warmup: false }]);
   assert.deepEqual(out.b.sets, [{ reps: "15", kg: "12", done: false }]);
   assert.equal(out.note, "ok");
 });
@@ -184,8 +184,8 @@ test("prefillSets: copia le serie della settimana precedente con done=false", ()
   d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "8", kg: "70", done: true }, { reps: "8", kg: "70", done: true }] }, "t1");
   const pre = prefillSets(d, "2026-W22", "A", 0);
   assert.deepEqual(pre, [
-    { reps: "8", kg: "70", done: false },
-    { reps: "8", kg: "70", done: false },
+    { reps: "8", kg: "70", done: false, warmup: false },
+    { reps: "8", kg: "70", done: false, warmup: false },
   ]);
 });
 
@@ -193,7 +193,7 @@ test("prefillSets: usa la settimana loggata più recente fra le precedenti", () 
   let d = emptyData();
   d = setEntry(d, "2026-W20", "A", 0, { sets: [{ reps: "8", kg: "60" }] }, "t1");
   d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "8", kg: "65" }] }, "t2");
-  assert.deepEqual(prefillSets(d, "2026-W22", "A", 0), [{ reps: "8", kg: "65", done: false }]);
+  assert.deepEqual(prefillSets(d, "2026-W22", "A", 0), [{ reps: "8", kg: "65", done: false, warmup: false }]);
 });
 
 test("prefillSets: nessuno storico -> array vuoto", () => {
@@ -204,14 +204,14 @@ test("prefillSets: salta settimane con serie vuote e usa la più recente non vuo
   let d = emptyData();
   d = setEntry(d, "2026-W20", "A", 0, { sets: [{ reps: "10", kg: "50" }] }, "t1");
   d = setEntry(d, "2026-W21", "A", 0, { sets: [] }, "t2"); // loggata ma senza serie
-  assert.deepEqual(prefillSets(d, "2026-W22", "A", 0), [{ reps: "10", kg: "50", done: false }]);
+  assert.deepEqual(prefillSets(d, "2026-W22", "A", 0), [{ reps: "10", kg: "50", done: false, warmup: false }]);
 });
 
 test("prefillSets: accetta chiavi con suffisso .N (settimane duplicate di newWeek)", () => {
   let d = emptyData();
   d = setEntry(d, "2026-W22", "A", 0, { sets: [{ reps: "8", kg: "60" }] }, "t1");
   d = setEntry(d, "2026-W22.2", "A", 0, { sets: [{ reps: "8", kg: "65" }] }, "t2");
-  assert.deepEqual(prefillSets(d, "2026-W23", "A", 0), [{ reps: "8", kg: "65", done: false }]);
+  assert.deepEqual(prefillSets(d, "2026-W23", "A", 0), [{ reps: "8", kg: "65", done: false, warmup: false }]);
 });
 import { platesPerSide } from "../store.js";
 
@@ -280,5 +280,23 @@ test("normalizeSet: feel mancante o non valido -> stringa vuota", () => {
 
 test("normalizeSet: non altera reps/kg/done aggiungendo feel", () => {
   assert.deepEqual(normalizeSet({ reps: 8, kg: 72.5, done: true, feel: "ok" }),
-    { reps: "8", kg: "72.5", done: true, feel: "ok" });
+    { reps: "8", kg: "72.5", done: true, feel: "ok", warmup: false });
+});
+
+test("normalizeSet: warmup default false, preserva true", () => {
+  assert.equal(normalizeSet({ reps: 8, kg: 50 }).warmup, false);
+  assert.equal(normalizeSet({ reps: 8, kg: 50, warmup: true }).warmup, true);
+  assert.equal(normalizeSet({ warmup: "x" }).warmup, true); // coercizione booleana
+});
+
+test("prefillSets: porta il flag warmup dalle serie precedenti", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W20", "A", 0, { sets: [
+    { reps: 8, kg: 40, done: true, warmup: true },
+    { reps: 8, kg: 72.5, done: true, warmup: false },
+  ] });
+  const pre = prefillSets(d, "2026-W21", "A", 0);
+  assert.equal(pre[0].warmup, true);
+  assert.equal(pre[1].warmup, false);
+  assert.equal(pre[0].done, false);
 });

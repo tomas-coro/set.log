@@ -60,7 +60,7 @@ const FEELS = new Set(["easy", "ok", "hard"]);
 
 export function normalizeSet(s) {
   const feel = FEELS.has(s?.feel) ? s.feel : "";
-  return { reps: String(s?.reps ?? ""), kg: String(s?.kg ?? ""), done: !!s?.done, feel };
+  return { reps: String(s?.reps ?? ""), kg: String(s?.kg ?? ""), done: !!s?.done, feel, warmup: !!s?.warmup };
 }
 
 export function normalizeEntry(v) {
@@ -91,7 +91,7 @@ export function prefillSets(data, weekKey, day, idx) {
     .sort();
   for (let i = keys.length - 1; i >= 0; i--) {
     const e = normalizeEntry(getEntry(data, keys[i], day, idx));
-    if (e.sets.length) return e.sets.map(({ reps, kg }) => ({ reps, kg, done: false }));
+    if (e.sets.length) return e.sets.map(({ reps, kg, warmup }) => ({ reps, kg, done: false, warmup: !!warmup }));
   }
   return [];
 }
