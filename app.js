@@ -652,7 +652,8 @@ function renderFocusNormal(ex, idx, container, footer) {
 
   const setsBox = document.createElement("div");
   setsBox.className = "sets";
-  const total = Math.max(entry.sets.length, tgt.sets, curIdx + 1);
+  const total = Math.max(entry.sets.length, tgt.sets);
+  const allDone = curIdx >= total;
   for (let i = 0; i < total; i++) {
     const set = entry.sets[i] || { reps: "", kg: "", done: false };
     const isCurrent = i === curIdx;
@@ -681,27 +682,29 @@ function renderFocusNormal(ex, idx, container, footer) {
   }
   container.appendChild(setsBox);
 
-  const edit = buildEditBlock(`Serie ${curIdx + 1} — carico · step 0.5 kg`, draft, prev[curIdx] || null);
-  container.appendChild(edit.block);
+  if (!allDone) {
+    const edit = buildEditBlock(`Serie ${curIdx + 1} — carico · step 0.5 kg`, draft, prev[curIdx] || null);
+    container.appendChild(edit.block);
 
-  const qcLabel = document.createElement("div"); qcLabel.className = "editlabel"; qcLabel.textContent = "commento veloce";
-  container.appendChild(qcLabel);
-  let chipsEl;
-  const refreshChips = () => {
-    const fresh = buildQuickCommentChips(draft.comments,
-      (text) => { draft.comments = toggleComment(draft.comments, text); refreshChips(); },
-      () => { const t = prompt("Commento:"); const v = t && t.trim(); if (v && !draft.comments.includes(v)) { draft.comments = [...draft.comments, v]; refreshChips(); } });
-    if (chipsEl) { chipsEl.replaceWith(fresh); } else { container.appendChild(fresh); }
-    chipsEl = fresh;
-  };
-  refreshChips();
+    const qcLabel = document.createElement("div"); qcLabel.className = "editlabel"; qcLabel.textContent = "commento veloce";
+    container.appendChild(qcLabel);
+    let chipsEl;
+    const refreshChips = () => {
+      const fresh = buildQuickCommentChips(draft.comments,
+        (text) => { draft.comments = toggleComment(draft.comments, text); refreshChips(); },
+        () => { const t = prompt("Commento:"); const v = t && t.trim(); if (v && !draft.comments.includes(v)) { draft.comments = [...draft.comments, v]; refreshChips(); } });
+      if (chipsEl) { chipsEl.replaceWith(fresh); } else { container.appendChild(fresh); }
+      chipsEl = fresh;
+    };
+    refreshChips();
 
-  const repInSession = previousSetInSession(v, curIdx);
-  const repPrevWeek = previousWeekSet(data, currentDay, idx, currentWeek, curIdx);
-  const repChips = buildRepeatChips(repInSession, repPrevWeek, ({ reps, kg }) => {
-    draft.reps = reps; draft.kg = kg; edit.refresh();
-  });
-  if (repChips) container.appendChild(repChips);
+    const repInSession = previousSetInSession(v, curIdx);
+    const repPrevWeek = previousWeekSet(data, currentDay, idx, currentWeek, curIdx);
+    const repChips = buildRepeatChips(repInSession, repPrevWeek, ({ reps, kg }) => {
+      draft.reps = reps; draft.kg = kg; edit.refresh();
+    });
+    if (repChips) container.appendChild(repChips);
+  }
 
   const dots = document.createElement("div");
   dots.className = "dots";
@@ -731,21 +734,23 @@ function renderFocusNormal(ex, idx, container, footer) {
   dots.appendChild(add);
   container.appendChild(dots);
 
-  const cta = document.createElement("button");
-  cta.className = "cta"; cta.textContent = "Serie fatta · avvia recupero ▸";
-  cta.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, idx,
-      withSet(v, curIdx, { reps: draft.reps, kg: draft.kg, done: true, feel: entry.sets[curIdx]?.feel ?? "", comments: draft.comments }), new Date().toISOString());
-    persist(idx);
-    startRest(getRest(currentDay, idx, ex.restSeconds), ex.name);
-    render();
-    if (isEntryComplete(getEntry(data, currentWeek, currentDay, idx), ex)) {
-      closeFocus(); // esercizio finito → torna alla lista (e libera la voce di history)
-    } else {
-      showFeelAsk({ idx, superset: false, setIndex: curIdx });
-    }
-  });
-  footer.appendChild(cta);
+  if (!allDone) {
+    const cta = document.createElement("button");
+    cta.className = "cta"; cta.textContent = "Serie fatta · avvia recupero ▸";
+    cta.addEventListener("click", () => {
+      data = setEntry(data, currentWeek, currentDay, idx,
+        withSet(v, curIdx, { reps: draft.reps, kg: draft.kg, done: true, feel: entry.sets[curIdx]?.feel ?? "", comments: draft.comments }), new Date().toISOString());
+      persist(idx);
+      startRest(getRest(currentDay, idx, ex.restSeconds), ex.name);
+      render();
+      if (isEntryComplete(getEntry(data, currentWeek, currentDay, idx), ex)) {
+        closeFocus(); // esercizio finito → torna alla lista (e libera la voce di history)
+      } else {
+        showFeelAsk({ idx, superset: false, setIndex: curIdx });
+      }
+    });
+    footer.appendChild(cta);
+  }
   container.appendChild(buildNoteField(false, idx));
 }
 
