@@ -6,7 +6,7 @@ import {
 } from "./store.js";
 import {
   parseTarget, activeSetIndex, isEntryComplete, bestKg, progressionDelta,
-  withSet, withoutSet, withSupersetSet, withNote, previousNote,
+  withSet, withoutSet, withSupersetSet, withoutSupersetSet, withNote, previousNote,
   previousSetInSession, previousWeekSet,
   sessionVolume, exerciseTrend,
 } from "./session.js";
@@ -724,43 +724,44 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
   wrap.appendChild(h);
 
   const curIdx = activeSetIndex(trackEntry.sets);
-  state.kg = prevSets[curIdx]?.kg ?? "";
-  state.reps = prevSets[curIdx]?.reps ?? repsLow(tgtTrack.reps);
-  state.comments = (trackEntry.sets[curIdx]?.comments ?? []).slice();
+  const stateKey = `${currentDay}-${idx}-${trackKey}-${curIdx}-${trackEntry.sets.length}`;
+  if (state._key !== stateKey) {
+    state.kg = prevSets[curIdx]?.kg ?? "";
+    state.reps = prevSets[curIdx]?.reps ?? repsLow(tgtTrack.reps);
+    state.comments = (trackEntry.sets[curIdx]?.comments ?? []).slice();
+    state._key = stateKey;
+  }
 
   const setsBox = document.createElement("div");
   setsBox.className = "sets";
   const total = Math.max(trackEntry.sets.length, tgtTrack.sets, curIdx + 1);
   for (let i = 0; i < total; i++) {
     const set = trackEntry.sets[i] || { reps: "", kg: "", done: false };
-    setsBox.appendChild(setRow(i, set, prevSets[i] || null, i === curIdx, null, (patch) => {
-      const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { ...patch, done: true });
-      data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
-      persist(idx); render();
-    }, set.done ? () => {
-      const next = nextFeel(set.feel);
-      const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { feel: next });
-      data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
-      persist(idx); render();
-    } : null, set.done ? () => {
-      const t = prompt("Commenti (separati da ;):", (set.comments ?? []).join("; "));
-      if (t === null) return;
-      const comments = t.split(";").map((s) => s.trim()).filter(Boolean);
-      const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { comments });
-      data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
-      persist(idx); render();
-    } : null));
+    const onOpen = set.done ? () => openSetDialog({
+      title: `${trackKey.toUpperCase()} · Serie ${i + 1} · ${set.reps || "—"} × ${set.kg || "—"} kg`,
+      reps: set.reps, kg: set.kg, feel: set.feel,
+      onApply: (reps, kg, feel) => {
+        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { reps, kg, feel });
+        data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+        persist(idx); render();
+      },
+      onUndo: () => {
+        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { done: false });
+        data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+        persist(idx); render();
+      },
+      onDelete: () => {
+        const nv = withoutSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i);
+        data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+        persist(idx); render();
+      },
+    }) : null;
+    setsBox.appendChild(setRow(i, set, prevSets[i] || null, i === curIdx, null, onOpen));
   }
   wrap.appendChild(setsBox);
 
   const edit = buildEditBlock(`Serie ${curIdx + 1} ${trackKey.toUpperCase()} — step 0.5 kg`, state, prevSets[curIdx] || null);
   wrap.appendChild(edit.block);
-
-  wrap.appendChild(buildRpeBar(trackEntry.sets[curIdx]?.feel ?? "", (feel) => {
-    const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, curIdx, { feel });
-    data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
-    persist(idx); render();
-  }));
 
   const qcLabel = document.createElement("div"); qcLabel.className = "editlabel"; qcLabel.textContent = "commento veloce";
   wrap.appendChild(qcLabel);
