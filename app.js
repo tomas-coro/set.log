@@ -234,7 +234,9 @@ function buildRpeBar(current, onPick) {
 // Riga di chip commenti per la serie corrente. `selected` = array commenti già scelti.
 function buildQuickCommentChips(selected, onToggle, onWrite) {
   const wrap = document.createElement("div"); wrap.className = "chips";
-  for (const text of getQuickComments()) {
+  const presets = getQuickComments();
+  const extras = selected.filter((s) => !presets.includes(s));
+  for (const text of [...presets, ...extras]) {
     const c = document.createElement("span");
     c.className = "chip" + (selected.includes(text) ? " on" : "");
     c.textContent = text;
@@ -556,9 +558,15 @@ function renderFocusNormal(ex, idx, container) {
 
   const qcLabel = document.createElement("div"); qcLabel.className = "editlabel"; qcLabel.textContent = "commento veloce";
   container.appendChild(qcLabel);
-  container.appendChild(buildQuickCommentChips(draft.comments,
-    (text) => { draft.comments = toggleComment(draft.comments, text); render(); },
-    () => { const t = prompt("Commento:"); const v = t && t.trim(); if (v && !draft.comments.includes(v)) { draft.comments = [...draft.comments, v]; render(); } }));
+  let chipsEl;
+  const refreshChips = () => {
+    const fresh = buildQuickCommentChips(draft.comments,
+      (text) => { draft.comments = toggleComment(draft.comments, text); refreshChips(); },
+      () => { const t = prompt("Commento:"); const v = t && t.trim(); if (v && !draft.comments.includes(v)) { draft.comments = [...draft.comments, v]; refreshChips(); } });
+    if (chipsEl) { chipsEl.replaceWith(fresh); } else { container.appendChild(fresh); }
+    chipsEl = fresh;
+  };
+  refreshChips();
 
   const repInSession = previousSetInSession(v, curIdx);
   const repPrevWeek = previousWeekSet(data, currentDay, idx, currentWeek, curIdx);
@@ -669,9 +677,15 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
 
   const qcLabel = document.createElement("div"); qcLabel.className = "editlabel"; qcLabel.textContent = "commento veloce";
   wrap.appendChild(qcLabel);
-  wrap.appendChild(buildQuickCommentChips(state.comments,
-    (text) => { state.comments = toggleComment(state.comments, text); render(); },
-    () => { const t = prompt("Commento:"); const v = t && t.trim(); if (v && !state.comments.includes(v)) { state.comments = [...state.comments, v]; render(); } }));
+  let chipsEl;
+  const refreshChips = () => {
+    const fresh = buildQuickCommentChips(state.comments,
+      (text) => { state.comments = toggleComment(state.comments, text); refreshChips(); },
+      () => { const t = prompt("Commento:"); const v = t && t.trim(); if (v && !state.comments.includes(v)) { state.comments = [...state.comments, v]; refreshChips(); } });
+    if (chipsEl) { chipsEl.replaceWith(fresh); } else { wrap.appendChild(fresh); }
+    chipsEl = fresh;
+  };
+  refreshChips();
 
   const inSess = previousSetInSession(trackEntry, curIdx);
   const prevWk = previousWeekSet(data, currentDay, idx, currentWeek, curIdx, trackKey);
