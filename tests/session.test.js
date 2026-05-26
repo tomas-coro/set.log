@@ -126,3 +126,16 @@ test("withoutSupersetSet: rimuove dalla traccia indicata", () => {
   const v = { a: { sets: [{ reps: "15", kg: "25", done: true }, { reps: "15", kg: "25", done: false }] }, b: { sets: [] }, note: "" };
   assert.equal(withoutSupersetSet(v, "a", 1).a.sets.length, 1);
 });
+
+test("withSet/withSupersetSet: non mutano l'input (immutabilità)", () => {
+  const e = { sets: [{ reps: "8", kg: "70", done: false }], note: "n" };
+  const out = withSet(e, 0, { kg: "72.5", done: true });
+  assert.equal(e.sets[0].kg, "70");      // originale invariato
+  assert.equal(e.sets[0].done, false);
+  assert.notEqual(out.sets[0], e.sets[0]); // oggetto serie nuovo
+
+  const sv = { a: { sets: [{ reps: "15", kg: "25", done: false }] }, b: { sets: [] }, note: "" };
+  const sout = withSupersetSet(sv, "a", 0, { done: true });
+  assert.equal(sv.a.sets[0].done, false);  // originale invariato
+  assert.equal(sout.a.sets[0].done, true);
+});
