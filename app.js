@@ -1,6 +1,7 @@
 import { PLAN } from "./plan.js";
 import {
   isoWeekKey, emptyData, ensureWeek, setEntry, getEntry,
+  normalizeEntry,
   GitHubStore, ConflictError, AuthError,
 } from "./store.js";
 import { RestTimer, formatTime } from "./timer.js";
@@ -46,14 +47,18 @@ function setRest(day, idx, seconds) {
   localStorage.setItem(REST_KEY, JSON.stringify(m));
 }
 
-// ---- Entry shape: { kg, reps }. Tolerates legacy string entries. ----
-function normalizeEntry(v) {
-  if (v && typeof v === "object") return { kg: v.kg ?? "", reps: v.reps ?? "" };
-  if (typeof v === "string" && v) return { kg: "", reps: v };
-  return { kg: "", reps: "" };
+// Adattatore Fase 1: appiattisce {sets} nel vecchio {kg, reps} slash per la UI attuale.
+// (La Fase 2 sostituirà il render e userà direttamente le serie.)
+function flatEntry(v) {
+  const { sets } = normalizeEntry(v);
+  if (!sets.length) return { kg: "", reps: "" };
+  const reps = sets.map((s) => s.reps).filter(Boolean).join("/");
+  const kgs = [...new Set(sets.map((s) => s.kg).filter(Boolean))];
+  const kg = kgs.length <= 1 ? (kgs[0] ?? "") : sets.map((s) => s.kg).join("/");
+  return { kg, reps };
 }
 function entrySummary(v) {
-  const e = normalizeEntry(v);
+  const e = flatEntry(v);
   if (!e.kg && !e.reps) return "";
   return [e.kg ? e.kg + " kg" : "", e.reps].filter(Boolean).join(" · ");
 }
@@ -73,7 +78,7 @@ function exerciseHistory(day, idx, beforeWeek) {
   const out = [];
   for (const k of Object.keys(data.weeks).sort()) {
     if (beforeWeek && k >= beforeWeek) continue;
-    const e = normalizeEntry(getEntry(data, k, day, idx));
+    const e = flatEntry(getEntry(data, k, day, idx));
     if (e.kg || e.reps) out.push({ key: k, label: data.weeks[k]?.label || k, kg: e.kg, reps: e.reps });
   }
   return out;
@@ -204,7 +209,7 @@ function renderDays() {
       meta.append(restIn, document.createTextNode(" s"));
       card.appendChild(meta);
 
-      const cur = normalizeEntry(getEntry(data, currentWeek, day.day, ei));
+      const cur = flatEntry(getEntry(data, currentWeek, day.day, ei));
       const row = document.createElement("div");
       row.className = "ex-row";
 
