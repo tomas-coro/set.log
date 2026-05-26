@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-26T16:49:09.111Z",
+  "updatedAt": "2026-05-26T16:49:19.558Z",
   "weeks": {
     "2026-W22": {
       "label": "2026-W22",
@@ -381,7 +381,7 @@
               "sets": [
                 {
                   "reps": "10",
-                  "kg": "",
+                  "kg": "7,5",
                   "done": true,
                   "feel": "",
                   "warmup": false,
