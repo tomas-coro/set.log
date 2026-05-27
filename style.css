@@ -433,3 +433,19 @@ body.timer-on .focus-body{padding-bottom:160px;}
   background:var(--field);color:var(--ink);}
 .ex-dialog .notifyrow{display:flex;align-items:center;gap:8px;margin-top:14px;font-size:13px;color:var(--ink);}
 .ex-dialog .notifyrow code{font-family:"JetBrains Mono",monospace;color:var(--acc);}
+
+/* Vista progressione */
+.focus-chart {
+  margin-left: auto; background: none; border: 0; color: var(--accent, #E8A93C);
+  font-size: 22px; line-height: 1; padding: 4px 6px; cursor: pointer;
+}
+.chart-dialog { width: min(92vw, 360px); }
+.chart-svg { width: 100%; height: auto; display: block; }
+.chart-empty { color: #9a9385; font-size: 13px; padding: 24px 4px; text-align: center; }
+.chart-note { color: #9a9385; font-size: 12px; text-align: center; margin-top: 8px; }
+.chart-range { display: flex; gap: 6px; margin-top: 12px; }
+.chart-range button {
+  background: #1d1913; color: #9a9385; border: 0; border-radius: 99px;
+  font: 600 12px system-ui; padding: 5px 12px; cursor: pointer;
+}
+.chart-range button.on { background: var(--accent, #E8A93C); color: #100E0A; }

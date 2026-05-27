@@ -80,6 +80,7 @@
         <div id="focusName" class="fn"></div>
         <div id="focusSet" class="fs"></div>
       </div>
+      <button id="chartBtn" class="focus-chart" type="button" aria-label="Progressione">📈</button>
     </header>
     <div id="focusBody" class="focus-body"></div>
     <div id="focusFoot" class="focus-foot"></div>
@@ -161,6 +162,17 @@
     <input id="exBar" type="number" inputmode="decimal" class="ex-inp" placeholder="" min="0" step="0.5">
     <label class="notifyrow"><input type="checkbox" id="exSuperset"> Superset (serie×reps: <code>A / B</code>)</label>
     <button id="exDlgSave" type="button" class="confirm">✓ Salva</button>
+  </dialog>
+
+  <!-- Grafico progressione esercizio -->
+  <dialog id="chartDialog" class="set-dialog chart-dialog">
+    <div class="modal-h">
+      <span id="chartTitle" class="t">Progressione</span>
+      <button id="chartClose" class="x" type="button" aria-label="Chiudi">✕</button>
+    </div>
+    <div class="editlabel" style="text-align:left">Top-set · kg per settimana</div>
+    <div id="chartBody"></div>
+    <div id="chartRange" class="chart-range"></div>
   </dialog>
 
   <!-- Striscia sensazione durante il recupero -->
