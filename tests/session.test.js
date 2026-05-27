@@ -103,16 +103,16 @@ test("isEntryComplete: superset con traccia A vuota e B completa -> true", () =>
 });
 
 test("activeExerciseIndex: primo esercizio non completo", () => {
-  const plan = { exercises: [{ superset: false }, { superset: false }, { superset: false }] };
+  const plan = { exercises: [{ id: "e0", superset: false }, { id: "e1", superset: false }, { id: "e2", superset: false }] };
   assert.equal(activeExerciseIndex(emptyData(), "2026-W22", "A", plan), 0);
-  let d = setEntry(emptyData(), "2026-W22", "A", 0, { sets: [{ reps: "8", kg: "70", done: true }] }, "t");
+  let d = setEntry(emptyData(), "2026-W22", "A", "e0", { sets: [{ reps: "8", kg: "70", done: true }] }, "t");
   assert.equal(activeExerciseIndex(d, "2026-W22", "A", plan), 1);
 });
 
 test("activeExerciseIndex: tutti completi -> 0 (wrap, non solo perché è il primo)", () => {
-  const plan = { exercises: [{ superset: false }, { superset: false }] };
-  let d = setEntry(emptyData(), "2026-W22", "A", 0, { sets: [{ reps: "8", kg: "70", done: true }] }, "t1");
-  d = setEntry(d, "2026-W22", "A", 1, { sets: [{ reps: "8", kg: "70", done: true }] }, "t2");
+  const plan = { exercises: [{ id: "e0", superset: false }, { id: "e1", superset: false }] };
+  let d = setEntry(emptyData(), "2026-W22", "A", "e0", { sets: [{ reps: "8", kg: "70", done: true }] }, "t1");
+  d = setEntry(d, "2026-W22", "A", "e1", { sets: [{ reps: "8", kg: "70", done: true }] }, "t2");
   assert.equal(activeExerciseIndex(d, "2026-W22", "A", plan), 0);
 });
 
@@ -269,17 +269,17 @@ test("previousWeekSet: salta settimane vuote e senza storico -> null", () => {
 });
 
 const PLAN_AB = { exercises: [
-  { name: "Panca", setsReps: "4 × 8" },
-  { name: "Croci", setsReps: "3 × 12", superset: true },
+  { id: "pab0", name: "Panca", setsReps: "4 × 8" },
+  { id: "pab1", name: "Croci", setsReps: "3 × 12", superset: true },
 ] };
 
 test("sessionVolume: somma reps*kg delle serie done (normale + superset)", () => {
   let d = emptyData();
-  d = setEntry(d, "2026-W22", "A", 0, { sets: [
+  d = setEntry(d, "2026-W22", "A", "pab0", { sets: [
     { reps: "8", kg: "70", done: true },   // 560
     { reps: "8", kg: "70", done: false },  // esclusa (non done)
   ] });
-  d = setEntry(d, "2026-W22", "A", 1, {
+  d = setEntry(d, "2026-W22", "A", "pab1", {
     a: { sets: [{ reps: "12", kg: "20", done: true }] },  // 240
     b: { sets: [{ reps: "15", kg: "10", done: true }] },  // 150
   });
@@ -288,7 +288,7 @@ test("sessionVolume: somma reps*kg delle serie done (normale + superset)", () =>
 
 test("sessionVolume: 0 senza serie done e ignora valori non numerici", () => {
   let d = emptyData();
-  d = setEntry(d, "2026-W22", "A", 0, { sets: [{ reps: "max", kg: "", done: true }] });
+  d = setEntry(d, "2026-W22", "A", "pab0", { sets: [{ reps: "max", kg: "", done: true }] });
   assert.equal(sessionVolume(d, "2026-W22", "A", PLAN_AB), 0);
 });
 
@@ -318,9 +318,9 @@ test("exerciseTrend: nessuno storico -> array vuoto", () => {
 });
 
 test("warmup escluso da volume, PR e trend", () => {
-  const dayPlan = { exercises: [{ name: "Panca", setsReps: "4 × 8" }] };
+  const dayPlan = { exercises: [{ id: "e0", name: "Panca", setsReps: "4 × 8" }] };
   let d = emptyData();
-  d = setEntry(d, "2026-W22", "A", 0, { sets: [
+  d = setEntry(d, "2026-W22", "A", "e0", { sets: [
     { reps: 8, kg: 40,   done: true, warmup: true },   // riscaldamento: NON conta
     { reps: 8, kg: 72.5, done: true, warmup: false },
     { reps: 8, kg: 72.5, done: true, warmup: false },
@@ -385,9 +385,9 @@ test("previousWeekSet si allinea ai soli working set", () => {
 // ── failed set ────────────────────────────────────────────────────────────────
 
 test("failed escluso da volume, PR e trend (esattamente come warmup)", () => {
-  const dayPlan = { exercises: [{ name: "Panca", setsReps: "3 × 8" }] };
+  const dayPlan = { exercises: [{ id: "e0", name: "Panca", setsReps: "3 × 8" }] };
   let d = emptyData();
-  d = setEntry(d, "2026-W22", "A", 0, { sets: [
+  d = setEntry(d, "2026-W22", "A", "e0", { sets: [
     { reps: 8, kg: 50,   done: true, failed: true },   // fallita: NON conta nelle stats
     { reps: 8, kg: 72.5, done: true, failed: false },
     { reps: 8, kg: 72.5, done: true, failed: false },

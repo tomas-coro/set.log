@@ -58,7 +58,7 @@ export function isEntryComplete(entry, ex) {
 export function activeExerciseIndex(data, weekKey, day, dayPlan) {
   const exs = dayPlan?.exercises ?? [];
   for (let i = 0; i < exs.length; i++) {
-    if (!isEntryComplete(getEntry(data, weekKey, day, exs[i].id ?? i), exs[i])) return i;
+    if (!isEntryComplete(getEntry(data, weekKey, day, exs[i].id), exs[i])) return i;
   }
   return 0;
 }
@@ -192,7 +192,7 @@ export function sessionVolume(data, weekKey, day, dayPlan) {
   const exs = dayPlan?.exercises ?? [];
   let total = 0;
   for (let i = 0; i < exs.length; i++) {
-    const v = getEntry(data, weekKey, day, exs[i].id ?? i);
+    const v = getEntry(data, weekKey, day, exs[i].id);
     if (exs[i]?.superset) {
       const e = normalizeSupersetEntry(v);
       total += trackVolume(e.a) + trackVolume(e.b);
