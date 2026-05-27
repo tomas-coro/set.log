@@ -1867,6 +1867,7 @@ async function boot() {
       openDlg.close();
       if (planOpen) history.pushState({ gymPlan: true }, "");
       else if (nutritionOpen) history.pushState({ gymNutrition: true }, "");
+      else if (calendarOpen) history.pushState({ gymCalendar: true }, "");
       else if (openIndex !== null) history.pushState({ gymFocus: true }, "");
       return;
     }
