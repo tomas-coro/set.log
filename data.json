@@ -1,5 +1,5 @@
 {
-  "updatedAt": "2026-05-27T10:48:52.645Z",
+  "updatedAt": "2026-05-27T10:48:56.092Z",
   "weeks": {
     "2026-W22": {
       "label": "2026-W22",
@@ -516,18 +516,7 @@
         },
         "C": {
           "aaui5": {
-            "sets": [
-              {
-                "reps": "8",
-                "kg": "",
-                "done": true,
-                "feel": "",
-                "warmup": false,
-                "failed": false,
-                "failNote": "",
-                "comments": []
-              }
-            ],
+            "sets": [],
             "note": ""
           }
         }
