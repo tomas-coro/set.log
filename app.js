@@ -1,4 +1,5 @@
 import { PLAN } from "./plan.js";
+import { migrate, addExercise, removeExercise, reorderExercise, updateExercise } from "./editor.js";
 import {
   isoWeekKey, emptyData, ensureWeek, setEntry, getEntry,
   normalizeEntry, normalizeSupersetEntry, prefillSets, platesPerSide, parsePlateSet, exerciseBar,
@@ -219,7 +220,17 @@ function prevWeekKey() {
   return keys.length ? keys[keys.length - 1] : null;
 }
 
-const dayPlan = () => PLAN.find((d) => d.day === currentDay) || PLAN[0];
+// La scheda vive in data.plan dopo la migrazione; PLAN resta solo da seed.
+const planDays = () => (Array.isArray(data.plan) && data.plan.length ? data.plan : PLAN);
+const dayPlan = () => planDays().find((d) => d.day === currentDay) || planDays()[0];
+// ID stabile dell'esercizio in posizione `i` di `day` (chiave dei log). Fallback
+// a String(i) solo se manca (non dovrebbe: migrate garantisce l'id).
+const exIdOf = (day, i) => {
+  const dp = planDays().find((d) => d.day === day);
+  const e = dp && dp.exercises[i];
+  return e && e.id != null ? e.id : String(i);
+};
+const exIdAt = (i) => exIdOf(currentDay, i);
 
 function weekLabel(key) {
   const m = String(key).match(/W(\d+)/i);
@@ -238,7 +249,7 @@ function renderHeader() {
 
 function isComplete(idx) {
   const ex = dayPlan().exercises[idx];
-  return isEntryComplete(getEntry(data, currentWeek, currentDay, idx), ex);
+  return isEntryComplete(getEntry(data, currentWeek, currentDay, exIdAt(idx)), ex);
 }
 
 function renderProgress() {
@@ -638,7 +649,8 @@ function showFeelAsk(info) {
   const bar = buildRpeBar("", (feel) => {
     if (!lastDone) return;
     if (!feel) { hideFeelAsk(); return; }
-    let v = getEntry(data, currentWeek, currentDay, lastDone.idx);
+    const exId = exIdAt(lastDone.idx);
+    let v = getEntry(data, currentWeek, currentDay, exId);
     let nv;
     if (lastDone.superset) {
       nv = withSupersetSet(v, "a", lastDone.aIdx, { feel });
@@ -646,7 +658,7 @@ function showFeelAsk(info) {
     } else {
       nv = withSet(v, lastDone.setIndex, { feel });
     }
-    data = setEntry(data, currentWeek, currentDay, lastDone.idx, nv, new Date().toISOString());
+    data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
     persist(lastDone.idx);
     hideFeelAsk();
     render();
@@ -663,9 +675,10 @@ function hideFeelAsk() {
 // Campo nota per esercizio (persistente tra le settimane). Mostra la nota della
 // settimana corrente; se vuota, suggerisce in placeholder quella precedente.
 function buildNoteField(superset, idx) {
-  const v = getEntry(data, currentWeek, currentDay, idx);
+  const exId = exIdAt(idx);
+  const v = getEntry(data, currentWeek, currentDay, exId);
   const e = superset ? normalizeSupersetEntry(v) : normalizeEntry(v);
-  const prev = previousNote(data, currentDay, idx, currentWeek, superset);
+  const prev = previousNote(data, currentDay, exId, currentWeek, superset);
 
   const wrap = document.createElement("div");
   wrap.className = "noteblock";
@@ -677,8 +690,8 @@ function buildNoteField(superset, idx) {
   ta.placeholder = prev ? `↳ ${prev}` : "presa, set-up, sensazioni…";
   ta.value = e.note || "";
   ta.addEventListener("change", () => {
-    const cur = getEntry(data, currentWeek, currentDay, idx);
-    data = setEntry(data, currentWeek, currentDay, idx, withNote(cur, ta.value.trim(), superset), new Date().toISOString());
+    const cur = getEntry(data, currentWeek, currentDay, exId);
+    data = setEntry(data, currentWeek, currentDay, exId, withNote(cur, ta.value.trim(), superset), new Date().toISOString());
     persist(idx);
   });
   wrap.append(lab, ta);
@@ -762,19 +775,21 @@ function setRow(i, set, prev, isCurrent, onRemove, onOpen) {
   return row;
 }
 
-// Bufferizza l'entry dell'esercizio `idx` e schedula il salvataggio cloud.
+// Bufferizza l'entry dell'esercizio in posizione `idx` e schedula il salvataggio cloud.
 function persist(idx) {
-  bufferEdit(currentWeek, currentDay, idx, getEntry(data, currentWeek, currentDay, idx));
+  const exId = exIdAt(idx);
+  bufferEdit(currentWeek, currentDay, exId, getEntry(data, currentWeek, currentDay, exId));
   setStatus("in attesa ⧗", "pending");
   clearTimeout(saveTimer);
   saveTimer = setTimeout(saveToCloud, 1500);
 }
 
 function renderFocusNormal(ex, idx, container, footer) {
-  const v = getEntry(data, currentWeek, currentDay, idx);
+  const exId = exIdAt(idx);
+  const v = getEntry(data, currentWeek, currentDay, exId);
   const entry = normalizeEntry(v);
   const tgt = parseTarget(ex.setsReps, false);
-  const prev = prefillSets(data, currentWeek, currentDay, idx); // [{reps,kg,done:false}]
+  const prev = prefillSets(data, currentWeek, currentDay, exId); // [{reps,kg,done:false}]
   const curIdx = activeSetIndex(entry.sets);
 
   document.getElementById("focusSet").textContent =
@@ -790,7 +805,7 @@ function renderFocusNormal(ex, idx, container, footer) {
     };
   }
 
-  const trendRow = buildTrendRow(exerciseTrend(data, currentDay, idx, currentWeek, 3), currentWeek);
+  const trendRow = buildTrendRow(exerciseTrend(data, currentDay, exId, currentWeek, 3), currentWeek);
   if (trendRow) container.appendChild(trendRow);
 
   const setsBox = document.createElement("div");
@@ -802,7 +817,7 @@ function renderFocusNormal(ex, idx, container, footer) {
     const isCurrent = i === curIdx;
     const canRemove = i < entry.sets.length && entry.sets.length > 0;
     const onRemove = canRemove ? () => {
-      data = setEntry(data, currentWeek, currentDay, idx, withoutSet(v, i), new Date().toISOString());
+      data = setEntry(data, currentWeek, currentDay, exId, withoutSet(v, i), new Date().toISOString());
       persist(idx); render();
     } : null;
     const onOpen = set.done ? () => openSetDialog({
@@ -810,15 +825,15 @@ function renderFocusNormal(ex, idx, container, footer) {
       reps: set.reps, kg: set.kg, feel: set.feel,
       failed: set.failed, failNote: set.failNote, done: set.done,
       onApply: (reps, kg, feel, failed, failNote) => {
-        data = setEntry(data, currentWeek, currentDay, idx, withSet(v, i, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) }), new Date().toISOString());
+        data = setEntry(data, currentWeek, currentDay, exId, withSet(v, i, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) }), new Date().toISOString());
         persist(idx); render();
       },
       onUndo: () => {
-        data = setEntry(data, currentWeek, currentDay, idx, withSet(v, i, { done: false }), new Date().toISOString());
+        data = setEntry(data, currentWeek, currentDay, exId, withSet(v, i, { done: false }), new Date().toISOString());
         persist(idx); render();
       },
       onDelete: () => {
-        data = setEntry(data, currentWeek, currentDay, idx, withoutSet(v, i), new Date().toISOString());
+        data = setEntry(data, currentWeek, currentDay, exId, withoutSet(v, i), new Date().toISOString());
         persist(idx); render();
       },
     }) : null;
@@ -841,7 +856,7 @@ function renderFocusNormal(ex, idx, container, footer) {
     refreshQc();
 
     const repInSession = previousSetInSession(v, curIdx);
-    const repPrevWeek = previousWeekSet(data, currentDay, idx, currentWeek, curIdx);
+    const repPrevWeek = previousWeekSet(data, currentDay, exId, currentWeek, curIdx);
     const repChips = buildRepeatChips(repInSession, repPrevWeek, ({ reps, kg }) => {
       draft.reps = reps; draft.kg = kg; edit.refresh();
     });
@@ -863,12 +878,12 @@ function renderFocusNormal(ex, idx, container, footer) {
         failNote: curSet.failNote || "",
         done: false,
         onApply: (reps, kg, feel, failed, failNote) => {
-          data = setEntry(data, currentWeek, currentDay, idx, withSet(v, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) }), new Date().toISOString());
+          data = setEntry(data, currentWeek, currentDay, exId, withSet(v, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) }), new Date().toISOString());
           persist(idx); render();
         },
         onUndo: () => {},
         onDelete: () => {
-          data = setEntry(data, currentWeek, currentDay, idx, withoutSet(v, curIdx), new Date().toISOString());
+          data = setEntry(data, currentWeek, currentDay, exId, withoutSet(v, curIdx), new Date().toISOString());
           persist(idx); render();
         },
       });
@@ -891,13 +906,13 @@ function renderFocusNormal(ex, idx, container, footer) {
   const addW = document.createElement("button");
   addW.className = "addset warm"; addW.textContent = "+ riscald.";
   addW.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, idx, withSet(v, entry.sets.length, { reps: "", kg: "", done: false, warmup: true }), new Date().toISOString());
+    data = setEntry(data, currentWeek, currentDay, exId, withSet(v, entry.sets.length, { reps: "", kg: "", done: false, warmup: true }), new Date().toISOString());
     persist(idx); render();
   });
   const add = document.createElement("button");
   add.className = "addset"; add.textContent = "+ serie";
   add.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, idx, withSet(v, entry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
+    data = setEntry(data, currentWeek, currentDay, exId, withSet(v, entry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
     persist(idx); render();
   });
   dots.appendChild(addW);
@@ -908,12 +923,12 @@ function renderFocusNormal(ex, idx, container, footer) {
     const cta = document.createElement("button");
     cta.className = "cta"; cta.textContent = "Serie fatta · avvia recupero ▸";
     cta.addEventListener("click", () => {
-      data = setEntry(data, currentWeek, currentDay, idx,
+      data = setEntry(data, currentWeek, currentDay, exId,
         withSet(v, curIdx, { reps: draft.reps, kg: draft.kg, done: true, feel: entry.sets[curIdx]?.feel ?? "", comments: draft.comments }), new Date().toISOString());
       persist(idx);
-      startRest(getRest(currentDay, idx, ex.restSeconds), ex.name);
+      startRest(getRest(currentDay, exId, ex.restSeconds), ex.name);
       render();
-      if (isEntryComplete(getEntry(data, currentWeek, currentDay, idx), ex)) {
+      if (isEntryComplete(getEntry(data, currentWeek, currentDay, exId), ex)) {
         closeFocus(); // esercizio finito → torna alla lista (e libera la voce di history)
       } else {
         showFeelAsk({ idx, superset: false, setIndex: curIdx });
@@ -929,6 +944,7 @@ let draftA = { kg: "", reps: "", comments: [] };
 let draftB = { kg: "", reps: "", comments: [] };
 
 function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, idx, bar = getBar()) {
+  const exId = exIdAt(idx);
   const wrap = document.createElement("div");
   wrap.className = "track";
 
@@ -960,23 +976,23 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
       reps: set.reps, kg: set.kg, feel: set.feel,
       failed: set.failed, failNote: set.failNote, done: set.done,
       onApply: (reps, kg, feel, failed, failNote) => {
-        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) });
-        data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, i, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) });
+        data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
         persist(idx); render();
       },
       onUndo: () => {
-        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i, { done: false });
-        data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, i, { done: false });
+        data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
         persist(idx); render();
       },
       onDelete: () => {
-        const nv = withoutSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i);
-        data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+        const nv = withoutSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, i);
+        data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
         persist(idx); render();
       },
     }) : null;
     const onRemove = (!set.done && i < trackEntry.sets.length) ? () => {
-      data = setEntry(data, currentWeek, currentDay, idx, withoutSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, i), new Date().toISOString());
+      data = setEntry(data, currentWeek, currentDay, exId, withoutSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, i), new Date().toISOString());
       persist(idx); render();
     } : null;
     setsBox.appendChild(setRow(i, set, prevSets[i] || null, i === curIdx, onRemove, onOpen));
@@ -988,7 +1004,7 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
   const add = document.createElement("button");
   add.className = "addset"; add.textContent = "+ serie";
   add.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, idx, withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, trackEntry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
+    data = setEntry(data, currentWeek, currentDay, exId, withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, trackEntry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
     persist(idx); render();
   });
   dots.appendChild(add);
@@ -1009,7 +1025,7 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
     refreshQc();
 
     const inSess = previousSetInSession(trackEntry, curIdx);
-    const prevWk = previousWeekSet(data, currentDay, idx, currentWeek, curIdx, trackKey);
+    const prevWk = previousWeekSet(data, currentDay, exId, currentWeek, curIdx, trackKey);
     const chips = buildRepeatChips(inSess, prevWk, ({ reps, kg }) => { state.reps = reps; state.kg = kg; edit.refresh(); });
     if (chips) wrap.appendChild(chips);
 
@@ -1029,14 +1045,14 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
         failNote: curSet.failNote || "",
         done: false,
         onApply: (reps, kg, feel, failed, failNote) => {
-          const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) });
-          data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+          const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) });
+          data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
           persist(idx); render();
         },
         onUndo: () => {},
         onDelete: () => {
-          const nv = withoutSupersetSet(getEntry(data, currentWeek, currentDay, idx), trackKey, curIdx);
-          data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+          const nv = withoutSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, curIdx);
+          data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
           persist(idx); render();
         },
       });
@@ -1047,11 +1063,12 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
 }
 
 function renderFocusSuperset(ex, idx, container, footer) {
-  const v = getEntry(data, currentWeek, currentDay, idx);
+  const exId = exIdAt(idx);
+  const v = getEntry(data, currentWeek, currentDay, exId);
   const e = normalizeSupersetEntry(v);
   const tgt = parseTarget(ex.setsReps, true);
   const [nameA, nameB] = ex.name.includes(" + ") ? ex.name.split(" + ") : [ex.name, ex.name];
-  const prev = previousSupersetSets(currentWeek, currentDay, idx);
+  const prev = previousSupersetSets(currentWeek, currentDay, exId);
 
   // sotto-tab A / B
   const tabs = document.createElement("div");
@@ -1065,7 +1082,7 @@ function renderFocusSuperset(ex, idx, container, footer) {
   });
   container.appendChild(tabs);
 
-  const trendRow = buildTrendRow(exerciseTrend(data, currentDay, idx, currentWeek, 3, true), currentWeek);
+  const trendRow = buildTrendRow(exerciseTrend(data, currentDay, exId, currentWeek, 3, true), currentWeek);
   if (trendRow) container.appendChild(trendRow);
 
   const ssBar = exerciseBar(ex, getBar());
@@ -1080,17 +1097,17 @@ function renderFocusSuperset(ex, idx, container, footer) {
   document.getElementById("focusSet").textContent =
     `serie ${Math.min(active.curIdx + 1, tgtT.sets)} / ${tgtT.sets} · ${supersetTab.toUpperCase()}`;
 
-  if (!isEntryComplete(getEntry(data, currentWeek, currentDay, idx), ex)) {
+  if (!isEntryComplete(getEntry(data, currentWeek, currentDay, exId), ex)) {
     const cta = document.createElement("button");
     cta.className = "cta"; cta.textContent = "Serie fatta (A+B) · avvia recupero ▸";
     cta.addEventListener("click", () => {
       let nv = withSupersetSet(v, "a", a.curIdx, { reps: draftA.reps, kg: draftA.kg, done: true, feel: e.a.sets[a.curIdx]?.feel ?? "", comments: draftA.comments });
       nv = withSupersetSet(nv, "b", b.curIdx, { reps: draftB.reps, kg: draftB.kg, done: true, feel: e.b.sets[b.curIdx]?.feel ?? "", comments: draftB.comments });
-      data = setEntry(data, currentWeek, currentDay, idx, nv, new Date().toISOString());
+      data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
       persist(idx);
-      startRest(getRest(currentDay, idx, ex.restSeconds), ex.name);
+      startRest(getRest(currentDay, exId, ex.restSeconds), ex.name);
       render();
-      if (isEntryComplete(getEntry(data, currentWeek, currentDay, idx), ex)) {
+      if (isEntryComplete(getEntry(data, currentWeek, currentDay, exId), ex)) {
         closeFocus(); // superset finito → torna alla lista (e libera la voce di history)
       } else {
         showFeelAsk({ idx, superset: true, aIdx: a.curIdx, bIdx: b.curIdx });
@@ -1132,12 +1149,12 @@ function renderList() {
     const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = ex.name;
     if (ex.superset) { const b = document.createElement("span"); b.className = "ssbadge"; b.textContent = "superset"; nm.appendChild(b); }
     const sub = document.createElement("div"); sub.className = "sub";
-    sub.textContent = `${ex.setsReps} · rec ${getRest(currentDay, i, ex.restSeconds)}″`;
+    sub.textContent = `${ex.setsReps} · rec ${getRest(currentDay, exIdAt(i), ex.restSeconds)}″`;
     mid.append(nm, sub);
     const right = document.createElement("div"); right.className = "right";
     if (isComplete(i)) { const c = document.createElement("span"); c.className = "chk"; c.textContent = "✓"; right.appendChild(c); }
     else if (ex.superset) { const best = document.createElement("div"); best.className = "best"; best.textContent = "A·B"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "2 tracce"; right.append(best, bl); }
-    else { const bk = bestKg(data, currentDay, i); const best = document.createElement("div"); best.className = "best"; best.textContent = bk === null ? "—" : bk + " kg"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "best"; right.append(best, bl); }
+    else { const bk = bestKg(data, currentDay, exIdAt(i)); const best = document.createElement("div"); best.className = "best"; best.textContent = bk === null ? "—" : bk + " kg"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "best"; right.append(best, bl); }
     const caret = document.createElement("span"); caret.className = "caret"; caret.textContent = "▾";
     r.append(id, mid, right, caret);
     item.appendChild(r);
@@ -1149,14 +1166,15 @@ function renderList() {
 // modifica l'override per-esercizio (setRest) e aggiorna subito il valore mostrato.
 // Step ±15s, minimo 15s; il valore vale anche per il timer e per la riga in lista.
 function buildRestEditor(idx, ex) {
+  const exId = exIdAt(idx);
   const wrap = document.createElement("div");
   wrap.className = "restedit";
   const lab = document.createElement("span"); lab.className = "rl"; lab.textContent = "recupero";
   const minus = document.createElement("button"); minus.type = "button"; minus.className = "rstep"; minus.textContent = "−10";
   const val = document.createElement("span"); val.className = "rval";
   const plus = document.createElement("button"); plus.type = "button"; plus.className = "rstep"; plus.textContent = "+10";
-  const paint = () => { val.textContent = `${getRest(currentDay, idx, ex.restSeconds)}″`; };
-  const step = (d) => { setRest(currentDay, idx, Math.max(10, getRest(currentDay, idx, ex.restSeconds) + d)); paint(); renderList(); };
+  const paint = () => { val.textContent = `${getRest(currentDay, exId, ex.restSeconds)}″`; };
+  const step = (d) => { setRest(currentDay, exId, Math.max(10, getRest(currentDay, exId, ex.restSeconds) + d)); paint(); renderList(); };
   minus.addEventListener("click", step.bind(null, -10));
   plus.addEventListener("click", step.bind(null, 10));
   paint();
@@ -1417,6 +1435,8 @@ async function boot() {
     data = applyPending(emptyData());
     setStatus(err instanceof AuthError ? "token non valido ⚠" : "offline ⧗", err instanceof AuthError ? "error" : "pending");
   }
+  // Migrazione schema 1->2 (indice->id) dopo applyPending, su entrambi i rami.
+  data = migrate(data, PLAN);
   data = ensureWeek(data, currentWeek);
   openIndex = null;
   renderWeekSelect();
