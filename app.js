@@ -274,7 +274,7 @@ function openExDialog(day, id) {
   exDlgDay = day; exDlgId = id;
   const dlg = document.getElementById("exDialog");
   const dp = planDays().find((d) => d.day === day);
-  const ex = id ? dp.exercises.find((e) => e.id === id) : null;
+  const ex = id && dp ? dp.exercises.find((e) => e.id === id) : null;
   document.getElementById("exDlgTitle").textContent = ex ? "Modifica esercizio" : "Nuovo esercizio";
   document.getElementById("exName").value = ex ? ex.name : "";
   document.getElementById("exSetsReps").value = ex ? ex.setsReps : "";
@@ -1609,7 +1609,7 @@ function renderList() {
 
 // Editor del tempo di recupero per esercizio, sempre visibile dentro l'overlay:
 // modifica l'override per-esercizio (setRest) e aggiorna subito il valore mostrato.
-// Step ±15s, minimo 15s; il valore vale anche per il timer e per la riga in lista.
+// Step ±10s, minimo 10s; il valore vale anche per il timer e per la riga in lista.
 function buildRestEditor(idx, ex) {
   const exId = exIdAt(idx);
   const wrap = document.createElement("div");
