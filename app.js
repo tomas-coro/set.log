@@ -921,7 +921,7 @@ function renderFocusNormal(ex, idx, container, footer) {
 let draftA = { kg: "", reps: "", comments: [] };
 let draftB = { kg: "", reps: "", comments: [] };
 
-function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, idx, bar) {
+function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, idx, bar = getBar()) {
   const wrap = document.createElement("div");
   wrap.className = "track";
 
