@@ -1758,6 +1758,19 @@ async function boot() {
     if (e.target.id === "qcDialog") e.target.close(); // tap sul backdrop
   });
   window.addEventListener("popstate", () => {
+    // Un dialog modale è il layer in cima: il tasto indietro chiude quello, non
+    // l'overlay sotto. Lo richiudiamo e ripristiniamo la voce di history
+    // dell'overlay sottostante (consumata dal back), così resta aperto e un
+    // secondo "indietro" lo chiuderà. I dialog non sono registrati nella history,
+    // quindi le loro chiusure normali (bottone/backdrop/Esc) non passano di qui.
+    const openDlg = [...document.querySelectorAll("dialog[open]")].pop();
+    if (openDlg) {
+      openDlg.close();
+      if (planOpen) history.pushState({ gymPlan: true }, "");
+      else if (nutritionOpen) history.pushState({ gymNutrition: true }, "");
+      else if (openIndex !== null) history.pushState({ gymFocus: true }, "");
+      return;
+    }
     if (openIndex !== null) { hideFeelAsk(); openIndex = null; render(); }
     if (nutritionOpen) { nutritionOpen = false; renderNutritionOverlay(); }
     if (planOpen) { planOpen = false; renderPlanEditor(); }
