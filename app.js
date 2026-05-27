@@ -803,13 +803,13 @@ function renderChart(series) {
       fill: isLast ? "#E8A93C" : "#100E0A",
       stroke: "#E8A93C", "stroke-width": isLast ? 0 : 2.5,
     }));
-    const val = svgEl("text", {
-      x: p.x, y: p.y - 8, fill: isLast ? "#E8A93C" : "#EDE6D8",
-      "font-size": isLast ? 11 : 10, "font-weight": isLast ? 700 : 600, "text-anchor": "middle",
-    });
-    val.textContent = String(p.kg);
-    svg.appendChild(val);
     if (i % step === 0 || isLast) {
+      const val = svgEl("text", {
+        x: p.x, y: p.y - 8, fill: isLast ? "#E8A93C" : "#EDE6D8",
+        "font-size": isLast ? 11 : 10, "font-weight": isLast ? 700 : 600, "text-anchor": "middle",
+      });
+      val.textContent = String(p.kg);
+      svg.appendChild(val);
       const xl = svgEl("text", {
         x: p.x, y: 142, fill: isLast ? "#EDE6D8" : "#9a9385",
         "font-size": 10, "font-weight": isLast ? 600 : 400, "text-anchor": "middle",
