@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate } from "../editor.js";
+import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate, keepLocalPlan } from "../editor.js";
 
 const samplePlan = () => [
   { day: "A", title: "A", exercises: [
@@ -133,4 +133,27 @@ test("migrate: non muta l'input (clona)", () => {
   const snapshot = JSON.stringify(data);
   migrate(data, seed());
   assert.equal(JSON.stringify(data), snapshot, "input invariato");
+});
+
+test("keepLocalPlan: conserva il plan locale nel merge da conflitto, tiene i weeks del remoto", () => {
+  const merged = { schema: 2, plan: samplePlan(), weeks: { "2026-W22": { label: "W22", entries: { A: { aaa1: { sets: [], note: "" } } } } } };
+  const localPlan = reorderExercise(samplePlan(), "A", 0, 1); // edit strutturale locale: aaa2 prima di aaa1
+  const out = keepLocalPlan(merged, localPlan);
+  assert.deepEqual(out.plan.find((d) => d.day === "A").exercises.map((e) => e.id), ["aaa2", "aaa1"], "plan locale preservato");
+  assert.ok(out.weeks["2026-W22"].entries.A.aaa1, "log del remoto mantenuti");
+});
+
+test("keepLocalPlan: localPlan vuoto o non-array -> merged invariato (stesso riferimento)", () => {
+  const merged = { schema: 2, plan: samplePlan(), weeks: {} };
+  assert.equal(keepLocalPlan(merged, []), merged);
+  assert.equal(keepLocalPlan(merged, null), merged);
+  assert.equal(keepLocalPlan(merged, undefined), merged);
+});
+
+test("keepLocalPlan: non muta merged (ritorna un nuovo oggetto)", () => {
+  const merged = { schema: 2, plan: samplePlan(), weeks: {} };
+  const snapshot = JSON.stringify(merged);
+  const out = keepLocalPlan(merged, samplePlan());
+  assert.notEqual(out, merged, "nuovo oggetto");
+  assert.equal(JSON.stringify(merged), snapshot, "merged invariato");
 });

@@ -1,5 +1,5 @@
 import { PLAN } from "./plan.js";
-import { migrate, addExercise, removeExercise, reorderExercise, updateExercise } from "./editor.js";
+import { migrate, addExercise, removeExercise, reorderExercise, updateExercise, keepLocalPlan } from "./editor.js";
 import {
   isoWeekKey, emptyData, ensureWeek, setEntry, getEntry,
   normalizeEntry, normalizeSupersetEntry, prefillSets, platesPerSide, parsePlateSet, exerciseBar,
@@ -1458,8 +1458,9 @@ async function saveToCloud() {
   } catch (err) {
     if (err instanceof ConflictError) {
       try {
+        const localPlan = data.plan; // edit strutturali della scheda: non sono nel buffer pending
         const remote = await store.load();
-        data = applyPending(remote.data);
+        data = keepLocalPlan(migrate(applyPending(remote.data), PLAN), localPlan);
         sha = remote.sha;
         sha = await store.save(data, sha, `log: ${currentWeek} (merge)`);
         setPending([]);

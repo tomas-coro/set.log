@@ -85,3 +85,12 @@ export function migrate(data, seedPlan) {
   out.schema = 2;
   return out;
 }
+
+// Merge dopo un conflitto di salvataggio: il ramo conflitto riparte dal remoto e
+// ri-applica i log pendenti, ma gli edit strutturali della scheda NON sono nel
+// buffer pending → andrebbero persi. Questo conserva il `plan` locale (intento più
+// recente dell'utente; last-writer-wins, coerente con un singolo utente su 2
+// dispositivi). Se non c'è un plan locale valido, ritorna `merged` invariato.
+export function keepLocalPlan(merged, localPlan) {
+  return Array.isArray(localPlan) && localPlan.length ? { ...merged, plan: localPlan } : merged;
+}
