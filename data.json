@@ -733,6 +733,14 @@
           "restSeconds": 60,
           "superset": true,
           "id": "f7m27"
+        },
+        {
+          "name": "Ffde",
+          "setsReps": "Trr",
+          "recText": "Ff",
+          "restSeconds": 55,
+          "superset": false,
+          "id": "nyffi"
         }
       ]
     }
