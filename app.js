@@ -74,6 +74,161 @@ function renderNutritionOverlay() {
   document.body.style.overflow = "hidden";
 }
 
+// ---- Editor scheda: overlay a schermo intero (stessa logica history degli altri). ----
+let planOpen = false;
+let planEditDay = "A";   // giorno selezionato nell'editor
+function openPlanEditor() {
+  planOpen = true;
+  planEditDay = currentDay;
+  history.pushState({ gymPlan: true }, "");
+  renderPlanEditor();
+}
+function closePlanEditor() {
+  if (!planOpen) return;
+  if (history.state && history.state.gymPlan) history.back(); // → popstate chiude
+  else { planOpen = false; renderPlanEditor(); }
+}
+
+function renderPlanEditor() {
+  const ov = document.getElementById("planOverlay");
+  if (!planOpen) {
+    ov.classList.add("hidden");
+    ov.setAttribute("aria-hidden", "true");
+    if (openIndex === null && !nutritionOpen) document.body.style.overflow = "";
+    return;
+  }
+  const day = planEditDay;
+  document.getElementById("planSub").textContent = `giorno ${day}`;
+  for (const b of document.querySelectorAll("#planTabs button")) b.classList.toggle("on", b.dataset.day === day);
+  const body = document.getElementById("planBody");
+  body.textContent = "";
+  const dp = planDays().find((d) => d.day === day) || planDays()[0];
+  dp.exercises.forEach((ex, i) => body.appendChild(buildPlanRow(ex, i, dp.exercises.length)));
+  const add = document.createElement("button");
+  add.type = "button"; add.className = "pe-add"; add.textContent = "＋ Aggiungi esercizio";
+  add.addEventListener("click", () => openExDialog(day, null));
+  body.appendChild(add);
+  ov.classList.remove("hidden");
+  ov.setAttribute("aria-hidden", "false");
+  document.body.style.overflow = "hidden";
+}
+
+// Riga esercizio nell'editor: grip drag, nome+sub, modifica, elimina.
+function buildPlanRow(ex, i, count) {
+  const row = document.createElement("div");
+  row.className = "pe-row";
+  row.dataset.idx = String(i);
+  const grip = document.createElement("span"); grip.className = "pe-grip"; grip.textContent = "⠿";
+  const meta = document.createElement("div"); meta.className = "pe-meta";
+  const nm = document.createElement("div"); nm.className = "pe-name"; nm.textContent = ex.name;
+  if (ex.superset) { const b = document.createElement("span"); b.className = "pe-badge"; b.textContent = "SUPERSET"; nm.appendChild(b); }
+  const sub = document.createElement("div"); sub.className = "pe-sub";
+  sub.textContent = `${ex.setsReps} · ${ex.recText}` + (ex.bar ? ` · bilanciere ${ex.bar}kg` : "");
+  meta.append(nm, sub);
+  const edit = document.createElement("button"); edit.type = "button"; edit.className = "pe-ic"; edit.textContent = "✎";
+  edit.addEventListener("click", () => openExDialog(planEditDay, ex.id));
+  const del = document.createElement("button"); del.type = "button"; del.className = "pe-ic del"; del.textContent = "🗑";
+  del.addEventListener("click", () => deletePlanExercise(planEditDay, ex.id, ex.name));
+  row.append(grip, meta, edit, del);
+  attachDragHandle(row, grip, planEditDay);
+  return row;
+}
+
+// day: giorno; id: id esercizio da modificare, oppure null per aggiungerne uno nuovo.
+let exDlgDay = "A";
+let exDlgId = null;
+function openExDialog(day, id) {
+  exDlgDay = day; exDlgId = id;
+  const dlg = document.getElementById("exDialog");
+  const dp = planDays().find((d) => d.day === day);
+  const ex = id ? dp.exercises.find((e) => e.id === id) : null;
+  document.getElementById("exDlgTitle").textContent = ex ? "Modifica esercizio" : "Nuovo esercizio";
+  document.getElementById("exName").value = ex ? ex.name : "";
+  document.getElementById("exSetsReps").value = ex ? ex.setsReps : "";
+  document.getElementById("exRecText").value = ex ? ex.recText : "";
+  document.getElementById("exRestSeconds").value = ex ? ex.restSeconds : "";
+  document.getElementById("exBar").value = ex && ex.bar != null ? ex.bar : "";
+  document.getElementById("exSuperset").checked = !!(ex && ex.superset);
+  dlg.showModal();
+}
+
+function readExDialog() {
+  const name = document.getElementById("exName").value.trim();
+  const setsReps = document.getElementById("exSetsReps").value.trim();
+  const recText = document.getElementById("exRecText").value.trim();
+  const restSeconds = parseInt(document.getElementById("exRestSeconds").value, 10);
+  const barRaw = document.getElementById("exBar").value.trim();
+  const superset = document.getElementById("exSuperset").checked;
+  const ex = {
+    name, setsReps, recText,
+    restSeconds: Number.isFinite(restSeconds) ? restSeconds : 60,
+    superset,
+  };
+  if (barRaw !== "") { const b = parseFloat(barRaw.replace(",", ".")); if (Number.isFinite(b) && b > 0) ex.bar = b; }
+  return ex;
+}
+
+function saveExDialog() {
+  const patch = readExDialog();
+  if (!patch.name) return; // nome obbligatorio
+  if (exDlgId) data = { ...data, plan: updateExercise(data.plan, exDlgDay, exDlgId, patch) };
+  else data = { ...data, plan: addExercise(data.plan, exDlgDay, patch) };
+  scheduleSave();
+  document.getElementById("exDialog").close();
+  renderPlanEditor();
+  render(); // la lista principale riflette i cambi
+}
+
+function deletePlanExercise(day, id, name) {
+  if (!confirm(`Eliminare "${name}" dal giorno ${day}?\nLo storico resta salvato ma non sarà più mostrato.`)) return;
+  data = { ...data, plan: removeExercise(data.plan, day, id) };
+  scheduleSave();
+  renderPlanEditor();
+  render();
+}
+
+// Drag-to-reorder col grip (pointer events, no HTML5 DnD: affidabile su mobile).
+function attachDragHandle(row, grip, day) {
+  grip.addEventListener("pointerdown", (e) => {
+    e.preventDefault();
+    const body = document.getElementById("planBody");
+    const rows = () => [...body.querySelectorAll(".pe-row")];
+    const fromIdx = rows().indexOf(row);
+    row.classList.add("dragging");
+    grip.setPointerCapture(e.pointerId);
+
+    const onMove = (ev) => {
+      const y = ev.clientY;
+      let target = 0;
+      rows().forEach((r, idx) => {
+        const rect = r.getBoundingClientRect();
+        if (y > rect.top + rect.height / 2) target = idx;
+      });
+      const list = rows();
+      const cur = list.indexOf(row);
+      if (target !== cur) {
+        const ref = list[target];
+        if (ref && ref !== row) { if (target > cur) ref.after(row); else ref.before(row); }
+      }
+    };
+    const onUp = () => {
+      grip.releasePointerCapture(e.pointerId);
+      grip.removeEventListener("pointermove", onMove);
+      grip.removeEventListener("pointerup", onUp);
+      row.classList.remove("dragging");
+      const toIdx = [...body.querySelectorAll(".pe-row")].indexOf(row);
+      if (toIdx !== fromIdx && toIdx >= 0) {
+        data = { ...data, plan: reorderExercise(data.plan, day, fromIdx, toIdx) };
+        scheduleSave();
+      }
+      renderPlanEditor();
+      render();
+    };
+    grip.addEventListener("pointermove", onMove);
+    grip.addEventListener("pointerup", onUp);
+  });
+}
+
 // ---- Token + pending buffer (browser only) ----
 const getToken = () => localStorage.getItem(TOKEN_KEY) || null;
 const setToken = (t) => (t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY));
@@ -1416,6 +1571,14 @@ async function boot() {
   document.getElementById("focusBack").addEventListener("click", () => closeFocus());
   document.getElementById("nutritionBtn").addEventListener("click", openNutrition);
   document.getElementById("nutritionBack").addEventListener("click", () => closeNutrition());
+  document.getElementById("planEditBtn").addEventListener("click", openPlanEditor);
+  document.getElementById("planBack").addEventListener("click", () => closePlanEditor());
+  for (const b of document.querySelectorAll("#planTabs button")) {
+    b.addEventListener("click", () => { planEditDay = b.dataset.day; renderPlanEditor(); });
+  }
+  document.getElementById("exDlgSave").addEventListener("click", saveExDialog);
+  document.getElementById("exDlgClose").addEventListener("click", () => document.getElementById("exDialog").close());
+  document.getElementById("exDialog").addEventListener("click", (e) => { if (e.target.id === "exDialog") e.target.close(); });
   document.getElementById("qcClose").addEventListener("click", () => document.getElementById("qcDialog").close());
   document.getElementById("qcDialog").addEventListener("click", (e) => {
     if (e.target.id === "qcDialog") e.target.close(); // tap sul backdrop
@@ -1423,6 +1586,7 @@ async function boot() {
   window.addEventListener("popstate", () => {
     if (openIndex !== null) { hideFeelAsk(); openIndex = null; render(); }
     if (nutritionOpen) { nutritionOpen = false; renderNutritionOverlay(); }
+    if (planOpen) { planOpen = false; renderPlanEditor(); }
   });
   initStore();
   setStatus("carico…");
