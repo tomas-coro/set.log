@@ -174,15 +174,10 @@ function toggleDrawer() { drawerOpen ? closeDrawer() : openDrawer(); }
 // Chiude il drawer e, una volta chiuso (history consumata), lancia l'azione scelta.
 function drawerLaunch(fn) { drawerPending = fn; closeDrawer(); }
 
-function openSettings() {
-  const dlg = document.getElementById("settingsDialog");
-  document.getElementById("tokenInput").value = getToken() || "";
-  document.getElementById("barInput").value = getBar();
-  document.getElementById("platesInput").value = getPlateSet().join(", ");
-  renderQcList();
-  document.getElementById("notifyToggle").checked = notifyOn();
-  dlg.showModal();
-}
+// Assegnata in wireSettings(): apre il dialog impostazioni. Vive a livello
+// modulo per essere richiamata dal drawer, ma il corpo gira nello scope di
+// wireSettings dove renderQcList è definita.
+let openSettings = null;
 
 const CAL_MONTHS = ["gennaio","febbraio","marzo","aprile","maggio","giugno",
   "luglio","agosto","settembre","ottobre","novembre","dicembre"];
@@ -1779,6 +1774,15 @@ function wireSettings() {
       row.append(t, del); root.appendChild(row);
     });
   }
+
+  openSettings = () => {
+    document.getElementById("tokenInput").value = getToken() || "";
+    document.getElementById("barInput").value = getBar();
+    document.getElementById("platesInput").value = getPlateSet().join(", ");
+    renderQcList();
+    document.getElementById("notifyToggle").checked = notifyOn();
+    dlg.showModal();
+  };
 
   document.getElementById("qcAdd").addEventListener("click", () => {
     const inp = document.getElementById("qcInput"); const t = inp.value.trim();
