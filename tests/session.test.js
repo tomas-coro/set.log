@@ -2,7 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { parseTargetTrack, parseTarget, activeSetIndex, isEntryComplete, activeExerciseIndex, nextExercisePreview } from "../session.js";
 import { withSet, withoutSet, withSupersetSet, withoutSupersetSet } from "../session.js";
-import { bestKg, progressionDelta, withNote, previousNote, previousSetInSession, previousWeekSet, sessionVolume, exerciseTrend, topSetSeries, chartGeometry } from "../session.js";
+import { bestKg, progressionDelta, withNote, previousNote, previousSetInSession, previousWeekSet, lastWorkingSet, sessionVolume, exerciseTrend, topSetSeries, chartGeometry } from "../session.js";
 import { sessionDates, monthGrid } from "../session.js";
 import { emptyData, setEntry, getEntry } from "../store.js";
 
@@ -457,6 +457,48 @@ test("failed escluso da previousWeekSet", () => {
   ] });
   // setIndex 0 -> primo working non-failed (70), non la failed da 100
   assert.deepEqual(previousWeekSet(d, "A", 0, "2026-W22", 0), { reps: "8", kg: "70", week: "2026-W21" });
+});
+
+test("lastWorkingSet: serie più pesante dell'ultima settimana precedente", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [
+    { reps: "8", kg: "67.5", done: true },
+    { reps: "6", kg: "72.5", done: true },
+    { reps: "8", kg: "70", done: true },
+  ] });
+  assert.deepEqual(lastWorkingSet(d, "A", 0, "2026-W22"), { reps: "6", kg: "72.5", week: "2026-W21" });
+});
+
+test("lastWorkingSet: esclude warmup e serie failed dal max", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [
+    { reps: "10", kg: "90", warmup: true },        // warmup escluso
+    { reps: "1", kg: "100", done: true, failed: true }, // failed escluso
+    { reps: "8", kg: "70", done: true },
+  ] });
+  assert.deepEqual(lastWorkingSet(d, "A", 0, "2026-W22"), { reps: "8", kg: "70", week: "2026-W21" });
+});
+
+test("lastWorkingSet: salta settimane senza kg numerico e quelle >= weekKey", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W20", "A", 0, { sets: [{ reps: "8", kg: "65", done: true }] });
+  d = setEntry(d, "2026-W21", "A", 0, { sets: [{ reps: "max", kg: "", done: true }] }); // nessun kg numerico
+  d = setEntry(d, "2026-W22", "A", 0, { sets: [{ reps: "8", kg: "80", done: true }] }); // == weekKey, escluso
+  assert.deepEqual(lastWorkingSet(d, "A", 0, "2026-W22"), { reps: "8", kg: "65", week: "2026-W20" });
+});
+
+test("lastWorkingSet: nessuno storico utile -> null", () => {
+  assert.equal(lastWorkingSet(emptyData(), "A", 0, "2026-W22"), null);
+});
+
+test("lastWorkingSet: traccia 'a'/'b' di un superset", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W21", "A", "ss", {
+    a: { sets: [{ reps: "12", kg: "20", done: true }, { reps: "10", kg: "22.5", done: true }] },
+    b: { sets: [{ reps: "15", kg: "10", done: true }] },
+  });
+  assert.deepEqual(lastWorkingSet(d, "A", "ss", "2026-W22", "a"), { reps: "10", kg: "22.5", week: "2026-W21" });
+  assert.deepEqual(lastWorkingSet(d, "A", "ss", "2026-W22", "b"), { reps: "15", kg: "10", week: "2026-W21" });
 });
 
 test("isEntryComplete: la serie failed (done+failed) conta per il completamento", () => {

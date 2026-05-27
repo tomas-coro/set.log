@@ -171,6 +171,26 @@ export function previousWeekSet(data, day, exId, weekKey, setIndex, track = null
   return null;
 }
 
+// {reps,kg,week} della serie working PIÙ PESANTE (kg numerico max) dell'ultima
+// settimana precedente (< weekKey) che ne ha una; null se nessuno storico utile.
+// Scandisce indietro: salta le settimane senza alcun kg numerico working.
+// track: null = normale, "a"/"b" = traccia del superset.
+export function lastWorkingSet(data, day, exId, weekKey, track = null) {
+  const keys = Object.keys(data?.weeks ?? {})
+    .filter((k) => /^\d{4}-W\d{2}(\.\d+)?$/.test(k) && k < weekKey).sort();
+  for (let i = keys.length - 1; i >= 0; i--) {
+    const t = entryTrack(getEntry(data, keys[i], day, exId), track);
+    let best = null;
+    for (const s of t.sets) {
+      if (s.warmup || s.failed) continue;
+      const k = parseNum(s.kg);
+      if (k !== null && (best === null || k > parseNum(best.kg))) best = { reps: s.reps, kg: s.kg };
+    }
+    if (best) return { ...best, week: keys[i] };
+  }
+  return null;
+}
+
 // Parsing numerico tollerante alla virgola decimale; null se non numerico.
 function parseNum(x) {
   const v = parseFloat(String(x).replace(",", "."));
