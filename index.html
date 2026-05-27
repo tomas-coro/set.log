@@ -30,6 +30,7 @@
       <button id="newWeekBtn" class="btn-soft">+ Sett.</button>
       <span id="status" class="status">—</span>
       <button id="nutritionBtn" class="btn-icon" aria-label="Alimentazione">🥗</button>
+      <button id="planEditBtn" class="btn-icon" aria-label="Modifica scheda">✎</button>
       <button id="settingsBtn" class="btn-icon" aria-label="Impostazioni">⚙</button>
     </div>
 
@@ -96,6 +97,23 @@
     <div id="nutritionBody" class="nutri-body"></div>
   </div>
 
+  <!-- Editor scheda a schermo intero -->
+  <div id="planOverlay" class="focus-ov hidden" aria-hidden="true">
+    <header class="focus-top">
+      <button id="planBack" class="focus-back" aria-label="Chiudi editor">←</button>
+      <div class="focus-id">
+        <div class="fn">Modifica scheda</div>
+        <div id="planSub" class="fs">giorno —</div>
+      </div>
+    </header>
+    <div class="plan-tabs" id="planTabs">
+      <button data-day="A" class="on">A</button>
+      <button data-day="B">B</button>
+      <button data-day="C">C</button>
+    </div>
+    <div id="planBody" class="plan-body"></div>
+  </div>
+
   <!-- Popup commento veloce -->
   <dialog id="qcDialog" class="qc-dialog">
     <div class="qc-head">
@@ -123,6 +141,26 @@
       <button id="setDlgUndo" type="button">↩ Annulla conferma</button>
       <button id="setDlgDelete" type="button" class="danger">🗑 Elimina serie</button>
     </div>
+  </dialog>
+
+  <!-- Popup modifica/aggiungi esercizio -->
+  <dialog id="exDialog" class="set-dialog ex-dialog">
+    <div class="modal-h">
+      <span id="exDlgTitle" class="t">Esercizio</span>
+      <button id="exDlgClose" class="x" type="button" aria-label="Chiudi">✕</button>
+    </div>
+    <label class="editlabel" for="exName">Nome</label>
+    <input id="exName" type="text" class="ex-inp" placeholder="es. Panca piana bilanciere" autocomplete="off">
+    <label class="editlabel" for="exSetsReps">Serie × ripetizioni</label>
+    <input id="exSetsReps" type="text" class="ex-inp" placeholder="es. 3 × 8-10" autocomplete="off">
+    <label class="editlabel" for="exRecText">Recupero (testo)</label>
+    <input id="exRecText" type="text" class="ex-inp" placeholder="es. 90 sec" autocomplete="off">
+    <label class="editlabel" for="exRestSeconds">Recupero (secondi)</label>
+    <input id="exRestSeconds" type="number" inputmode="numeric" class="ex-inp" placeholder="90" min="0" step="5">
+    <label class="editlabel" for="exBar">Bilanciere kg (vuoto = default)</label>
+    <input id="exBar" type="number" inputmode="decimal" class="ex-inp" placeholder="" min="0" step="0.5">
+    <label class="notifyrow"><input type="checkbox" id="exSuperset"> Superset (serie×reps: <code>A / B</code>)</label>
+    <button id="exDlgSave" type="button" class="confirm">✓ Salva</button>
   </dialog>
 
   <!-- Striscia sensazione durante il recupero -->
