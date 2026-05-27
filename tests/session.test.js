@@ -446,3 +446,20 @@ test("nextExercisePreview: ultimo esercizio -> { last: true }", () => {
   const ex = [{ name: "A", setsReps: "3 × 10" }, { name: "B", setsReps: "3 × 12" }];
   assert.deepEqual(nextExercisePreview(ex, 1), { last: true });
 });
+
+test("bestKg: funziona con chiavi-id opache (non numeriche)", () => {
+  const data = { weeks: {
+    "2026-W21": { entries: { A: { "k7m2": { sets: [{ reps: "8", kg: "40", done: true }] } } } },
+    "2026-W22": { entries: { A: { "k7m2": { sets: [{ reps: "8", kg: "45", done: true }] } } } },
+  } };
+  assert.equal(bestKg(data, "A", "k7m2"), 45);
+});
+
+test("exerciseTrend: traccia per id opaco su più settimane", () => {
+  const data = { weeks: {
+    "2026-W21": { entries: { A: { "zz9": { sets: [{ reps: "8", kg: "40", done: true }] } } } },
+    "2026-W22": { entries: { A: { "zz9": { sets: [{ reps: "8", kg: "42", done: true }] } } } },
+  } };
+  const t = exerciseTrend(data, "A", "zz9", "2026-W22", 3, false);
+  assert.deepEqual(t.map((x) => x.kg), [40, 42]);
+});

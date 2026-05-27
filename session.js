@@ -58,7 +58,7 @@ export function isEntryComplete(entry, ex) {
 export function activeExerciseIndex(data, weekKey, day, dayPlan) {
   const exs = dayPlan?.exercises ?? [];
   for (let i = 0; i < exs.length; i++) {
-    if (!isEntryComplete(getEntry(data, weekKey, day, i), exs[i])) return i;
+    if (!isEntryComplete(getEntry(data, weekKey, day, exs[i].id ?? i), exs[i])) return i;
   }
   return 0;
 }
@@ -106,11 +106,11 @@ export function withNote(entry, note, superset = false) {
 
 // Nota più recente loggata in una settimana precedente per quell'esercizio
 // (le note sono persistenti tra le settimane). "" se nessuna.
-export function previousNote(data, day, idx, weekKey, superset = false) {
+export function previousNote(data, day, exId, weekKey, superset = false) {
   const keys = Object.keys(data?.weeks ?? {})
     .filter((k) => /^\d{4}-W\d{2}(\.\d+)?$/.test(k) && k < weekKey).sort();
   for (let i = keys.length - 1; i >= 0; i--) {
-    const v = getEntry(data, keys[i], day, idx);
+    const v = getEntry(data, keys[i], day, exId);
     const e = superset ? normalizeSupersetEntry(v) : normalizeEntry(v);
     if (e.note && e.note.trim()) return e.note;
   }
@@ -118,10 +118,10 @@ export function previousNote(data, day, idx, weekKey, superset = false) {
 }
 
 // Max kg loggato per un esercizio normale su tutte le settimane (null se assente).
-export function bestKg(data, day, idx) {
+export function bestKg(data, day, exId) {
   let best = null;
   for (const k of Object.keys(data?.weeks ?? {})) {
-    const e = normalizeEntry(getEntry(data, k, day, idx));
+    const e = normalizeEntry(getEntry(data, k, day, exId));
     for (const s of e.sets) {
       if (s.warmup || s.failed) continue;
       const v = parseFloat(String(s.kg).replace(",", "."));
@@ -157,11 +157,11 @@ export function previousSetInSession(entry, index, track = null) {
 
 // {reps,kg,week} dalla settimana precedente con dato per quell'esercizio; null se assente.
 // Ritorna il set a `setIndex`, o l'ultimo disponibile di quella settimana.
-export function previousWeekSet(data, day, idx, weekKey, setIndex, track = null) {
+export function previousWeekSet(data, day, exId, weekKey, setIndex, track = null) {
   const keys = Object.keys(data?.weeks ?? {})
     .filter((k) => /^\d{4}-W\d{2}(\.\d+)?$/.test(k) && k < weekKey).sort();
   for (let i = keys.length - 1; i >= 0; i--) {
-    const t = entryTrack(getEntry(data, keys[i], day, idx), track);
+    const t = entryTrack(getEntry(data, keys[i], day, exId), track);
     const working = t.sets.filter((s) => !s.warmup && !s.failed);
     if (working.length) {
       const s = working[setIndex] ?? working[working.length - 1];
@@ -192,7 +192,7 @@ export function sessionVolume(data, weekKey, day, dayPlan) {
   const exs = dayPlan?.exercises ?? [];
   let total = 0;
   for (let i = 0; i < exs.length; i++) {
-    const v = getEntry(data, weekKey, day, i);
+    const v = getEntry(data, weekKey, day, exs[i].id ?? i);
     if (exs[i]?.superset) {
       const e = normalizeSupersetEntry(v);
       total += trackVolume(e.a) + trackVolume(e.b);
@@ -204,8 +204,8 @@ export function sessionVolume(data, weekKey, day, dayPlan) {
 }
 
 // Top-set (kg max) di una settimana per quell'esercizio; null se nessun kg numerico.
-function weekTopKg(data, weekKey, day, idx, superset) {
-  const v = getEntry(data, weekKey, day, idx);
+function weekTopKg(data, weekKey, day, exId, superset) {
+  const v = getEntry(data, weekKey, day, exId);
   const tracks = superset
     ? [normalizeSupersetEntry(v).a, normalizeSupersetEntry(v).b]
     : [normalizeEntry(v)];
@@ -221,12 +221,12 @@ function weekTopKg(data, weekKey, day, idx, superset) {
 }
 
 // Ultime n settimane <= weekKey con dato: [{week, kg}] in ordine crescente. Salta le vuote.
-export function exerciseTrend(data, day, idx, weekKey, n = 3, superset = false) {
+export function exerciseTrend(data, day, exId, weekKey, n = 3, superset = false) {
   const keys = Object.keys(data?.weeks ?? {})
     .filter((k) => /^\d{4}-W\d{2}(\.\d+)?$/.test(k) && k <= weekKey).sort();
   const out = [];
   for (let i = keys.length - 1; i >= 0 && out.length < n; i--) {
-    const kg = weekTopKg(data, keys[i], day, idx, superset);
+    const kg = weekTopKg(data, keys[i], day, exId, superset);
     if (kg !== null) out.unshift({ week: keys[i], kg });
   }
   return out;
