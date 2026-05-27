@@ -43,3 +43,45 @@ export function reorderExercise(plan, day, fromIdx, toIdx) {
 export function updateExercise(plan, day, id, patch) {
   return mapDay(plan, day, (exs) => exs.map((e) => (e.id === id ? { ...e, ...patch, id: e.id } : e)));
 }
+
+// Migrazione una-tantum schema 1 -> 2: crea `data.plan` dal seed (assegnando id),
+// riscrive le entry da chiavi-indice a chiavi-id. Idempotente (guard su schema),
+// non muta l'input. `seedPlan` è il PLAN di plan.js (così editor.js resta puro).
+export function migrate(data, seedPlan) {
+  if (data && data.schema >= 2) return data; // già migrato, no-op
+  const out = structuredClone(data || { updatedAt: null, weeks: {} });
+
+  // 1. plan dal seed, con id stabili (ordine = ordine storico dei log).
+  const used = [];
+  out.plan = seedPlan.map((d) => ({
+    day: d.day,
+    title: d.title,
+    exercises: d.exercises.map((e) => {
+      const id = genId(used);
+      used.push(id);
+      return { ...e, id };
+    }),
+  }));
+
+  // 2. mappa giorno -> [id per indice], per riscrivere le entry.
+  const idsByDay = {};
+  for (const d of out.plan) idsByDay[d.day] = d.exercises.map((e) => e.id);
+
+  // 3. riscrive le entry indice->id; gli indici senza esercizio diventano orfani.
+  for (const wk of Object.values(out.weeks || {})) {
+    const entries = wk.entries || {};
+    for (const day of Object.keys(entries)) {
+      const ids = idsByDay[day] || [];
+      const remapped = {};
+      for (const key of Object.keys(entries[day])) {
+        const i = Number(key);
+        if (Number.isInteger(i) && ids[i]) remapped[ids[i]] = entries[day][key];
+        else remapped[`_orphan_${key}`] = entries[day][key];
+      }
+      entries[day] = remapped;
+    }
+  }
+
+  out.schema = 2;
+  return out;
+}

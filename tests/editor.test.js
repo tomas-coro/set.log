@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { genId, addExercise, removeExercise, reorderExercise, updateExercise } from "../editor.js";
+import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate } from "../editor.js";
 
 const samplePlan = () => [
   { day: "A", title: "A", exercises: [
@@ -70,4 +70,67 @@ test("updateExercise: applica patch per id, preserva l'id, immutabile", () => {
   assert.equal(ex.id, "aaa1", "id preservato");
   assert.equal(ex.name, "Panca piana");
   assert.equal(ex.restSeconds, 150);
+});
+
+// PLAN seed minimale a 2 giorni; gli indici dei log mappano l'ordine di questo seed.
+const seed = () => [
+  { day: "A", title: "Petto", exercises: [
+    { name: "Panca", setsReps: "3 × 8", recText: "2 min", restSeconds: 120, superset: false },
+    { name: "Lento", setsReps: "3 × 10", recText: "2 min", restSeconds: 120, superset: false },
+  ] },
+  { day: "B", title: "Dorso", exercises: [
+    { name: "Stacco", setsReps: "3 × 8", recText: "2 min", restSeconds: 120, superset: false },
+  ] },
+];
+
+test("migrate: dato vuoto -> crea plan dal seed con id, schema 2", () => {
+  const out = migrate({ updatedAt: null, weeks: {} }, seed());
+  assert.equal(out.schema, 2);
+  assert.equal(out.plan.length, 2);
+  assert.ok(out.plan[0].exercises[0].id, "id assegnato");
+  assert.ok(out.plan[0].exercises[1].id !== out.plan[0].exercises[0].id, "id distinti");
+});
+
+test("migrate: riscrive le entry da chiavi-indice a chiavi-id", () => {
+  const data = {
+    updatedAt: null,
+    weeks: { "2026-W22": { label: "W22", entries: {
+      A: { "0": { sets: [{ reps: "8", kg: "50", done: true }], note: "" },
+           "1": { sets: [{ reps: "10", kg: "20", done: true }], note: "" } },
+      B: { "0": { sets: [{ reps: "8", kg: "80", done: true }], note: "" } },
+    } } },
+  };
+  const out = migrate(data, seed());
+  const idA0 = out.plan.find((d) => d.day === "A").exercises[0].id;
+  const idA1 = out.plan.find((d) => d.day === "A").exercises[1].id;
+  const entA = out.weeks["2026-W22"].entries.A;
+  assert.ok(entA[idA0] && entA[idA0].sets[0].kg === "50");
+  assert.ok(entA[idA1] && entA[idA1].sets[0].kg === "20");
+  assert.ok(!("0" in entA) && !("1" in entA), "vecchie chiavi-indice rimosse");
+});
+
+test("migrate: indici orfani (oltre il piano) conservati sotto _orphan_<i>", () => {
+  const data = {
+    updatedAt: null,
+    weeks: { "2026-W22": { label: "W22", entries: {
+      A: { "0": { sets: [], note: "x" }, "5": { sets: [{ reps: "1", kg: "1", done: true }], note: "" } },
+    } } },
+  };
+  const out = migrate(data, seed());
+  const entA = out.weeks["2026-W22"].entries.A;
+  assert.ok(entA["_orphan_5"], "log orfano conservato");
+  assert.equal(entA["_orphan_5"].sets[0].kg, "1");
+});
+
+test("migrate: idempotente -> se schema>=2 ritorna invariato", () => {
+  const data = { schema: 2, plan: seed().map((d) => ({ ...d, exercises: d.exercises.map((e, i) => ({ ...e, id: `x${i}` })) })), weeks: {} };
+  const out = migrate(data, seed());
+  assert.equal(out, data, "stesso riferimento: nessun lavoro");
+});
+
+test("migrate: non muta l'input (clona)", () => {
+  const data = { updatedAt: null, weeks: { W: { label: "W", entries: { A: { "0": { sets: [], note: "" } } } } } };
+  const snapshot = JSON.stringify(data);
+  migrate(data, seed());
+  assert.equal(JSON.stringify(data), snapshot, "input invariato");
 });
