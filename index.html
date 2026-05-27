@@ -29,10 +29,6 @@
       <select id="weekSelect" aria-label="Settimana"></select>
       <button id="newWeekBtn" class="btn-soft">+ Sett.</button>
       <span id="status" class="status">—</span>
-      <button id="nutritionBtn" class="btn-icon" aria-label="Alimentazione">🥗</button>
-      <button id="calendarBtn" class="btn-icon" aria-label="Calendario">📅</button>
-      <button id="planEditBtn" class="btn-icon" aria-label="Modifica scheda">✎</button>
-      <button id="settingsBtn" class="btn-icon" aria-label="Impostazioni">⚙</button>
     </div>
 
     <div class="prog" id="progBar"></div>
@@ -201,6 +197,22 @@
   </div>
 
   <div id="restDoneBanner" class="restdone hidden">RECUPERO FINITO</div>
+
+  <!-- Menu drawer in fondo -->
+  <div id="drawerScrim" class="drawer-scrim hidden"></div>
+  <div id="menuDrawer" class="drawer" aria-hidden="true">
+    <button id="drawerHandle" class="drawer-handle" aria-label="Menu" aria-expanded="false">
+      <span class="dh-grab"></span>
+      <span class="dh-lbl"><span class="dh-chev">⌃</span> MENU <span class="dh-chev">⌃</span></span>
+      <span class="dh-hint"><span>🥗</span><span>📅</span><span>✎</span><span>⚙</span></span>
+    </button>
+    <div id="drawerPanel" class="drawer-panel" role="menu">
+      <button class="dr-item" data-act="nutrition" role="menuitem"><span class="e">🥗</span><span class="t">Alimentazione</span></button>
+      <button class="dr-item" data-act="calendar" role="menuitem"><span class="e">📅</span><span class="t">Calendario</span></button>
+      <button class="dr-item" data-act="plan" role="menuitem"><span class="e">✎</span><span class="t">Modifica scheda</span></button>
+      <button class="dr-item" data-act="settings" role="menuitem"><span class="e">⚙</span><span class="t">Impostazioni</span></button>
+    </div>
+  </div>
 
   <!-- Rest timer -->
   <div id="timerBar" class="timerbar hidden">
