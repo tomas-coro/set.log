@@ -211,6 +211,17 @@ test("bestKg: nessun dato -> null", () => {
   assert.equal(bestKg(emptyData(), "A", 0), null);
 });
 
+test("bestKg: con track restringe ai set della traccia indicata del superset", () => {
+  let d = emptyData();
+  d = setEntry(d, "2026-W20", "A", "s1", {
+    a: { sets: [{ reps: "8", kg: "30", done: true }], note: "" },
+    b: { sets: [{ reps: "8", kg: "12", done: true }], note: "" },
+    note: "",
+  });
+  assert.equal(bestKg(d, "A", "s1", "a"), 30);
+  assert.equal(bestKg(d, "A", "s1", "b"), 12);
+});
+
 test("progressionDelta: differenza arrotondata o null", () => {
   assert.equal(progressionDelta("72.5", "70"), 2.5);
   assert.equal(progressionDelta("70", "72.5"), -2.5);

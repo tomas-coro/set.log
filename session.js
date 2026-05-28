@@ -117,11 +117,12 @@ export function previousNote(data, day, exId, weekKey, superset = false) {
   return "";
 }
 
-// Max kg loggato per un esercizio normale su tutte le settimane (null se assente).
-export function bestKg(data, day, exId) {
+// Max kg loggato per un esercizio su tutte le settimane (null se assente).
+// `track` opzionale ("a"/"b") restringe alla traccia indicata del superset.
+export function bestKg(data, day, exId, track = null) {
   let best = null;
   for (const k of Object.keys(data?.weeks ?? {})) {
-    const t = entryTrack(getEntry(data, k, day, exId), null);
+    const t = entryTrack(getEntry(data, k, day, exId), track);
     for (const s of t.sets) {
       if (s.warmup || s.failed) continue;
       const v = parseNum(s.kg);

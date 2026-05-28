@@ -6,7 +6,7 @@ import {
   GitHubStore, ConflictError, AuthError,
 } from "./store.js";
 import {
-  parseTarget, activeSetIndex, isEntryComplete, bestKg, bestKgBefore, isWeekRecord, isSetRecord, progressionDelta,
+  parseTarget, activeSetIndex, isEntryComplete, bestKg, isWeekRecord, isSetRecord, progressionDelta,
   withSet, withoutSet, withSupersetSet, withoutSupersetSet, withNote, previousNote,
   previousSetInSession, previousWeekSet,
   sessionVolume, exerciseTrend, nextExercisePreview,
@@ -1393,7 +1393,7 @@ function renderFocusNormal(ex, idx, container, footer) {
     const cta = document.createElement("button");
     cta.className = "cta"; cta.textContent = "Serie fatta · avvia recupero ▸";
     cta.addEventListener("click", () => {
-      const _prevBest = bestKgBefore(data, currentDay, exId, currentWeek);
+      const _prevBest = bestKg(data, currentDay, exId);
       if (isSetRecord(_prevBest, draft.kg)) showRecordToast();
       data = setEntry(data, currentWeek, currentDay, exId,
         withSet(v, curIdx, { reps: draft.reps, kg: draft.kg, done: true, feel: entry.sets[curIdx]?.feel ?? "", comments: draft.comments }), new Date().toISOString());
@@ -1573,8 +1573,8 @@ function renderFocusSuperset(ex, idx, container, footer) {
     const cta = document.createElement("button");
     cta.className = "cta"; cta.textContent = "Serie fatta (A+B) · avvia recupero ▸";
     cta.addEventListener("click", () => {
-      const _pa = bestKgBefore(data, currentDay, exId, currentWeek, "a");
-      const _pb = bestKgBefore(data, currentDay, exId, currentWeek, "b");
+      const _pa = bestKg(data, currentDay, exId, "a");
+      const _pb = bestKg(data, currentDay, exId, "b");
       if (isSetRecord(_pa, draftA.kg) || isSetRecord(_pb, draftB.kg)) showRecordToast();
       let nv = withSupersetSet(v, "a", a.curIdx, { reps: draftA.reps, kg: draftA.kg, done: true, feel: e.a.sets[a.curIdx]?.feel ?? "", comments: draftA.comments });
       nv = withSupersetSet(nv, "b", b.curIdx, { reps: draftB.reps, kg: draftB.kg, done: true, feel: e.b.sets[b.curIdx]?.feel ?? "", comments: draftB.comments });
@@ -1728,6 +1728,8 @@ function renderFocusOverlay() {
     ov.classList.add("hidden");
     ov.setAttribute("aria-hidden", "true");
     document.body.style.overflow = "";
+    clearTimeout(showRecordToast._t);
+    document.getElementById("recToast")?.remove();
     return;
   }
   const ex = dayPlan().exercises[openIndex];
