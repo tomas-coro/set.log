@@ -378,10 +378,18 @@ git commit -m "feat(editor): backfillMuscles (migrazione schema 2->3 dei gruppi 
 
 ---
 
-## Task 4: Muscoli nel seed `plan.js`
+## Task 4: Muscoli nel seed `plan.js` + variante ⭐ Consigliata+ in `data.json`
+
+**Variante scheda scelta (⭐ Consigliata+):**
+- Giorno B: Affondi spostati al 2° posto (era 4°), per lombare fresco dopo Stacco.
+- Giorno C: aggiunto **Rematore manubrio** come 9° esercizio (subito dopo Rematore al cavo presa neutra). Non sostituisce nulla.
+- Braccia restano 12+12. Petto/Dorso/Spalle a 15.
 
 **Files:**
-- Modify: `plan.js` (aggiunge `muscle`/`muscleB` a ogni esercizio)
+- Modify: `plan.js` (aggiunge `muscle`/`muscleB` a ogni esercizio + applica variante ⭐)
+- Modify: `data.json` (aggiunge `muscle`/`muscleB`, riordina B, inserisce Rematore manubrio come 9° in C con id stabile generato)
+
+I nomi del seed sono allineati a quelli già presenti in `data.json` per garantire che `backfillMuscles` matchi correttamente sui device esistenti che hanno già clonato il plan in localStorage.
 
 - [ ] **Step 1: Aggiorna il commento dello schema**
 
@@ -395,11 +403,11 @@ in:
 // muscle = gruppo della traccia normale/A; muscleB = traccia B del superset.
 ```
 
-- [ ] **Step 2: Aggiungi muscle/muscleB a ogni esercizio**
+- [ ] **Step 2: Sostituisci i 3 array `exercises` nel seed**
 
-Sostituisci i tre array `exercises` con questi (aggiunge solo i campi muscolo, nient'altro cambia):
+Aggiunge `muscle`/`muscleB`, allinea i nomi a `data.json`, applica la variante ⭐ Consigliata+ (B riordinato, C +Rematore manubrio).
 
-Giorno A:
+Giorno A (invariato a parte muscle/muscleB):
 ```js
       { name: "Panca piana bilanciere", setsReps: "3 × 6-8", recText: "2 min", restSeconds: 120, superset: false, muscle: "Petto" },
       { name: "Lento avanti manubri", setsReps: "3 × 8-10", recText: "2 min", restSeconds: 120, superset: false, muscle: "Spalle" },
@@ -411,45 +419,119 @@ Giorno A:
       { name: "Crunch a terra + Plank", setsReps: "3 × 15-20 / 3 × max", recText: "60 sec", restSeconds: 60, superset: true, muscle: "Core", muscleB: "Core" },
 ```
 
-Giorno B:
+Giorno B (⭐ Consigliata+: Affondi al 2°, gli altri scalano):
 ```js
       { name: "Stacco rumeno", setsReps: "3 × 8-10", recText: "2 min", restSeconds: 120, superset: false, muscle: "Gambe" },
+      { name: "Affondi con manubri", setsReps: "3 × 10-12", recText: "90-120 s", restSeconds: 120, superset: false, muscle: "Gambe" },
       { name: "Rematore bilanciere", setsReps: "3 × 8-10", recText: "2 min", restSeconds: 120, superset: false, muscle: "Dorso" },
       { name: "Pullover con manubrio", setsReps: "3 × 12-15", recText: "75 sec", restSeconds: 75, superset: false, muscle: "Dorso" },
-      { name: "Affondi con manubri", setsReps: "3 × 10-12", recText: "90-120 s", restSeconds: 120, superset: false, muscle: "Gambe" },
       { name: "Spinte su panca inclinata (manubri)", setsReps: "3 × 8-10", recText: "90 sec", restSeconds: 90, superset: false, muscle: "Petto" },
       { name: "Curl EZ + Skullcrusher", setsReps: "3 × 10 / 3 × 10", recText: "75 sec", restSeconds: 75, superset: true, bar: 10, muscle: "Bicipiti", muscleB: "Tricipiti" },
       { name: "Face pull", setsReps: "3 × 12", recText: "60 sec", restSeconds: 60, superset: false, muscle: "Spalle" },
       { name: "Leg raise + Russian twist", setsReps: "3 × 12-15 / 3 × 20", recText: "60 sec", restSeconds: 60, superset: true, muscle: "Core", muscleB: "Core" },
 ```
 
-Giorno C:
+Giorno C (⭐ Consigliata+: +Rematore manubrio come 6° per raggruppare i due rematori, 9 esercizi totali). Nomi `Alzate laterali` e `Spinte manubri panca piana` allineati a `data.json` (rimosse le parentesi descrittive):
 ```js
       { name: "Lento avanti bilanciere", setsReps: "3 × 6-8", recText: "2 min", restSeconds: 120, superset: false, muscle: "Spalle" },
-      { name: "Alzate laterali (manubri o cavo)", setsReps: "3 × 12-15", recText: "60 sec", restSeconds: 60, superset: false, muscle: "Spalle" },
+      { name: "Alzate laterali", setsReps: "3 × 12-15", recText: "60 sec", restSeconds: 60, superset: false, muscle: "Spalle" },
       { name: "Alzate posteriori (reverse fly)", setsReps: "3 × 15-20", recText: "60 sec", restSeconds: 60, superset: false, muscle: "Spalle" },
-      { name: "Spinte manubri panca piana (o chest press)", setsReps: "3 × 10-12", recText: "90 sec", restSeconds: 90, superset: false, muscle: "Petto" },
+      { name: "Spinte manubri panca piana", setsReps: "3 × 10-12", recText: "90 sec", restSeconds: 90, superset: false, muscle: "Petto" },
       { name: "Rematore al cavo, presa neutra", setsReps: "3 × 10-12", recText: "90 sec", restSeconds: 90, superset: false, muscle: "Dorso" },
+      { name: "Rematore manubrio", setsReps: "3 × 10-12", recText: "90 sec", restSeconds: 90, superset: false, muscle: "Dorso" },
       { name: "Curl EZ + Skullcrusher", setsReps: "3 × 10 / 3 × 10", recText: "75 sec", restSeconds: 75, superset: true, bar: 10, muscle: "Bicipiti", muscleB: "Tricipiti" },
       { name: "Curl concentrato + Pushdown", setsReps: "3 × 10 / 3 × 10", recText: "60 sec", restSeconds: 60, superset: true, muscle: "Bicipiti", muscleB: "Tricipiti" },
       { name: "Crunch inverso + Plank laterale", setsReps: "3 × 15 / 3 × max/lato", recText: "60 sec", restSeconds: 60, superset: true, muscle: "Core", muscleB: "Core" },
 ```
 
-- [ ] **Step 2b: Verifica sintassi**
+- [ ] **Step 3: Verifica sintassi del seed**
 
-Run: `node -e "import('./plan.js').then(m => console.log(m.PLAN.flatMap(d => d.exercises).every(e => e.muscle) ? 'OK tutti hanno muscle' : 'MANCA muscle'))"`
-Atteso: `OK tutti hanno muscle`
+Run: `node -e "import('./plan.js').then(m => { const exs = m.PLAN.flatMap(d => d.exercises); const ok = exs.every(e => e.muscle); const supOk = exs.filter(e => e.superset).every(e => e.muscleB); const c = m.PLAN.find(d => d.day === 'C').exercises.length; const b1 = m.PLAN.find(d => d.day === 'B').exercises[1].name; console.log('muscle ok:', ok, '| muscleB ok:', supOk, '| C len:', c, '| B[1]:', b1); })"`
+Atteso: `muscle ok: true | muscleB ok: true | C len: 9 | B[1]: Affondi con manubri`
 
-- [ ] **Step 3: Esegui i test (nessuna regressione)**
+- [ ] **Step 4: Aggiorna `data.json` — muscle + variante ⭐**
 
-Run: `npm test`
-Atteso: PASS (plan.test.js non controlla i muscoli, ma verifica struttura).
-
-- [ ] **Step 4: Commit**
+Genera un id stabile univoco per il nuovo "Rematore manubrio" (5 char base36, non collidente con quelli esistenti) e applica le modifiche in `data.json`. Usa questo script per produrre il nuovo `data.json` (NON eseguire `genId` da `editor.js` perché Math.random non è deterministico — preferiamo un id scelto a mano, controllato, che non collida):
 
 ```bash
-git add plan.js
-git commit -m "feat(plan): assegna gruppo muscolare a ogni esercizio del seed"
+node -e "import('./data.json', { with: { type: 'json' } }).then(({default: d}) => { const ids = d.plan.flatMap(p => p.exercises.map(e => e.id)); const candidate = 'rmman'; if (ids.includes(candidate)) throw new Error('collision: ' + candidate); console.log('OK id libero:', candidate); })"
+```
+
+Atteso: `OK id libero: rmman`. Se collide, scegli un altro id 5-char (es. `rmmnb`, `rmmnc`).
+
+Modifiche puntuali a `data.json` (lascia `weeks`/`updatedAt`/`schema` invariati):
+
+**A (8 esercizi)** — aggiungi solo `muscle`/`muscleB`:
+- `cxgj3` Panca piana bilanciere → `"muscle": "Petto"`
+- `z3ps9` Lento avanti manubri → `"muscle": "Spalle"`
+- `howq7` Croci ai cavi → `"muscle": "Petto"`
+- `52mk0` Dips → `"muscle": "Petto"`
+- `5q8yi` Pulldown presa larga → `"muscle": "Dorso"`
+- `1gidd` Pushdown+Curl manubri (superset) → `"muscle": "Tricipiti", "muscleB": "Bicipiti"`
+- `v5097` Polpacci in piedi → `"muscle": "Polpacci"`
+- `tz1nt` Crunch a terra+Plank (superset) → `"muscle": "Core", "muscleB": "Core"`
+
+**B (8 esercizi)** — riordina con Affondi al 2° (era 4°) + aggiungi `muscle`/`muscleB`:
+
+Ordine nuovo (id stabili invariati, solo posizione cambia):
+1. `8q1zt` Stacco rumeno → `"muscle": "Gambe"`
+2. `2hvi3` Affondi con manubri → `"muscle": "Gambe"` (era al 4°)
+3. `ngw9n` Rematore bilanciere → `"muscle": "Dorso"` (era al 2°)
+4. `1ytay` Pullover con manubrio → `"muscle": "Dorso"` (era al 3°)
+5. `3f9te` Spinte su panca inclinata (manubri) → `"muscle": "Petto"` (invariato)
+6. `xu7ag` Curl EZ + Skullcrusher (superset) → `"muscle": "Bicipiti", "muscleB": "Tricipiti"`
+7. `bpr46` Face pull → `"muscle": "Spalle"`
+8. `zcx7z` Leg raise + Russian twist (superset) → `"muscle": "Core", "muscleB": "Core"`
+
+**C (9 esercizi)** — aggiungi Rematore manubrio come 6° (id `rmman`) + aggiungi `muscle`/`muscleB`:
+
+1. `aaui5` Lento avanti bilanciere → `"muscle": "Spalle"`
+2. `v527v` Alzate laterali → `"muscle": "Spalle"`
+3. `gnj31` Alzate posteriori (reverse fly) → `"muscle": "Spalle"`
+4. `mgndf` Spinte manubri panca piana → `"muscle": "Petto"`
+5. `85gvb` Rematore al cavo, presa neutra → `"muscle": "Dorso"`
+6. **NUOVO** `rmman` Rematore manubrio → `"muscle": "Dorso"`. Oggetto completo da inserire:
+   ```json
+   {
+     "name": "Rematore manubrio",
+     "setsReps": "3 × 10-12",
+     "recText": "90 sec",
+     "restSeconds": 90,
+     "superset": false,
+     "id": "rmman",
+     "muscle": "Dorso"
+   }
+   ```
+7. `3tzq7` Curl EZ + Skullcrusher (superset) → `"muscle": "Bicipiti", "muscleB": "Tricipiti"`
+8. `bslij` Curl concentrato + Pushdown (superset) → `"muscle": "Bicipiti", "muscleB": "Tricipiti"`
+9. `f7m27` Crunch inverso + Plank laterale (superset) → `"muscle": "Core", "muscleB": "Core"`
+
+NB: lo schema in `data.json` resta `2` — sarà `backfillMuscles` ad alzarlo a `3` al boot (idempotente: `data.plan` ha già `muscle`, quindi il loop interno è no-op). Aggiornare lo schema a mano è facoltativo; lascialo a 2 per coerenza con il fatto che `migrate` lo gestisce.
+
+- [ ] **Step 5: Verifica `data.json`**
+
+Run:
+```bash
+node -e "import('./data.json', { with: { type: 'json' } }).then(({default: d}) => { const allExs = d.plan.flatMap(p => p.exercises); const noMuscle = allExs.filter(e => !e.muscle).map(e => e.name); const supNoB = allExs.filter(e => e.superset && !e.muscleB).map(e => e.name); const c = d.plan.find(p => p.day === 'C'); const b = d.plan.find(p => p.day === 'B'); console.log('no muscle:', noMuscle.length ? noMuscle : '-'); console.log('superset no muscleB:', supNoB.length ? supNoB : '-'); console.log('C len:', c.exercises.length, '| B[1]:', b.exercises[1].name, '| C[5]:', c.exercises[5].name); })"
+```
+
+Atteso:
+```
+no muscle: -
+superset no muscleB: -
+C len: 9 | B[1]: Affondi con manubri | C[5]: Rematore manubrio
+```
+
+- [ ] **Step 6: Esegui i test (nessuna regressione)**
+
+Run: `npm test`
+Atteso: PASS (178/178).
+
+- [ ] **Step 7: Commit**
+
+```bash
+git add plan.js data.json
+git commit -m "feat(plan): variante \"Consigliata+\" + muscolo per esercizio (seed + data.json)"
 ```
 
 ---
@@ -845,4 +927,6 @@ git push
 - **Copertura spec**: §A modello dati → Task 4 (seed) + Task 3 (migrazione) + Task 6 (editor). §B PR badge → Task 1 (helper) + Task 7 (render). §C volume muscolo → Task 2 (helper) + Task 8 (display) + Task 6 (editor). §D test+rilascio → test in ogni task + Task 9. Tutto coperto.
 - **Type/nomi**: `bestKgBefore`, `isWeekRecord`, `isSetRecord`, `volumeByMuscle`, `backfillMuscles`, `toggleMuscleB`, `showRecordToast`, `buildMuscleBreakdown`, `volExpanded` — coerenti tra definizione e uso.
 - **Task 7 Step 3-4**: righe e nomi locali (`exId`, `draft`/`draftA`/`draftB`) verificati in `renderFocusNormal` (~1383) e `renderFocusSuperset` (~1561). Nessun placeholder residuo.
+- **Variante ⭐ Consigliata+ (Task 4)**: scelta dall'utente il 2026-05-28. Affondi al 2° in B + Rematore manubrio come 9° in C (id stabile `rmman`). Applicata sia a `plan.js` (seed per fresh installs) sia a `data.json` (snapshot del repo). I nomi del seed sono allineati a quelli in `data.json` (rimuovo le parentesi descrittive da "Alzate laterali (manubri o cavo)" → "Alzate laterali" e da "Spinte manubri panca piana (o chest press)" → "Spinte manubri panca piana") così `backfillMuscles` matcha 1:1 anche sui device che hanno già clonato il plan in localStorage.
+- **Task 9 verifica**: in C ora ci sono 9 esercizi (non 8).
 - **Placeholder scan**: nessun TBD/TODO; ogni step che tocca codice mostra il codice completo.
