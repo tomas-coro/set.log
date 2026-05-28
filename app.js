@@ -1845,12 +1845,14 @@ function changeWeek(key) {
   currentWeek = key;
   data = ensureWeek(data, currentWeek, data.weeks[currentWeek]?.label);
   openIndex = null;
+  volExpanded = false;
   renderWeekSelect();
   render();
 }
 function changeDay(day) {
   currentDay = day;
   openIndex = null;
+  volExpanded = false;
   render();
 }
 function newWeek() {
