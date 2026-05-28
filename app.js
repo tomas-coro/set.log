@@ -20,6 +20,7 @@ import {
 import { RestTimer, formatTime } from "./timer.js";
 import { ScreenWakeLock } from "./wakelock.js";
 import { renderNutritionGuide } from "./nutrition.js";
+import { createPusher } from "./sync.js";
 
 const OWNER = "xBacco";
 const REPO = "gym-schedule";
@@ -42,7 +43,7 @@ let dataVersion = 0;       // optimistic lock version (sostituisce 'sha')
 let chartExId = null;   // id esercizio mostrato
 let chartTrack = null;  // null | "a" | "b"
 let chartAll = false;   // false = ultime 3 settimane, true = tutto lo storico
-let saveTimer = null;
+let pusher = null;
 
 // L'overlay dell'esercizio è registrato come voce di history, così la gesture
 // "indietro" del telefono (swipe dal bordo / tasto back) chiude l'esercizio
@@ -1289,9 +1290,9 @@ function setRow(i, set, prev, isCurrent, onRemove, onOpen) {
 function persist(idx) {
   const exId = exIdAt(idx);
   bufferEdit(currentWeek, currentDay, exId, getEntry(data, currentWeek, currentDay, exId));
-  setStatus("in attesa ⧗", "pending");
-  clearTimeout(saveTimer);
-  saveTimer = setTimeout(saveToCloud, 1500);
+  profileStorage.set("data", data);
+  profileStorage.set("dirty", true);
+  pusher.schedule();
 }
 
 function renderFocusNormal(ex, idx, container, footer) {
@@ -1804,47 +1805,6 @@ function render() {
 }
 
 // ---- Editing + saving ----
-function scheduleSave() {
-  clearTimeout(saveTimer);
-  setStatus("in attesa ⧗", "pending");
-  saveTimer = setTimeout(saveToCloud, 800);
-}
-
-async function saveToCloud() {
-  if (!store || !getToken()) { setStatus("nessun token ⧗", "pending"); return; }
-  setStatus("salvataggio…");
-  try {
-    sha = await store.save(data, sha, `log: ${currentWeek}`);
-    setPending([]);
-    setStatus("salvato ✓", "ok");
-  } catch (err) {
-    if (err instanceof ConflictError) {
-      try {
-        const localPlan = data.plan; // edit strutturali della scheda: non sono nel buffer pending
-        const remote = await store.load();
-        data = backfillMuscles(keepLocalPlan(migrate(applyPending(remote.data), PLAN), localPlan), PLAN);
-        sha = remote.sha;
-        sha = await store.save(data, sha, `log: ${currentWeek} (merge)`);
-        setPending([]);
-        setStatus("salvato ✓", "ok");
-        render();
-      } catch (e2) {
-        setStatus("errore ⚠ (riprova)", "error");
-      }
-    } else if (err instanceof AuthError) {
-      setStatus("token non valido ⚠", "error");
-    } else {
-      setStatus("offline ⧗ (salvato in locale)", "pending");
-    }
-  }
-}
-
-// Flush best-effort quando la sessione viene messa via (tab nascosta o pagina
-// chiusa): salva subito i pending invece di aspettare il debounce. §9.2.
-function flushPending() {
-  if (saveTimer) { clearTimeout(saveTimer); saveTimer = null; }
-  if (getPending().length && getToken() && store) saveToCloud().catch(() => {}); // best-effort; errori già gestiti dentro saveToCloud
-}
 
 // ---- Week management ----
 function changeWeek(key) {
@@ -1868,7 +1828,9 @@ function newWeek() {
   if (label === null) return;
   data = ensureWeek(data, key, label || key);
   changeWeek(key);
-  scheduleSave();
+  profileStorage.set("data", data);
+  profileStorage.set("dirty", true);
+  pusher.schedule();
 }
 
 // ---- Settings dialog ----
@@ -1925,7 +1887,9 @@ function wireSettings() {
       localStorage.setItem(BAR_KEY, String(parseFloat(document.getElementById("barInput").value) || 20));
       localStorage.setItem(PLATES_KEY, document.getElementById("platesInput").value);
       initStore();
-      saveToCloud();
+      profileStorage.set("data", data);
+      profileStorage.set("dirty", true);
+      pusher.schedule();
       render(); // ridipinge il calcolatore col nuovo set
     } else if (dlg.returnValue === "clear") {
       setToken(null);
@@ -2015,14 +1979,32 @@ async function boot() {
   profileStorage = new ProfileStorage(localStorage, session.user.id);
   store = new SupabaseStore(supabase);
 
+  pusher = createPusher({
+    getData: () => data,
+    getVersion: () => dataVersion,
+    setVersion: (v) => { dataVersion = v; profileStorage.set("version", v); },
+    setDirty: (d) => profileStorage.set("dirty", d),
+    store,
+    onConflict: async () => {
+      const remote = await store.load();
+      const merged = mergeBlobs(data, remote.data);
+      dataVersion = await store.save(merged, remote.version);
+      data = merged;
+      profileStorage.set("data", data);
+      profileStorage.set("version", dataVersion);
+      profileStorage.set("dirty", false);
+      render();
+    },
+    onAuthError: async () => { await signOut(supabase); location.reload(); },
+    onStatus: (s) => setStatus({pending:"sincronizzo ⧗",ok:"ok ✓",error:"offline ⧗"}[s], s),
+  });
+
   // Wire UI event listeners (richiedono DOM visibile).
   wireSettings();
   wireTimerControls();
   wireSetDialog();
   document.getElementById("weekSelect").addEventListener("change", (e) => changeWeek(e.target.value));
   document.getElementById("newWeekBtn").addEventListener("click", newWeek);
-  document.addEventListener("visibilitychange", () => { if (document.hidden) flushPending(); });
-  window.addEventListener("pagehide", flushPending);
   for (const b of document.querySelectorAll("#dayTabs button")) {
     b.addEventListener("click", () => changeDay(b.dataset.day));
   }
@@ -2129,9 +2111,11 @@ async function boot() {
     }
   });
 
-  // 6. Reconcile on visibility change (telefono+PC).
+  // 6. Flush + reconcile on visibility change (telefono+PC).
   document.addEventListener("visibilitychange", () => {
-    if (document.visibilityState === "visible") {
+    if (document.visibilityState === "hidden") {
+      pusher?.flush().catch(() => {});
+    } else {
       reconcileFromRemote().catch(() => {});
     }
   });
