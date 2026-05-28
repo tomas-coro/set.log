@@ -1,5 +1,5 @@
 import { PLAN, seedPlan } from "./plan.js";
-import { migrate, backfillMuscles, addExercise, removeExercise, reorderExercise, updateExercise, keepLocalPlan } from "./editor.js";
+import { migrate, backfillMuscles, patchPlanV4, addExercise, removeExercise, reorderExercise, updateExercise, keepLocalPlan } from "./editor.js";
 import {
   isoWeekKey, nextFreeWeekKey, emptyData, ensureWeek, setEntry, getEntry,
   normalizeEntry, normalizeSupersetEntry, prefillSets, platesPerSide, parsePlateSet, exerciseBar,
@@ -2163,7 +2163,7 @@ async function boot() {
       profileStorage.set("version", dataVersion);
     }
     // Backfill schema sui dati appena letti (riusa logica esistente).
-    data = backfillMuscles(migrate(data), PLAN);
+    data = patchPlanV4(backfillMuscles(migrate(data), PLAN));
     render();
     setStatus("ok ✓", "ok");
     await offerSeedIfEmpty();
@@ -2210,7 +2210,7 @@ async function offerSeedIfEmpty() {
     dlg.showModal();
     await new Promise((r) => dlg.addEventListener("close", r, { once: true }));
     if (dlg.returnValue === "import") {
-      data = backfillMuscles(migrate(seed), PLAN);
+      data = patchPlanV4(backfillMuscles(migrate(seed), PLAN));
       profileStorage.set("data", data);
       profileStorage.set("dirty", true);
       pusher.schedule();
@@ -2278,7 +2278,7 @@ async function rescueLegacyLocalStorage() {
   for (const e of pendingList) {
     try { withPending = setEntry(withPending, e.weekKey, e.day, e.idx, e.value, new Date().toISOString()); } catch {}
   }
-  data = backfillMuscles(migrate(withPending, PLAN), PLAN);
+  data = patchPlanV4(backfillMuscles(migrate(withPending, PLAN), PLAN));
   profileStorage.set("data", data);
   profileStorage.set("dirty", true);
   pusher.schedule();
@@ -2351,7 +2351,7 @@ async function recoverLogsFromOldCloud() {
   );
   if (!ok) return;
   const merged = mergeBlobs(data ?? emptyData(), seed);
-  data = backfillMuscles(migrate(merged), PLAN);
+  data = patchPlanV4(backfillMuscles(migrate(merged), PLAN));
   profileStorage.set("data", data);
   profileStorage.set("dirty", true);
   pusher.schedule();

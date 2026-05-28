@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate, backfillMuscles, keepLocalPlan } from "../editor.js";
+import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate, backfillMuscles, patchPlanV4, keepLocalPlan } from "../editor.js";
 
 const samplePlan = () => [
   { day: "A", title: "A", exercises: [
@@ -203,4 +203,50 @@ test("backfillMuscles: non muta l'input", () => {
   backfillMuscles(data, seedWithMuscles());
   assert.equal(data.schema, 2);
   assert.equal(data.plan[0].exercises[0].muscle, undefined);
+});
+
+const planV4Sample = () => ({ schema: 3, weeks: {}, plan: [
+  { day: "B", title: "B", exercises: [
+    { id: "b1", name: "Curl EZ + Skullcrusher", setsReps: "3 × 10 / 3 × 10", recText: "75 sec", restSeconds: 75, superset: true, bar: 10, muscle: "Bicipiti", muscleB: "Tricipiti" },
+  ] },
+  { day: "C", title: "C", exercises: [
+    { id: "c1", name: "Alzate posteriori (reverse fly)", setsReps: "3 × 15-20", recText: "60 sec", restSeconds: 60, superset: false, muscle: "Spalle" },
+    { id: "c2", name: "Curl concentrato + Pushdown", setsReps: "3 × 10 / 3 × 10", recText: "60 sec", restSeconds: 60, superset: true, muscle: "Bicipiti", muscleB: "Tricipiti" },
+  ] },
+] });
+
+test("patchPlanV4: applica le 3 patch contenuto e porta schema a 4", () => {
+  const out = patchPlanV4(planV4Sample());
+  assert.equal(out.schema, 4);
+  const b = out.plan.find((d) => d.day === "B").exercises[0];
+  assert.equal(b.name, "Curl manubri + French press");
+  assert.equal(b.bar, undefined); // bilanciere rimosso (manubri)
+  assert.equal(b.id, "b1"); // id stabile → lo storico resta agganciato
+  const c = out.plan.find((d) => d.day === "C").exercises;
+  assert.equal(c[0].setsReps, "3 × 12");
+  assert.equal(c[1].recText, "75 sec");
+  assert.equal(c[1].restSeconds, 75);
+});
+
+test("patchPlanV4: idempotente (schema >= 4 -> no-op)", () => {
+  const once = patchPlanV4(planV4Sample());
+  const twice = patchPlanV4(once);
+  assert.equal(twice.plan.find((d) => d.day === "C").exercises[0].setsReps, "3 × 12");
+  // un nome già patchato non viene ri-toccato
+  assert.equal(twice.plan.find((d) => d.day === "B").exercises[0].name, "Curl manubri + French press");
+});
+
+test("patchPlanV4: nome già modificato dall'utente non viene sovrascritto", () => {
+  const data = { schema: 3, weeks: {}, plan: [
+    { day: "C", title: "C", exercises: [{ id: "c1", name: "Alzate posteriori custom", setsReps: "4 × 20", superset: false }] },
+  ] };
+  const out = patchPlanV4(data);
+  assert.equal(out.plan[0].exercises[0].setsReps, "4 × 20"); // invariato
+});
+
+test("patchPlanV4: non muta l'input", () => {
+  const data = planV4Sample();
+  patchPlanV4(data);
+  assert.equal(data.schema, 3);
+  assert.equal(data.plan[0].exercises[0].name, "Curl EZ + Skullcrusher");
 });

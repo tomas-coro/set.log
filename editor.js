@@ -112,6 +112,36 @@ export function backfillMuscles(data, seedPlan) {
   return out;
 }
 
+// Migrazione schema 3 -> 4: aggiornamento contenuti scheda richiesto dall'utente
+// (feedback 2026-05-28). Patch idempotenti applicate per (day, name) su data.plan:
+//  - B "Curl EZ + Skullcrusher" -> "Curl manubri + French press" (era duplicato del giorno C),
+//    rimuove il bilanciere fittizio (ora a manubri);
+//  - C "Alzate posteriori (reverse fly)" -> target 3 × 12 (era 15-20);
+//  - C "Curl concentrato + Pushdown" -> recupero 75s (era 60s).
+// Match per nome esatto: se l'utente ha già rinominato/modificato, la patch salta
+// (nessuna sovrascrittura). Guard su schema >= 4. Non muta l'input.
+const PLAN_V4_PATCHES = [
+  { day: "B", name: "Curl EZ + Skullcrusher", patch: { name: "Curl manubri + French press" }, unset: ["bar"] },
+  { day: "C", name: "Alzate posteriori (reverse fly)", patch: { setsReps: "3 × 12" } },
+  { day: "C", name: "Curl concentrato + Pushdown", patch: { recText: "75 sec", restSeconds: 75 } },
+];
+export function patchPlanV4(data) {
+  if (data && data.schema >= 4) return data;
+  const out = structuredClone(data || { updatedAt: null, weeks: {} });
+  if (Array.isArray(out.plan)) {
+    for (const { day, name, patch, unset } of PLAN_V4_PATCHES) {
+      const d = out.plan.find((x) => x.day === day);
+      if (!d) continue;
+      const ex = d.exercises.find((e) => e.name === name);
+      if (!ex) continue;
+      Object.assign(ex, patch);
+      for (const k of unset || []) delete ex[k];
+    }
+  }
+  out.schema = 4;
+  return out;
+}
+
 // Merge dopo un conflitto di salvataggio: il ramo conflitto riparte dal remoto e
 // ri-applica i log pendenti, ma gli edit strutturali della scheda NON sono nel
 // buffer pending → andrebbero persi. Questo conserva il `plan` locale (intento più
