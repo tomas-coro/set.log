@@ -494,3 +494,12 @@ body.timer-on .drawer,body.timer-on .drawer-scrim{display:none;}
 
 .drawer-scrim{position:fixed;inset:0;background:rgba(8,7,5,.5);z-index:25;}
 .drawer-scrim.hidden{display:none;}
+
+.rec-badge { font-size: 1.1rem; line-height: 1; margin-left: 6px; }
+.rec-toast {
+  position: absolute; top: 64px; left: 50%; transform: translateX(-50%) translateY(-8px);
+  background: var(--acc); color: #1a1205; font-weight: 700; padding: 8px 16px;
+  border-radius: 999px; box-shadow: 0 4px 16px rgba(0,0,0,.35); z-index: 40;
+  opacity: 0; pointer-events: none; transition: opacity .2s, transform .2s;
+}
+.rec-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }

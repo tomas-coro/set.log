@@ -6,7 +6,7 @@ import {
   GitHubStore, ConflictError, AuthError,
 } from "./store.js";
 import {
-  parseTarget, activeSetIndex, isEntryComplete, bestKg, progressionDelta,
+  parseTarget, activeSetIndex, isEntryComplete, bestKg, bestKgBefore, isWeekRecord, isSetRecord, progressionDelta,
   withSet, withoutSet, withSupersetSet, withoutSupersetSet, withNote, previousNote,
   previousSetInSession, previousWeekSet,
   sessionVolume, exerciseTrend, nextExercisePreview,
@@ -1393,6 +1393,8 @@ function renderFocusNormal(ex, idx, container, footer) {
     const cta = document.createElement("button");
     cta.className = "cta"; cta.textContent = "Serie fatta · avvia recupero ▸";
     cta.addEventListener("click", () => {
+      const _prevBest = bestKgBefore(data, currentDay, exId, currentWeek);
+      if (isSetRecord(_prevBest, draft.kg)) showRecordToast();
       data = setEntry(data, currentWeek, currentDay, exId,
         withSet(v, curIdx, { reps: draft.reps, kg: draft.kg, done: true, feel: entry.sets[curIdx]?.feel ?? "", comments: draft.comments }), new Date().toISOString());
       persist(idx);
@@ -1571,6 +1573,9 @@ function renderFocusSuperset(ex, idx, container, footer) {
     const cta = document.createElement("button");
     cta.className = "cta"; cta.textContent = "Serie fatta (A+B) · avvia recupero ▸";
     cta.addEventListener("click", () => {
+      const _pa = bestKgBefore(data, currentDay, exId, currentWeek, "a");
+      const _pb = bestKgBefore(data, currentDay, exId, currentWeek, "b");
+      if (isSetRecord(_pa, draftA.kg) || isSetRecord(_pb, draftB.kg)) showRecordToast();
       let nv = withSupersetSet(v, "a", a.curIdx, { reps: draftA.reps, kg: draftA.kg, done: true, feel: e.a.sets[a.curIdx]?.feel ?? "", comments: draftA.comments });
       nv = withSupersetSet(nv, "b", b.curIdx, { reps: draftB.reps, kg: draftB.kg, done: true, feel: e.b.sets[b.curIdx]?.feel ?? "", comments: draftB.comments });
       data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
@@ -1642,9 +1647,14 @@ function renderList() {
     }
     mid.append(nm, sub);
     const right = document.createElement("div"); right.className = "right";
+    const exIdL = exIdAt(i);
+    const isRec = ex.superset
+      ? (isWeekRecord(data, currentDay, exIdL, currentWeek, "a") || isWeekRecord(data, currentDay, exIdL, currentWeek, "b"))
+      : isWeekRecord(data, currentDay, exIdL, currentWeek);
     if (isComplete(i)) { const c = document.createElement("span"); c.className = "chk"; c.textContent = "✓"; right.appendChild(c); }
     else if (ex.superset) { const best = document.createElement("div"); best.className = "best"; best.textContent = "A·B"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "2 tracce"; right.append(best, bl); }
-    else { const bk = bestKg(data, currentDay, exIdAt(i)); const best = document.createElement("div"); best.className = "best"; best.textContent = bk === null ? "—" : bk + " kg"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "best"; right.append(best, bl); }
+    else { const bk = bestKg(data, currentDay, exIdL); const best = document.createElement("div"); best.className = "best"; best.textContent = bk === null ? "—" : bk + " kg"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "best"; right.append(best, bl); }
+    if (isRec) { const t = document.createElement("span"); t.className = "rec-badge"; t.textContent = "🏆"; t.title = "Record personale questa settimana"; right.appendChild(t); }
     const caret = document.createElement("span"); caret.className = "caret"; caret.textContent = "▾";
     r.append(id, mid, right, caret);
     item.appendChild(r);
@@ -1695,6 +1705,18 @@ function buildNextStrip(exercises, idx) {
     strip.append(tag, arrow, nm, tg);
   }
   return strip;
+}
+
+// Badge transitorio "record" sopra l'overlay esercizio. Si auto-rimuove.
+function showRecordToast() {
+  const host = document.getElementById("focusOverlay");
+  if (!host || host.classList.contains("hidden")) return;
+  let t = document.getElementById("recToast");
+  if (!t) { t = document.createElement("div"); t.id = "recToast"; t.className = "rec-toast"; host.appendChild(t); }
+  t.textContent = "🏆 record!";
+  t.classList.remove("show"); void t.offsetWidth; t.classList.add("show");
+  clearTimeout(showRecordToast._t);
+  showRecordToast._t = setTimeout(() => t.classList.remove("show"), 1800);
 }
 
 // Renderizza (o nasconde) l'overlay a schermo intero dell'esercizio aperto.
