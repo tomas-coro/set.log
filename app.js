@@ -3,7 +3,7 @@ import { migrate, backfillMuscles, addExercise, removeExercise, reorderExercise,
 import {
   isoWeekKey, nextFreeWeekKey, emptyData, ensureWeek, setEntry, getEntry,
   normalizeEntry, normalizeSupersetEntry, prefillSets, platesPerSide, parsePlateSet, exerciseBar,
-  GitHubStore, SupabaseStore, mergeBlobs, ConflictError, AuthError,
+  SupabaseStore, mergeBlobs, ConflictError, AuthError,
 } from "./store.js";
 import { supabase } from "./supabase-client.js";
 import { bindAuthScreen, hideAuthScreen, signOut } from "./auth.js";
@@ -22,9 +22,6 @@ import { ScreenWakeLock } from "./wakelock.js";
 import { renderNutritionGuide } from "./nutrition.js";
 import { createPusher } from "./sync.js";
 
-const OWNER = "xBacco";
-const REPO = "gym-schedule";
-const TOKEN_KEY = "gymsched_token";
 const PENDING_KEY = "gymsched_pending"; // local buffer of unsynced edits
 const SEED_URL = "https://xbacco.github.io/gym-schedule/data.json";
 
@@ -407,9 +404,7 @@ function attachDragHandle(row, grip, day) {
   });
 }
 
-// ---- Token + pending buffer (browser only) ----
-const getToken = () => localStorage.getItem(TOKEN_KEY) || null;
-const setToken = (t) => (t ? localStorage.setItem(TOKEN_KEY, t) : localStorage.removeItem(TOKEN_KEY));
+// ---- Pending buffer (browser only) ----
 const getPending = () => JSON.parse(localStorage.getItem(PENDING_KEY) || "[]");
 const setPending = (arr) => localStorage.setItem(PENDING_KEY, JSON.stringify(arr));
 function bufferEdit(weekKey, day, idx, value) {
@@ -1947,10 +1942,6 @@ function wireDrawer() {
 }
 
 // ---- Boot ----
-function initStore() {
-  store = new GitHubStore({ owner: OWNER, repo: REPO, token: getToken() });
-}
-
 async function boot() {
   // 1. Verifica sessione.
   const { data: sessionData } = await supabase.auth.getSession();
