@@ -249,3 +249,37 @@ export class GitHubStore {
     return body.content.sha;
   }
 }
+
+// ---- Supabase persistence (multi-tenant via RLS) ----
+
+export class SupabaseStore {
+  constructor(client) {
+    if (!client) throw new Error("SupabaseStore richiede un client Supabase");
+    this.client = client;
+  }
+
+  async _requireSession() {
+    const { data, error } = await this.client.auth.getSession();
+    if (error) throw new AuthError(error.message || "Errore sessione");
+    if (!data?.session?.user?.id) throw new AuthError("Nessuna sessione attiva");
+    return data.session.user.id;
+  }
+
+  // Ritorna { data, version }. Se la riga non esiste ancora ritorna emptyData() + version=0.
+  async load() {
+    const userId = await this._requireSession();
+    const { data: row, error } = await this.client
+      .from("user_data")
+      .select()
+      .eq("user_id", userId)
+      .maybeSingle();
+    if (error) {
+      if (error.code === "PGRST301" || error.status === 401 || error.status === 403) {
+        throw new AuthError(error.message || "Non autorizzato");
+      }
+      throw new Error(`Supabase load failed: ${error.message}`);
+    }
+    if (!row) return { data: emptyData(), version: 0 };
+    return { data: row.data, version: row.version };
+  }
+}
