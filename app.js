@@ -2003,6 +2003,7 @@ async function boot() {
     data = { weeks: {}, updatedAt: null }; // simula stato vuoto solo per la durata dell'offer
     await offerSeedIfEmpty();
   });
+  document.getElementById("btnImportLegacy").addEventListener("click", rescueLegacyLocalStorage);
 
   wireTimerControls();
   wireSetDialog();
@@ -2148,6 +2149,46 @@ async function offerSeedIfEmpty() {
   } catch {
     // network error: ignora, l'utente parte vuoto
   }
+}
+
+// Rescue dei dati pre-cut-over a Supabase: legge le vecchie chiavi non-namespacizzate
+// (`gymsched_data` + `gymsched_pending`), fa merge con il blob corrente e pianifica
+// il push sul cloud. Le chiavi legacy NON vengono cancellate: restano come backup.
+async function rescueLegacyLocalStorage() {
+  const rawData = localStorage.getItem("gymsched_data");
+  const rawPending = localStorage.getItem(PENDING_KEY);
+  let legacy = null;
+  let pendingList = [];
+  if (rawData) {
+    try { legacy = JSON.parse(rawData); } catch {
+      alert("Dati locali legacy presenti ma corrotti — impossibile importare.");
+      return;
+    }
+  }
+  if (rawPending) {
+    try { pendingList = JSON.parse(rawPending) || []; } catch { pendingList = []; }
+  }
+  const wkKeys = Object.keys(legacy?.weeks || {}).sort();
+  if (wkKeys.length === 0 && pendingList.length === 0) {
+    alert("Nessun dato locale legacy trovato in questo browser.\n\nSe avevi gli allenamenti su un altro device, aprilo lì e prova questo bottone.");
+    return;
+  }
+  const wkRange = wkKeys.length === 0 ? "—" : (wkKeys.length === 1 ? wkKeys[0] : `${wkKeys[0]} → ${wkKeys[wkKeys.length-1]}`);
+  const summary = `Trovati dati locali:\n  • ${wkKeys.length} settimane (${wkRange})\n  • ${pendingList.length} log in coda non sincronizzati\n\nImportarli e sincronizzarli sul tuo account?\nI dati legacy resteranno come backup nel browser.`;
+  if (!confirm(summary)) return;
+  // Merge: il legacy ha precedenza sui sets non-vuoti (mergeBlobs(local=legacy, remote=data)).
+  const merged = mergeBlobs(legacy ?? emptyData(), data ?? emptyData());
+  // Applica eventuali pending non ancora sincronizzati sopra il merged.
+  let withPending = merged;
+  for (const e of pendingList) {
+    try { withPending = setEntry(withPending, e.weekKey, e.day, e.idx, e.value, new Date().toISOString()); } catch {}
+  }
+  data = backfillMuscles(migrate(withPending, PLAN), PLAN);
+  profileStorage.set("data", data);
+  profileStorage.set("dirty", true);
+  pusher.schedule();
+  render();
+  alert(`Importate ${wkKeys.length} settimane (${wkRange}) e ${pendingList.length} log in coda.\nSincronizzazione cloud in corso…`);
 }
 
 async function reconcileFromRemote() {
