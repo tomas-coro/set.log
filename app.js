@@ -1,4 +1,4 @@
-import { PLAN, seedPlan } from "./plan.js";
+import { PLAN } from "./plan.js";
 import { migrate, backfillMuscles, patchPlanV4, patchPlanV5, addExercise, removeExercise, reorderExercise, updateExercise, keepLocalPlan } from "./editor.js";
 import {
   isoWeekKey, nextFreeWeekKey, emptyData, ensureWeek, setEntry, getEntry,
@@ -2214,12 +2214,6 @@ async function boot() {
     await signOut(supabase);
     location.reload();
   });
-  document.getElementById("btnImportDemo").addEventListener("click", async () => {
-    if (!confirm("Sovrascrivere i dati attuali con la scheda demo?")) return;
-    // forza il dialog di import
-    data = { weeks: {}, updatedAt: null }; // simula stato vuoto solo per la durata dell'offer
-    await offerSeedIfEmpty();
-  });
   document.getElementById("btnImportLegacy").addEventListener("click", rescueLegacyLocalStorage);
   document.getElementById("btnRecoverCloud").addEventListener("click", recoverLogsFromOldCloud);
   document.getElementById("btnForceUpdate").addEventListener("click", forceAppUpdate);
@@ -2306,7 +2300,7 @@ async function boot() {
       profileStorage.set("version", dataVersion);
       profileStorage.set("dirty", false);
     } else if (!cached || remote.version > (profileStorage.get("version") || 0)) {
-      data = { ...remote.data, plan: remote.data.plan ?? seedPlan({ empty: true }) };
+      data = { ...remote.data, plan: Array.isArray(remote.data.plan) ? remote.data.plan : [] };
       dataVersion = remote.version;
       profileStorage.set("data", data);
       profileStorage.set("version", dataVersion);
@@ -2315,7 +2309,6 @@ async function boot() {
     data = patchPlanV5(patchPlanV4(backfillMuscles(migrate(data), PLAN)));
     render();
     setStatus("ok ✓", "ok");
-    await offerSeedIfEmpty();
   } catch (err) {
     if (err instanceof AuthError) {
       // Sessione invalidata: logout pulito.
@@ -2343,31 +2336,6 @@ async function boot() {
       reconcileFromRemote().catch(() => {});
     }
   });
-}
-
-async function offerSeedIfEmpty() {
-  if (!data || (data.weeks && Object.keys(data.weeks).length > 0)) return;
-  try {
-    const res = await fetch(SEED_URL, { cache: "no-store" });
-    if (!res.ok) return;
-    const seed = await res.json();
-    const wkKeys = Object.keys(seed.weeks || {}).sort();
-    if (wkKeys.length === 0) return;
-    const summary = document.getElementById("seedSummary");
-    summary.textContent = `Trovata scheda demo con ${wkKeys.length} settimane (${wkKeys[0]} → ${wkKeys[wkKeys.length-1]}).`;
-    const dlg = document.getElementById("seedDialog");
-    dlg.showModal();
-    await new Promise((r) => dlg.addEventListener("close", r, { once: true }));
-    if (dlg.returnValue === "import") {
-      data = patchPlanV5(patchPlanV4(backfillMuscles(migrate(seed), PLAN)));
-      profileStorage.set("data", data);
-      profileStorage.set("dirty", true);
-      pusher.schedule();
-      render();
-    }
-  } catch {
-    // network error: ignora, l'utente parte vuoto
-  }
 }
 
 // Rescue dei dati pre-cut-over a Supabase. Il vecchio app.js NON salvava il blob
