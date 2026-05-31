@@ -48,10 +48,15 @@ Implementato in `style.css` (più eventuali variabili CSS). Nessuna libreria nuo
 --ctb:  #2a1f08   /* sfondo CTA                  */
 --ctc:  #4a3712   /* bordo CTA                   */
 ```
-- **Glow** sui testi accento: `text-shadow: 0 0 5px #ffd36b44` (sobrio, non ovunque).
-- **Scanline** opzionale come overlay `repeating-linear-gradient` a bassissima
-  opacità sull'app-shell; deve poter essere **disattivata** (accessibilità /
-  preferenza). Rispettare `prefers-reduced-motion` (niente animazioni del cursore).
+- **Default = "sobrio"** (deciso dai mockup `mockups/v2-amber-crt/compare.html`,
+  variante B): glow **off** e scanline **off** di default, testo base un filo più
+  chiaro (`--fg:#cdb27a`, `--dim:#6a5733`). Massima leggibilità mobile/luce forte.
+- **Glow** sui testi accento: `text-shadow: 0 0 5px #ffd36b44` (sobrio, non ovunque),
+  **attivabile** dal toggle Impostazioni — implementato via CSS custom property
+  (es. `--glow1`) commutabile da `none` a valore, non da `text-shadow` sparsi.
+- **Scanline** come overlay `repeating-linear-gradient` a bassissima opacità
+  sull'app-shell, **attivabile** dal toggle (off di default). Rispettare
+  `prefers-reduced-motion` (niente animazioni del cursore).
 - **Type**: stack monospace di sistema
   (`ui-monospace, "SF Mono", "Cascadia Mono", Consolas, monospace`). Nessun web-font
   (resta PWA offline, niente fetch font).
@@ -91,8 +96,11 @@ rispetto a oggi salvo dove indicato.
 8. **Calendario** — griglia mese coi giorni allenati marcati `N·A/B/C`, riepilogo
    del giorno, streak.
 9. **Impostazioni** — stesso tema; voci come righe `key: value`; lo switch/scuro
-   attuale diventa coerente (il tema chiaro/scuro odierno è assorbito dal tema CRT;
-   valutare se mantenere un toggle “scanline on/off” e “glow on/off”).
+   attuale è assorbito dal tema CRT (sempre scuro). **DECISO**: due toggle distinti
+   “scanline on/off” e “glow on/off”, entrambi **off di default** (look sobrio).
+   La preferenza va persistita per-utente (riusa `ProfileStorage` namespacizzato,
+   come le altre impostazioni locali) e applicata via classe sull'app-shell
+   (es. `.fx-glow` / `.fx-scan`) che attiva le custom property/overlay.
 10. **Editor scheda** — vedi §5.
 
 ## 5. Flusso “crea scheda da zero”
