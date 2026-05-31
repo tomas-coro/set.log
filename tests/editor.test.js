@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate, backfillMuscles, patchPlanV4, patchPlanV5, keepLocalPlan } from "../editor.js";
+import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate, backfillMuscles, patchPlanV4, patchPlanV5, keepLocalPlan, addDay, nextDayCode } from "../editor.js";
 
 const samplePlan = () => [
   { day: "A", title: "A", exercises: [
@@ -290,4 +290,29 @@ test("patchPlanV5: non muta l'input", () => {
   patchPlanV5(data);
   assert.equal(data.schema, 4);
   assert.equal(data.plan.find((d) => d.day === "A").exercises[0].unitB, undefined);
+});
+
+test("nextDayCode: prima lettera maiuscola libera", () => {
+  assert.equal(nextDayCode([]), "A");
+  assert.equal(nextDayCode([{ day: "A", title: "x", exercises: [] }]), "B");
+  assert.equal(
+    nextDayCode([{ day: "A", exercises: [] }, { day: "C", exercises: [] }]),
+    "B"
+  );
+});
+
+test("addDay: aggiunge un giorno vuoto con code univoco e titolo dato", () => {
+  const plan = [{ day: "A", title: "Petto", exercises: [] }];
+  const out = addDay(plan, "Schiena");
+  assert.equal(out.length, 2);
+  assert.equal(out[1].day, "B");
+  assert.equal(out[1].title, "Schiena");
+  assert.deepEqual(out[1].exercises, []);
+  assert.equal(plan.length, 1);
+});
+
+test("addDay: titolo vuoto -> fallback al code del giorno", () => {
+  const out = addDay([], "");
+  assert.equal(out[0].day, "A");
+  assert.equal(out[0].title, "A");
 });

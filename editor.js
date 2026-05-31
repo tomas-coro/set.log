@@ -44,6 +44,24 @@ export function updateExercise(plan, day, id, patch) {
   return mapDay(plan, day, (exs) => exs.map((e) => (e.id === id ? { ...e, ...patch, id: e.id } : e)));
 }
 
+// Primo code di giorno libero: A..Z, poi id base36 univoco. I `day` sono opachi e
+// stabili (le entries delle settimane sono keyate per `day`): rinominare cambia
+// solo il titolo, non il code.
+export function nextDayCode(plan) {
+  const used = new Set(plan.map((d) => d.day));
+  for (let i = 0; i < 26; i++) {
+    const c = String.fromCharCode(65 + i);
+    if (!used.has(c)) return c;
+  }
+  return genId([...used]);
+}
+
+export function addDay(plan, title) {
+  const day = nextDayCode(plan);
+  const t = (title || "").trim() || day;
+  return [...plan, { day, title: t, exercises: [] }];
+}
+
 // Migrazione una-tantum schema 1 -> 2: crea `data.plan` dal seed (assegnando id),
 // riscrive le entry da chiavi-indice a chiavi-id. Idempotente (guard su schema),
 // non muta l'input. `seedPlan` è il PLAN di plan.js (così editor.js resta puro).
