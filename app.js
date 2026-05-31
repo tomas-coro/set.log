@@ -22,6 +22,7 @@ import { RestTimer, formatTime, withoutSession } from "./timer.js";
 import { ScreenWakeLock } from "./wakelock.js";
 import { renderNutritionGuide } from "./nutrition.js";
 import { createPusher } from "./sync.js";
+import { getFx, setFx, applyFx } from "./fx.js";
 
 const PENDING_KEY = "gymsched_pending"; // local buffer of unsynced edits
 const SEED_URL = "https://xbacco.github.io/gym-schedule/data.json";
@@ -2095,6 +2096,8 @@ function wireSettings() {
     document.getElementById("platesInput").value = getPlateSet().join(", ");
     renderQcList();
     document.getElementById("notifyToggle").checked = notifyOn();
+    document.getElementById("fxGlowToggle").checked = getFx(localStorage, "glow");
+    document.getElementById("fxScanToggle").checked = getFx(localStorage, "scan");
     // Blocca lo scroll della pagina sotto mentre il dialog è aperto:
     // su mobile il <dialog> nativo non sempre impedisce il rubber-band.
     document.documentElement.classList.add("modal-open");
@@ -2124,6 +2127,15 @@ function wireSettings() {
       localStorage.setItem(NOTIFY_KEY, "0");
       alert("Permesso notifiche negato dal browser/sistema.");
     }
+  });
+
+  document.getElementById("fxGlowToggle").addEventListener("change", (e) => {
+    setFx(localStorage, "glow", e.target.checked);
+    applyFx(document.body, localStorage);
+  });
+  document.getElementById("fxScanToggle").addEventListener("change", (e) => {
+    setFx(localStorage, "scan", e.target.checked);
+    applyFx(document.body, localStorage);
   });
 
   dlg.addEventListener("close", () => {
@@ -2276,6 +2288,7 @@ async function boot() {
   // 3. Sessione attiva → mostra app, inizializza store.
   hideAuthScreen();
   profileStorage = new ProfileStorage(localStorage, session.user.id);
+  applyFx(document.body, localStorage);
   store = new SupabaseStore(supabase);
 
   pusher = createPusher({
