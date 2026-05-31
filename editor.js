@@ -68,6 +68,10 @@ export function renameDay(plan, day, title) {
   );
 }
 
+export function removeDay(plan, day) {
+  return plan.filter((d) => d.day !== day);
+}
+
 // Migrazione una-tantum schema 1 -> 2: crea `data.plan` dal seed (assegnando id),
 // riscrive le entry da chiavi-indice a chiavi-id. Idempotente (guard su schema),
 // non muta l'input. `seedPlan` è il PLAN di plan.js (così editor.js resta puro).

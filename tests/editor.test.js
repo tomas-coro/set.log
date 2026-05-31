@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate, backfillMuscles, patchPlanV4, patchPlanV5, keepLocalPlan, addDay, nextDayCode, renameDay } from "../editor.js";
+import { genId, addExercise, removeExercise, reorderExercise, updateExercise, migrate, backfillMuscles, patchPlanV4, patchPlanV5, keepLocalPlan, addDay, nextDayCode, renameDay, removeDay } from "../editor.js";
 
 const samplePlan = () => [
   { day: "A", title: "A", exercises: [
@@ -329,4 +329,21 @@ test("renameDay: cambia solo il titolo, non il code ne le entries", () => {
 test("renameDay: titolo vuoto -> resta il code come titolo", () => {
   const out = renameDay([{ day: "A", title: "Petto", exercises: [] }], "A", "  ");
   assert.equal(out[0].title, "A");
+});
+
+test("removeDay: elimina il giorno indicato, lascia gli altri", () => {
+  const plan = [
+    { day: "A", title: "Petto", exercises: [] },
+    { day: "B", title: "Schiena", exercises: [] },
+  ];
+  const out = removeDay(plan, "A");
+  assert.equal(out.length, 1);
+  assert.equal(out[0].day, "B");
+  assert.equal(plan.length, 2);
+});
+
+test("removeDay: day inesistente -> plan invariato (copia)", () => {
+  const plan = [{ day: "A", title: "Petto", exercises: [] }];
+  const out = removeDay(plan, "Z");
+  assert.deepEqual(out, plan);
 });
