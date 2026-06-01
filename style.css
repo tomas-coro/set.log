@@ -580,6 +580,28 @@ body.timer-on .focus-body{padding-bottom:160px;}
 .focus-body .trend{margin-top:0;}
 .focus-body .track-h{margin-bottom:6px;}
 
+/* ---- Layout "una pagina": body a colonna, azioni ancorate in fondo ---- */
+.focus-body{display:flex;flex-direction:column;}
+.focus-actions{margin-top:auto;display:flex;flex-direction:column;gap:9px;padding-top:10px;}
+
+/* Cassetto collassabile con i blocchi secondari (recupero/nota/volume/add) */
+.focus-actions .drawer{display:none;flex-direction:column;gap:10px;
+  border:1px solid var(--ctc);border-radius:9px;padding:10px;background:var(--surf2);}
+.focus-actions .drawer.open{display:flex;}
+.focus-actions .drawer .addrow{display:flex;gap:8px;}
+.focus-actions .drawer .addrow .addset{flex:1;margin-left:0;text-align:center;padding:8px;}
+
+/* Barra azioni: 2–4 pulsanti uguali, sempre visibile in fondo */
+.actbar{display:flex;gap:7px;align-items:stretch;}
+.actbtn{flex:1;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  background:var(--surf2);border:1px solid var(--line);border-radius:9px;color:var(--ink);
+  font-family:var(--mono);font-size:15px;cursor:pointer;}
+.actbtn .lbl{font-size:8.5px;color:var(--dim);letter-spacing:.05em;text-transform:uppercase;}
+.actbtn:active{background:var(--acc);color:var(--acc-ink);}
+.actbtn.fail .ab-g{color:var(--down);}
+.actbtn.more.open{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);}
+.actbtn.more.open .lbl{color:var(--acc-ink);}
+
 /* Link "serie non riuscita" nell'editor della serie corrente */
 .fail-link{background:transparent;border:none;color:var(--faint);font-family:"JetBrains Mono",monospace;font-size:11px;
   cursor:pointer;padding:8px 0 0;display:block;text-align:left;letter-spacing:.03em;}
