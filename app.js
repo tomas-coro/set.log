@@ -1584,16 +1584,6 @@ function renderFocusNormal(ex, idx, container, footer) {
     const edit = buildEditBlock(editLabel, draft, prev[curIdx] || null, exerciseBar(ex, getBar()), meta.unit);
     container.appendChild(edit.block);
 
-    let qcEl;
-    const refreshQc = () => {
-      const fresh = buildQuickCommentButton(draft.comments, () => {
-        openQcDialog(draft.comments, (next) => { draft.comments = next; refreshQc(); });
-      });
-      if (qcEl) { qcEl.replaceWith(fresh); } else { container.appendChild(fresh); }
-      qcEl = fresh;
-    };
-    refreshQc();
-
     const repInSession = previousSetInSession(v, curIdx);
     const repPrevWeek = previousWeekSet(data, currentDay, exId, currentWeek, curIdx);
     const repChips = buildRepeatChips(repInSession, repPrevWeek, ({ reps, kg }) => {
@@ -1601,33 +1591,6 @@ function renderFocusNormal(ex, idx, container, footer) {
     });
     if (repChips) container.appendChild(repChips);
 
-    // "Serie non riuscita" entry for the current (not-done) set
-    const failLink = document.createElement("button");
-    failLink.type = "button";
-    failLink.className = "fail-link";
-    failLink.textContent = "✗ Serie non riuscita";
-    failLink.addEventListener("click", () => {
-      const curSet = entry.sets[curIdx] || {};
-      openSetDialog({
-        title: `Serie ${curIdx + 1} — non riuscita`,
-        reps: draft.reps || curSet.reps || "",
-        kg: draft.kg || curSet.kg || "",
-        feel: curSet.feel || "", unit: meta.unit,
-        failed: curSet.failed || false,
-        failNote: curSet.failNote || "",
-        done: false,
-        onApply: (reps, kg, feel, failed, failNote) => {
-          data = setEntry(data, currentWeek, currentDay, exId, withSet(v, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) }), new Date().toISOString());
-          persist(idx); render();
-        },
-        onUndo: () => {},
-        onDelete: () => {
-          data = setEntry(data, currentWeek, currentDay, exId, withoutSet(v, curIdx), new Date().toISOString());
-          persist(idx); render();
-        },
-      });
-    });
-    container.appendChild(failLink);
   }
 
   const dots = document.createElement("div");
@@ -1642,20 +1605,6 @@ function renderFocusNormal(ex, idx, container, footer) {
     d.className = cls;
     dots.appendChild(d);
   }
-  const addW = document.createElement("button");
-  addW.className = "addset warm"; addW.textContent = "+ riscald.";
-  addW.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, exId, withSet(v, entry.sets.length, { reps: "", kg: "", done: false, warmup: true }), new Date().toISOString());
-    persist(idx); render();
-  });
-  const add = document.createElement("button");
-  add.className = "addset"; add.textContent = "+ serie";
-  add.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, exId, withSet(v, entry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
-    persist(idx); render();
-  });
-  dots.appendChild(addW);
-  dots.appendChild(add);
   container.appendChild(dots);
 
   if (!allDone) {
@@ -1675,9 +1624,62 @@ function renderFocusNormal(ex, idx, container, footer) {
     });
     footer.appendChild(cta);
   }
+  // --- Cassetto secondario: recupero · nota · volume · add ---
+  const restEditor = buildRestEditor(idx, ex);
+  const noteField = buildNoteField(false, idx);
   const exVol = exerciseVolume(v, ex);
-  if (exVol > 0) container.appendChild(buildVolLine(meta.factor === 2 ? "Volume esercizio · ×2 manubri" : "Volume esercizio", exVol));
-  container.appendChild(buildNoteField(false, idx));
+  const volLine = exVol > 0
+    ? buildVolLine(meta.factor === 2 ? "Volume esercizio · ×2 manubri" : "Volume esercizio", exVol)
+    : null;
+
+  const addRow = document.createElement("div");
+  addRow.className = "addrow";
+  const addW = document.createElement("button");
+  addW.className = "addset warm"; addW.textContent = "+ riscald.";
+  addW.addEventListener("click", () => {
+    data = setEntry(data, currentWeek, currentDay, exId, withSet(v, entry.sets.length, { reps: "", kg: "", done: false, warmup: true }), new Date().toISOString());
+    persist(idx); render();
+  });
+  const addS = document.createElement("button");
+  addS.className = "addset"; addS.textContent = "+ serie";
+  addS.addEventListener("click", () => {
+    data = setEntry(data, currentWeek, currentDay, exId, withSet(v, entry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
+    persist(idx); render();
+  });
+  addRow.append(addW, addS);
+
+  // --- Handler barra azioni ---
+  const onComment = allDone ? null : () => openQcDialog(draft.comments, (next) => { draft.comments = next; render(); });
+  const onFail = allDone ? null : () => {
+    const curSet = entry.sets[curIdx] || {};
+    openSetDialog({
+      title: `Serie ${curIdx + 1} — non riuscita`,
+      reps: draft.reps || curSet.reps || "",
+      kg: draft.kg || curSet.kg || "",
+      feel: curSet.feel || "", unit: meta.unit,
+      failed: curSet.failed || false,
+      failNote: curSet.failNote || "",
+      done: false,
+      onApply: (reps, kg, feel, failed, failNote) => {
+        data = setEntry(data, currentWeek, currentDay, exId, withSet(v, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) }), new Date().toISOString());
+        persist(idx); render();
+      },
+      onUndo: () => {},
+      onDelete: () => {
+        data = setEntry(data, currentWeek, currentDay, exId, withoutSet(v, curIdx), new Date().toISOString());
+        persist(idx); render();
+      },
+    });
+  };
+
+  container.appendChild(buildFocusActions(
+    [restEditor, noteField, volLine, addRow],
+    {
+      allDone,
+      restValue: `${getRest(currentDay, exId, ex.restSeconds)}s`,
+      handlers: { rest: openFocusDrawer, comment: onComment, fail: onFail, more: toggleFocusDrawer },
+    }
+  ));
 }
 
 // Bozze separate per traccia A e B della serie corrente del superset.
