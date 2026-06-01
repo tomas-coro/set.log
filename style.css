@@ -585,11 +585,11 @@ body.timer-on .focus-body{padding-bottom:160px;}
 .focus-actions{margin-top:auto;display:flex;flex-direction:column;gap:9px;padding-top:10px;}
 
 /* Cassetto collassabile con i blocchi secondari (recupero/nota/volume/add) */
-.focus-actions .drawer{display:none;flex-direction:column;gap:10px;
+.focus-actions .focus-drawer{display:none;flex-direction:column;gap:10px;
   border:1px solid var(--ctc);border-radius:9px;padding:10px;background:var(--surf2);}
-.focus-actions .drawer.open{display:flex;}
-.focus-actions .drawer .addrow{display:flex;gap:8px;}
-.focus-actions .drawer .addrow .addset{flex:1;margin-left:0;text-align:center;padding:8px;}
+.focus-actions .focus-drawer.open{display:flex;}
+.focus-actions .focus-drawer .addrow{display:flex;gap:8px;}
+.focus-actions .focus-drawer .addrow .addset{flex:1;margin-left:0;text-align:center;padding:8px;}
 
 /* Barra azioni: 2–4 pulsanti uguali, sempre visibile in fondo */
 .actbar{display:flex;gap:7px;align-items:stretch;}

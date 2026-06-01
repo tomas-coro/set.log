@@ -1981,7 +1981,7 @@ function buildFocusActions(drawerChildren, barOpts) {
   const group = document.createElement("div");
   group.className = "focus-actions";
   const drawer = document.createElement("div");
-  drawer.className = "drawer" + (focusDrawerOpen ? " open" : "");
+  drawer.className = "focus-drawer" + (focusDrawerOpen ? " open" : "");
   drawerChildren.filter(Boolean).forEach((c) => drawer.appendChild(c));
   group.append(drawer, buildActionBar(barOpts));
   return group;
