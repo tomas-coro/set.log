@@ -1676,7 +1676,7 @@ function renderFocusNormal(ex, idx, container, footer) {
     [restEditor, noteField, volLine, addRow],
     {
       allDone,
-      restValue: `${getRest(currentDay, exId, ex.restSeconds)}s`,
+      restValue: `${getRest(currentDay, exId, ex.restSeconds)}″`,
       handlers: { rest: openFocusDrawer, comment: onComment, fail: onFail, more: toggleFocusDrawer },
     }
   ));
@@ -1742,68 +1742,45 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
   }
   wrap.appendChild(setsBox);
 
-  const dots = document.createElement("div");
-  dots.className = "dots";
-  const add = document.createElement("button");
-  add.className = "addset"; add.textContent = "+ serie";
-  add.addEventListener("click", () => {
-    data = setEntry(data, currentWeek, currentDay, exId, withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, trackEntry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
-    persist(idx); render();
-  });
-  dots.appendChild(add);
-  wrap.appendChild(dots);
-
   if (!allDone) {
     const editLabel = meta.unit === "sec" ? `Serie ${curIdx + 1} ${trackKey.toUpperCase()} — secondi` : `Serie ${curIdx + 1} ${trackKey.toUpperCase()} — step 0.5 kg`;
     const edit = buildEditBlock(editLabel, state, prevSets[curIdx] || null, bar, meta.unit);
     wrap.appendChild(edit.block);
 
-    let qcEl;
-    const refreshQc = () => {
-      const fresh = buildQuickCommentButton(state.comments, () => {
-        openQcDialog(state.comments, (next) => { state.comments = next; refreshQc(); });
-      });
-      if (qcEl) { qcEl.replaceWith(fresh); } else { wrap.appendChild(fresh); }
-      qcEl = fresh;
-    };
-    refreshQc();
-
     const inSess = previousSetInSession(trackEntry, curIdx);
     const prevWk = previousWeekSet(data, currentDay, exId, currentWeek, curIdx, trackKey);
     const chips = buildRepeatChips(inSess, prevWk, ({ reps, kg }) => { state.reps = reps; state.kg = kg; edit.refresh(); });
     if (chips) wrap.appendChild(chips);
-
-    // "Serie non riuscita" entry for the current (not-done) superset set
-    const failLink = document.createElement("button");
-    failLink.type = "button";
-    failLink.className = "fail-link";
-    failLink.textContent = "✗ Serie non riuscita";
-    failLink.addEventListener("click", () => {
-      const curSet = trackEntry.sets[curIdx] || {};
-      openSetDialog({
-        title: `${trackKey.toUpperCase()} · Serie ${curIdx + 1} — non riuscita`,
-        reps: state.reps || curSet.reps || "",
-        kg: state.kg || curSet.kg || "",
-        feel: curSet.feel || "", unit: meta.unit,
-        failed: curSet.failed || false,
-        failNote: curSet.failNote || "",
-        done: false,
-        onApply: (reps, kg, feel, failed, failNote) => {
-          const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) });
-          data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
-          persist(idx); render();
-        },
-        onUndo: () => {},
-        onDelete: () => {
-          const nv = withoutSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, curIdx);
-          data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
-          persist(idx); render();
-        },
-      });
-    });
-    wrap.appendChild(failLink);
   }
-  return { wrap, curIdx, allDone };
+  const onAddSet = () => {
+    data = setEntry(data, currentWeek, currentDay, exId, withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, trackEntry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
+    persist(idx); render();
+  };
+  const onComment = allDone ? null : () => openQcDialog(state.comments, (next) => { state.comments = next; render(); });
+  const onFail = allDone ? null : () => {
+    const curSet = trackEntry.sets[curIdx] || {};
+    openSetDialog({
+      title: `${trackKey.toUpperCase()} · Serie ${curIdx + 1} — non riuscita`,
+      reps: state.reps || curSet.reps || "",
+      kg: state.kg || curSet.kg || "",
+      feel: curSet.feel || "", unit: meta.unit,
+      failed: curSet.failed || false,
+      failNote: curSet.failNote || "",
+      done: false,
+      onApply: (reps, kg, feel, failed, failNote) => {
+        const nv = withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, curIdx, { reps, kg, feel, failed, failNote, ...(failed ? { done: true } : {}) });
+        data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
+        persist(idx); render();
+      },
+      onUndo: () => {},
+      onDelete: () => {
+        const nv = withoutSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, curIdx);
+        data = setEntry(data, currentWeek, currentDay, exId, nv, new Date().toISOString());
+        persist(idx); render();
+      },
+    });
+  };
+  return { wrap, curIdx, allDone, onAddSet, onComment, onFail };
 }
 
 function renderFocusSuperset(ex, idx, container, footer) {
@@ -1864,10 +1841,25 @@ function renderFocusSuperset(ex, idx, container, footer) {
   // Volume per traccia + totale superset (con ×2 manubri; tracce a tempo escluse).
   const volA = e.a.sets.reduce((s, x) => s + setVolume(x, metaA), 0);
   const volB = e.b.sets.reduce((s, x) => s + setVolume(x, metaB), 0);
-  if (volA > 0) container.appendChild(buildVolLine(`Volume A${metaA.factor === 2 ? " · ×2 manubri" : ""}`, volA));
-  if (volB > 0) container.appendChild(buildVolLine(`Volume B${metaB.factor === 2 ? " · ×2 manubri" : ""}`, volB));
-  if (volA + volB > 0) container.appendChild(buildVolLine("Totale superset", volA + volB));
-  container.appendChild(buildNoteField(true, idx));
+  const volNodes = [];
+  if (volA > 0) volNodes.push(buildVolLine(`Volume A${metaA.factor === 2 ? " · ×2 manubri" : ""}`, volA));
+  if (volB > 0) volNodes.push(buildVolLine(`Volume B${metaB.factor === 2 ? " · ×2 manubri" : ""}`, volB));
+  if (volA + volB > 0) volNodes.push(buildVolLine("Totale superset", volA + volB));
+
+  // "+ serie" della traccia attiva, dentro al cassetto.
+  const addRow = document.createElement("div");
+  addRow.className = "addrow";
+  const addS = document.createElement("button");
+  addS.className = "addset"; addS.textContent = `+ serie ${supersetTab.toUpperCase()}`;
+  addS.addEventListener("click", active.onAddSet);
+  addRow.appendChild(addS);
+
+  const drawerChildren = [buildRestEditor(idx, ex), buildNoteField(true, idx), ...volNodes, addRow];
+  container.appendChild(buildFocusActions(drawerChildren, {
+    allDone: active.allDone,
+    restValue: `${getRest(currentDay, exId, ex.restSeconds)}″`,
+    handlers: { rest: openFocusDrawer, comment: active.onComment, fail: active.onFail, more: toggleFocusDrawer },
+  }));
 }
 
 // Sets della settimana loggata più recente, per entrambe le tracce ({a:[...], b:[...]}).
