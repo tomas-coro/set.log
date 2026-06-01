@@ -762,71 +762,70 @@ body.timer-on .drawer,body.timer-on .drawer-scrim{display:none;}
 .mb-kg { flex: 0 0 auto; color: var(--ink); opacity: .8; min-width: 56px; text-align: right; }
 
 /* ---- Auth screen ---- */
+/* ===== Schermata accesso — look "terminale / boot" (mockup login #1) ===== */
 #auth-screen {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--bg, #111);
-  padding: 1rem;
-  z-index: 1000;
+  position: fixed; inset: 0;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--bg); padding: 1rem; z-index: 1000;
 }
 #auth-screen[hidden] { display: none; }
 
 .auth-card {
-  width: 100%;
-  max-width: 360px;
-  padding: 1.5rem;
-  border-radius: 12px;
-  background: var(--card, #1a1a1a);
-  box-shadow: 0 8px 24px rgba(0,0,0,0.35);
+  width: 100%; max-width: 360px; padding: 26px 22px;
+  font-family: var(--mono); color: var(--tx);
 }
-.auth-card h1 { margin: 0 0 1rem; font-size: 1.6rem; font-weight: 800; letter-spacing: -.02em; text-align: center; }
+.auth-sbar {
+  display: flex; justify-content: space-between;
+  font-size: .7rem; letter-spacing: .18em; color: var(--dim); margin-bottom: 30px;
+}
+.auth-sbar .r { color: var(--ok); }
+.auth-card h1 { margin: 0; font-size: 2rem; font-weight: 800; letter-spacing: -.02em; text-align: left; }
+.auth-card h1::before { content: "> "; color: var(--acc); font-weight: 700; }
 .auth-card h1 .a { color: var(--acc); }
-
-.auth-tabs {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 1rem;
+.auth-cap { color: var(--dim); font-size: .82rem; margin: 4px 0 26px; display: flex; align-items: center; }
+.auth-cur {
+  display: inline-block; width: .5ch; height: 1em; background: var(--acc);
+  margin-left: 2px; animation: auth-bk 1s steps(1) infinite;
 }
+@keyframes auth-bk { 50% { opacity: 0; } }
+
+.auth-tabs { display: flex; gap: 18px; margin-bottom: 22px; }
 .auth-tab {
-  flex: 1;
-  padding: 0.5rem;
-  border: 1px solid var(--border, #333);
-  background: transparent;
-  color: inherit;
-  border-radius: 8px;
-  cursor: pointer;
+  flex: 0 0 auto; padding: 0 0 4px; border: 0; background: none;
+  color: var(--faint); font-family: var(--mono); font-size: .9rem; cursor: pointer;
 }
-.auth-tab.is-active {
-  background: var(--accent, #2a7);
-  border-color: var(--accent, #2a7);
-}
+.auth-tab.is-active { color: var(--tx); border-bottom: 2px solid var(--acc); }
 
-.auth-form { display: flex; flex-direction: column; gap: 0.75rem; }
-.auth-form label { display: flex; flex-direction: column; gap: 0.25rem; font-size: 0.9rem; }
-.auth-form input { padding: 0.6rem; border-radius: 8px; border: 1px solid var(--border, #333); background: var(--bg-input, #0e0e0e); color: inherit; }
+.auth-form { display: flex; flex-direction: column; gap: 0; }
+/* display:flex sovrascrive l'attributo [hidden] della UA: ripristina nascondere
+   le form reset/nuova-password finché auth.js non le mostra (bug pre-esistente). */
+.auth-form[hidden] { display: none; }
+.auth-form label { display: flex; flex-direction: column; gap: 5px; margin-bottom: 16px; }
+.auth-form .al { font-size: .78rem; color: var(--dim); }
+.auth-form .ai {
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px solid var(--line); padding: 8px 2px;
+}
+.auth-form .ai:focus-within { border-bottom-color: var(--acc); }
+.auth-form .ai .c { color: var(--acc); }
+.auth-form input {
+  flex: 1; background: none; border: 0; outline: none; padding: 0;
+  font-family: var(--mono); color: var(--tx); font-size: .95rem;
+}
+.auth-form input::placeholder { color: var(--faint); }
+.auth-note { font-size: .82rem; color: var(--dim); margin-bottom: 16px; }
 .auth-form button[type="submit"] {
-  padding: 0.7rem;
-  border: none;
-  background: var(--accent, #2a7);
-  color: white;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
+  margin-top: 14px; padding: 13px; border: 0; border-radius: 7px;
+  background: var(--acc); color: var(--acc-ink);
+  font-family: var(--mono); font-weight: 700; font-size: .98rem; cursor: pointer;
 }
+.auth-form button[type="submit"]::before { content: "› "; }
 .auth-link {
-  background: none;
-  border: none;
-  color: var(--accent, #2a7);
-  cursor: pointer;
-  text-decoration: underline;
-  font-size: 0.9rem;
-  padding: 0;
+  background: none; border: 0; color: var(--acc); cursor: pointer;
+  font-family: var(--mono); font-size: .85rem; text-align: left; padding: 0; margin-top: 18px;
 }
-.auth-error { color: var(--down); font-size: 0.9rem; margin: 0; }
-.auth-info  { color: var(--ok); font-size: 0.9rem; margin: 0; }
+.auth-error { color: var(--down); font-size: .85rem; margin: 10px 0 0; }
+.auth-info  { color: var(--ok);   font-size: .85rem; margin: 10px 0 0; }
 
 /* ===== Effetti CRT — off di default, gestiti da fx.js (classi su body) ===== */
 body.fx-glow{ --glow1:0 0 5px #ffd36b44; }
@@ -1041,6 +1040,25 @@ h1{ font-family:var(--mono); font-size:22px; font-weight:700; letter-spacing:0;
 /* ===== Piano 3a — Impostazioni stile terminale (vs 04-resto-3a.html) ===== */
 .sv-term .sv-sec{ font-size:9px; color:var(--dim); letter-spacing:.14em; text-transform:uppercase; margin:14px 0 6px; }
 .sv-term .sv-sec:first-child{ margin-top:0; }
+/* selettore tema "protagonista": due card con anteprima viva (mockup impostazioni #3) */
+.sv-themecards{ display:flex; gap:10px; margin:2px 0 4px; }
+.sv-tc{ flex:1; border:2px solid var(--line); border-radius:12px; padding:8px; background:none;
+  font-family:var(--mono); text-align:left; cursor:pointer; }
+.sv-tc.is-on{ border-color:var(--acc); box-shadow:0 0 0 3px var(--acc-soft); }
+.sv-tc-mini{ display:flex; flex-direction:column; gap:5px; border-radius:8px; padding:9px; height:74px; }
+.sv-tc-carta{ background:#ece3d0; }
+.sv-tc-graph{ background:#131517; }
+.sv-tc-mini .m-w{ font-size:.7rem; font-weight:800; }
+.sv-tc-carta .m-w{ color:#2f2614; } .sv-tc-carta .m-w b{ color:#b07211; }
+.sv-tc-graph .m-w{ color:#eef1f4; } .sv-tc-graph .m-w b{ color:#f0a73c; }
+.sv-tc-mini .m-bar{ height:6px; border-radius:3px; }
+.sv-tc-carta .m-bar{ background:#d8caa8; } .sv-tc-carta .m-bar.a{ background:#b07211; width:60%; }
+.sv-tc-graph .m-bar{ background:#2e343a; } .sv-tc-graph .m-bar.a{ background:#f0a73c; width:60%; }
+.sv-tc-cap{ display:flex; align-items:center; justify-content:space-between; margin-top:8px; padding:0 2px; }
+.sv-tc-cap .nm{ font-size:.82rem; font-weight:700; color:var(--ink); }
+.sv-tc-cap .rd{ width:15px; height:15px; border-radius:50%; border:2px solid var(--line); }
+.sv-tc.is-on .sv-tc-cap .nm{ color:var(--acc); }
+.sv-tc.is-on .sv-tc-cap .rd{ border-color:var(--acc); background:radial-gradient(circle,var(--acc) 45%,transparent 50%); }
 .sv-term .sv-line{ display:flex; align-items:center; justify-content:space-between; gap:10px;
   border:1px solid var(--line); border-radius:7px; background:var(--surf); padding:10px 12px; margin-bottom:7px; font-size:12px; }
 .sv-term .sv-line .k{ color:var(--ac2); flex:0 0 auto; } .sv-term .sv-line .k::before{ content:"# "; color:var(--dim); }

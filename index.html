@@ -33,43 +33,46 @@
   </div>
   <section id="auth-screen" hidden>
     <div class="auth-card">
+      <div class="auth-sbar"><span class="l">◈ ACCESSO</span><span class="r">● online</span></div>
       <h1>set<span class="a">.log</span></h1>
+      <p class="auth-cap"># autenticazione richiesta<span class="auth-cur"></span></p>
+
       <nav class="auth-tabs">
-        <button type="button" data-tab="login" class="auth-tab is-active">Accedi</button>
-        <button type="button" data-tab="signup" class="auth-tab">Registrati</button>
+        <button type="button" data-tab="login" class="auth-tab is-active">accedi</button>
+        <button type="button" data-tab="signup" class="auth-tab">registrati</button>
       </nav>
 
       <form id="authForm" class="auth-form">
         <label>
-          Email
-          <input id="authEmail" type="email" autocomplete="email" required>
+          <span class="al">email</span>
+          <span class="ai"><span class="c">▸</span><input id="authEmail" type="email" autocomplete="email" required placeholder="tu@mail.it"></span>
         </label>
         <label>
-          Password
-          <input id="authPassword" type="password" autocomplete="current-password" minlength="8" required>
+          <span class="al">password</span>
+          <span class="ai"><span class="c">▸</span><input id="authPassword" type="password" autocomplete="current-password" minlength="8" required placeholder="••••••••"></span>
         </label>
         <button type="submit" id="authSubmit">Entra</button>
         <p id="authError" class="auth-error" hidden></p>
         <p id="authInfo" class="auth-info" hidden></p>
-        <button type="button" id="authForgot" class="auth-link">Password dimenticata?</button>
+        <button type="button" id="authForgot" class="auth-link">password dimenticata?</button>
       </form>
 
       <form id="resetForm" class="auth-form" hidden>
-        <p>Inserisci la tua email: ti mando un link per reimpostare la password.</p>
+        <p class="auth-note">Inserisci la tua email: ti mando un link per reimpostare la password.</p>
         <label>
-          Email
-          <input id="resetEmail" type="email" required>
+          <span class="al">email</span>
+          <span class="ai"><span class="c">▸</span><input id="resetEmail" type="email" required placeholder="tu@mail.it"></span>
         </label>
         <button type="submit">Invia link</button>
-        <button type="button" id="resetBack" class="auth-link">↩ Torna al login</button>
+        <button type="button" id="resetBack" class="auth-link">↩ torna al login</button>
         <p id="resetMsg" class="auth-info" hidden></p>
       </form>
 
       <form id="newPasswordForm" class="auth-form" hidden>
-        <p>Imposta una nuova password.</p>
+        <p class="auth-note">Imposta una nuova password.</p>
         <label>
-          Nuova password
-          <input id="newPassword" type="password" minlength="8" required>
+          <span class="al">nuova password</span>
+          <span class="ai"><span class="c">▸</span><input id="newPassword" type="password" minlength="8" required placeholder="••••••••"></span>
         </label>
         <button type="submit">Aggiorna</button>
         <p id="newPasswordMsg" class="auth-info" hidden></p>
@@ -147,11 +150,19 @@
             <button type="button" id="qcAdd">+</button>
           </div>
 
+          <div class="sv-sec">tema</div>
+          <div class="sv-themecards" id="themeCards">
+            <button type="button" class="sv-tc" data-theme="carta" aria-pressed="true">
+              <span class="sv-tc-mini sv-tc-carta"><span class="m-w">set<b>.log</b></span><span class="m-bar a"></span><span class="m-bar"></span></span>
+              <span class="sv-tc-cap"><span class="nm">Carta</span><span class="rd"></span></span>
+            </button>
+            <button type="button" class="sv-tc" data-theme="graphite" aria-pressed="false">
+              <span class="sv-tc-mini sv-tc-graph"><span class="m-w">set<b>.log</b></span><span class="m-bar a"></span><span class="m-bar"></span></span>
+              <span class="sv-tc-cap"><span class="nm">Graphite</span><span class="rd"></span></span>
+            </button>
+          </div>
+
           <div class="sv-sec">interfaccia</div>
-          <label class="sv-line sv-linetoggle">
-            <span class="k">tema scuro</span>
-            <span class="v sv-switch"><input type="checkbox" id="themeToggle"><span class="sv-switch-track"></span></span>
-          </label>
           <label class="sv-line sv-linetoggle">
             <span class="k">notifica recupero</span>
             <span class="v sv-switch"><input type="checkbox" id="notifyToggle"><span class="sv-switch-track"></span></span>

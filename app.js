@@ -2140,6 +2140,16 @@ function newWeek() {
 function wireSettings() {
   const dlg = document.getElementById("settingsDialog");
 
+  // Evidenzia la card del tema attivo (Carta/Graphite) e aggiorna aria-pressed.
+  function syncThemeCards() {
+    const cur = getTheme(localStorage);
+    document.querySelectorAll(".sv-tc").forEach((c) => {
+      const on = c.dataset.theme === cur;
+      c.classList.toggle("is-on", on);
+      c.setAttribute("aria-pressed", on ? "true" : "false");
+    });
+  }
+
   function renderQcList() {
     const root = document.getElementById("qcList"); root.textContent = "";
     getQuickComments().forEach((text, i) => {
@@ -2156,7 +2166,7 @@ function wireSettings() {
     document.getElementById("platesInput").value = getPlateSet().join(", ");
     renderQcList();
     document.getElementById("notifyToggle").checked = notifyOn();
-    document.getElementById("themeToggle").checked = getTheme(localStorage) === "graphite";
+    syncThemeCards();
     document.getElementById("fxGlowToggle").checked = getFx(localStorage, "glow");
     document.getElementById("fxScanToggle").checked = getFx(localStorage, "scan");
     // Blocca lo scroll della pagina sotto mentre il dialog è aperto:
@@ -2190,9 +2200,13 @@ function wireSettings() {
     }
   });
 
-  document.getElementById("themeToggle").addEventListener("change", (e) => {
-    setTheme(localStorage, e.target.checked ? "graphite" : "carta");
-    applyTheme(document.documentElement, localStorage);
+  // Selettore tema a card (Carta / Graphite): scelta nominata, applicata live.
+  document.querySelectorAll(".sv-tc").forEach((card) => {
+    card.addEventListener("click", () => {
+      setTheme(localStorage, card.dataset.theme);
+      applyTheme(document.documentElement, localStorage);
+      syncThemeCards();
+    });
   });
   document.getElementById("fxGlowToggle").addEventListener("change", (e) => {
     setFx(localStorage, "glow", e.target.checked);
