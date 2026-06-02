@@ -1859,93 +1859,90 @@ function previousSupersetSets(weekKey, day, idx) {
   return { a: [], b: [] };
 }
 
+// Mini sparkline inline (storico top-set): polyline + dot finale; piatta se <2 punti.
+function buildSparkline(trend, w = 54, h = 20) {
+  const svg = document.createElementNS(SVGNS, "svg");
+  svg.setAttribute("class", "spark");
+  svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.setAttribute("width", String(w)); svg.setAttribute("height", String(h));
+  if (trend.length >= 2) {
+    const geo = chartGeometry(trend, { width: w, height: h, padX: 2, padTop: 3, padBottom: 3, padRight: 4 });
+    const pl = document.createElementNS(SVGNS, "polyline");
+    pl.setAttribute("points", geo.points.map((p) => `${p.x},${p.y}`).join(" "));
+    pl.setAttribute("fill", "none"); pl.setAttribute("stroke", "var(--ac2)"); pl.setAttribute("stroke-width", "1.5");
+    svg.appendChild(pl);
+    const last = geo.points[geo.points.length - 1];
+    const dot = document.createElementNS(SVGNS, "circle");
+    dot.setAttribute("cx", String(last.x)); dot.setAttribute("cy", String(last.y));
+    dot.setAttribute("r", "2.2"); dot.setAttribute("fill", "var(--acc)");
+    svg.appendChild(dot);
+  } else {
+    const pl = document.createElementNS(SVGNS, "polyline");
+    pl.setAttribute("points", `2,${h / 2} ${w / 2},${h / 2} ${w - 2},${h / 2}`);
+    pl.setAttribute("fill", "none"); pl.setAttribute("stroke", "var(--ctc)"); pl.setAttribute("stroke-width", "1.5");
+    svg.appendChild(pl);
+  }
+  return svg;
+}
+
+// Lista esercizi — layout "Pipeline a Tag" + sparkline inline. Riga pulita
+// (indice · nome · meta con "ult." in kg espliciti), mini sparkline storica e
+// tag di stato DONE/NEXT/TODO a destra, con chip PR sul record settimanale.
+// NEXT = primo esercizio non completato. Il tap apre il focus a schermo intero.
 function renderList() {
   const root = document.getElementById("list");
   root.textContent = "";
   const dp = dayPlan();
+  const nextIndex = dp.exercises.findIndex((_, i) => !isComplete(i));
   dp.exercises.forEach((ex, i) => {
-    const item = document.createElement("div");
-    item.className = "item" + (isComplete(i) ? " done" : "") + (i === openIndex ? " open" : "");
-    const r = document.createElement("div");
-    r.className = "r";
-    r.addEventListener("click", () => openFocus(i));
-    const id = document.createElement("span"); id.className = "id"; id.textContent = String(i + 1).padStart(2, "0");
+    const exId = exIdAt(i);
+    const status = isComplete(i) ? "done" : i === nextIndex ? "next" : "todo";
+
+    const row = document.createElement("div");
+    row.className = "row " + status;
+    row.addEventListener("click", () => openFocus(i));
+
+    const ix = document.createElement("span"); ix.className = "ix"; ix.textContent = String(i + 1).padStart(2, "0");
+
     const mid = document.createElement("div"); mid.className = "mid";
     const nm = document.createElement("div"); nm.className = "nm"; nm.textContent = ex.name;
     if (ex.superset) { const b = document.createElement("span"); b.className = "ssbadge"; b.textContent = "superset"; nm.appendChild(b); }
     const sub = document.createElement("div"); sub.className = "sub";
-    sub.textContent = `${ex.setsReps} · rec ${getRest(currentDay, exIdAt(i), ex.restSeconds)}″`;
+    sub.append(document.createTextNode(ex.setsReps));
+    // "ult." in kg espliciti: normale -> "ult. 55 kg · 10 rip"; superset -> "ult. A 20 kg · B 7.5 kg".
     if (!isComplete(i)) {
-      const exId = exIdAt(i);
-      let lastLabel = "";
       if (ex.superset) {
         const a = lastWorkingSet(data, currentDay, exId, currentWeek, "a");
         const b = lastWorkingSet(data, currentDay, exId, currentWeek, "b");
         const parts = [];
-        if (a) parts.push(`A${a.kg}`);
-        if (b) parts.push(`B${b.kg}`);
-        if (parts.length) lastLabel = parts.join(" ");
+        if (a) parts.push(`A ${a.kg} kg`);
+        if (b) parts.push(`B ${b.kg} kg`);
+        if (parts.length) sub.append(document.createTextNode(` · ult. ${parts.join(" · ")}`));
       } else {
         const last = lastWorkingSet(data, currentDay, exId, currentWeek);
-        if (last) lastLabel = `${last.reps}×${last.kg}`;
-      }
-      if (lastLabel) {
-        const u = document.createElement("span"); u.className = "ult";
-        u.textContent = ` · ult. ${lastLabel}`;
-        sub.appendChild(u);
+        if (last) {
+          sub.append(document.createTextNode(" · ult. "));
+          const b = document.createElement("b"); b.textContent = `${last.kg} kg`;
+          sub.append(b, document.createTextNode(` · ${last.reps} rip`));
+        }
       }
     }
     mid.append(nm, sub);
-    const right = document.createElement("div"); right.className = "right";
-    const exIdL = exIdAt(i);
+
+    const spark = buildSparkline(exerciseTrend(data, currentDay, exId, currentWeek, 4, !!ex.superset));
+
+    const tags = document.createElement("div"); tags.className = "tags";
     const isRec = ex.superset
-      ? (isWeekRecord(data, currentDay, exIdL, currentWeek, "a") || isWeekRecord(data, currentDay, exIdL, currentWeek, "b"))
-      : isWeekRecord(data, currentDay, exIdL, currentWeek);
-    if (isComplete(i)) { const c = document.createElement("span"); c.className = "chk"; c.textContent = "✓"; right.appendChild(c); }
-    else if (ex.superset) { const best = document.createElement("div"); best.className = "best"; best.textContent = "A·B"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "2 tracce"; right.append(best, bl); }
-    else { const bk = bestKg(data, currentDay, exIdL); const best = document.createElement("div"); best.className = "best"; best.textContent = bk === null ? "—" : bk + " kg"; const bl = document.createElement("div"); bl.className = "bl"; bl.textContent = "best"; right.append(best, bl); }
-    if (isRec) { const t = document.createElement("span"); t.className = "rec-badge"; t.textContent = "🏆"; t.title = "Record personale questa settimana"; right.appendChild(t); }
-    const caret = document.createElement("span"); caret.className = "caret"; caret.textContent = "▾";
-    r.append(id, mid, right, caret);
-    item.appendChild(r);
-    // Piede riga: sparkline (storico top-set) + azione log esplicita.
-    const foot = document.createElement("div");
-    foot.className = "ex-foot";
-    const trend = exerciseTrend(data, currentDay, exIdL, currentWeek, 4, !!ex.superset);
-    const svg = document.createElementNS(SVGNS, "svg");
-    svg.setAttribute("class", "spark");
-    svg.setAttribute("height", "18");
-    svg.setAttribute("width", "100%");
-    svg.setAttribute("viewBox", "0 0 120 18");
-    svg.setAttribute("preserveAspectRatio", "none");
-    if (trend.length >= 2) {
-      const geo = chartGeometry(trend, { width: 120, height: 18, padX: 2, padTop: 3, padBottom: 3, padRight: 4 });
-      const pl = document.createElementNS(SVGNS, "polyline");
-      pl.setAttribute("points", geo.points.map((p) => `${p.x},${p.y}`).join(" "));
-      pl.setAttribute("fill", "none");
-      pl.setAttribute("stroke", "var(--ac2)");
-      pl.setAttribute("stroke-width", "1.5");
-      svg.appendChild(pl);
-      const last = geo.points[geo.points.length - 1];
-      const dot = document.createElementNS(SVGNS, "circle");
-      dot.setAttribute("cx", String(last.x)); dot.setAttribute("cy", String(last.y));
-      dot.setAttribute("r", "2.2"); dot.setAttribute("fill", "var(--acc)");
-      svg.appendChild(dot);
-    } else {
-      const pl = document.createElementNS(SVGNS, "polyline");
-      pl.setAttribute("points", "2,9 60,9 118,9");
-      pl.setAttribute("fill", "none"); pl.setAttribute("stroke", "var(--ctc)"); pl.setAttribute("stroke-width", "1.5");
-      svg.appendChild(pl);
-    }
-    const logbtn = document.createElement("button");
-    logbtn.type = "button";
-    const done = isComplete(i);
-    logbtn.className = "logbtn" + (done ? " fulldone" : "");
-    logbtn.textContent = done ? "✓ fatto" : "› log";
-    logbtn.addEventListener("click", (e) => { e.stopPropagation(); openFocus(i); });
-    foot.append(svg, logbtn);
-    item.appendChild(foot);
-    root.appendChild(item);
+      ? (isWeekRecord(data, currentDay, exId, currentWeek, "a") || isWeekRecord(data, currentDay, exId, currentWeek, "b"))
+      : isWeekRecord(data, currentDay, exId, currentWeek);
+    if (isRec) { const pr = document.createElement("span"); pr.className = "tag pr"; pr.textContent = "PR 🏆"; pr.title = "Record personale questa settimana"; tags.appendChild(pr); }
+    const st = document.createElement("span"); st.className = "tag " + status;
+    st.textContent = status === "done" ? "DONE" : status === "next" ? "NEXT" : "TODO";
+    tags.appendChild(st);
+
+    row.append(ix, mid, spark, tags);
+    root.appendChild(row);
   });
 }
 
