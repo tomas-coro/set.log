@@ -271,7 +271,81 @@ function renderSheets() {
   const ov = document.getElementById("sheetsOverlay");
   if (!sheetsOpen) { ov.classList.add("hidden"); ov.setAttribute("aria-hidden", "true"); return; }
   ov.classList.remove("hidden"); ov.setAttribute("aria-hidden", "false");
-  // corpo: Task 11
+  const body = document.getElementById("sheetsBody");
+  body.innerHTML = "";
+  const sums = sheetSummaries(dehydrate(data));
+  document.getElementById("sheetsSub").textContent =
+    `${sums.length} scheda${sums.length === 1 ? "" : "e"} · attiva + archivio`;
+
+  for (const s of sums) {
+    const card = document.createElement("div");
+    card.className = "sheet-card" + (s.active ? " active" : "");
+
+    const head = document.createElement("div");
+    head.className = "sheet-nm";
+    const nm = document.createElement("span");
+    nm.className = "sheet-name";
+    nm.textContent = s.name;
+    head.appendChild(nm);
+    if (s.active) {
+      const badge = document.createElement("span");
+      badge.className = "sheet-badge";
+      badge.textContent = "attiva";
+      head.appendChild(badge);
+    }
+    card.appendChild(head);
+
+    const meta = document.createElement("div");
+    meta.className = "sheet-meta";
+    const last = s.lastDate ? `ult. ${s.lastDate}` : "mai usata";
+    meta.textContent = `${s.days} giorni · ${s.exercises} es · ${s.weeks} sett. · ${last}`;
+    card.appendChild(meta);
+
+    const acts = document.createElement("div");
+    acts.className = "sheet-acts";
+
+    if (s.active) {
+      acts.appendChild(mkBtn("✎ Modifica scheda", "edit", () => { closeSheets(); openPlanEditor(); }));
+      acts.appendChild(mkBtn("rinomina", "", () => renameSheetPrompt(s)));
+    } else {
+      acts.appendChild(mkBtn("↪ attiva", "go", () => mutateSheets((b) => setActiveSheet(b, s.id))));
+      acts.appendChild(mkBtn("rinomina", "", () => renameSheetPrompt(s)));
+      acts.appendChild(mkBtn("⧉ duplica", "", () => mutateSheets((b) => addSheet(setActiveSheet(b, s.id), { duplicateActive: true }))));
+    }
+    if (sums.length > 1) {
+      acts.appendChild(mkBtn("🗑", "dl", () => deleteSheetConfirm(s)));
+    }
+    card.appendChild(acts);
+    body.appendChild(card);
+  }
+
+  const newrow = document.createElement("div");
+  newrow.className = "sheet-newrow";
+  newrow.appendChild(mkBtn("+ Nuova vuota", "empty", () => mutateSheets((b) => addSheet(b, { duplicateActive: false }))));
+  newrow.appendChild(mkBtn("⧉ Duplica attiva", "dup", () => mutateSheets((b) => addSheet(b, { duplicateActive: true }))));
+  body.appendChild(newrow);
+}
+
+function mkBtn(label, cls, onClick) {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "sheet-btn" + (cls ? " " + cls : "");
+  b.textContent = label;
+  b.addEventListener("click", onClick);
+  return b;
+}
+
+function renameSheetPrompt(s) {
+  const name = window.prompt("Nome scheda:", s.name);
+  if (name === null) return;            // annullato
+  const t = name.trim();
+  if (!t) return;                        // vuoto ignorato (coerente con renameSheet)
+  mutateSheets((b) => renameSheet(b, s.id, t));
+}
+
+function deleteSheetConfirm(s) {
+  if (!window.confirm(`Eliminare "${s.name}"? Verrà cancellato anche lo storico di questa scheda.`)) return;
+  mutateSheets((b) => deleteSheet(b, s.id));
 }
 
 // ---- Menu drawer in fondo: stessa logica history degli overlay. ----
