@@ -1,4 +1,5 @@
 // ---- Pure data helpers (testable in Node, used in the browser) ----
+import { toSheetsBlob } from "./sheets.js";
 
 // ISO 8601 week key, e.g. "2026-W22".
 export function isoWeekKey(date) {
@@ -233,34 +234,52 @@ function mergeWeekDates(localDates, remoteDates) {
   return out;
 }
 
-export function mergeBlobs(local, remote) {
-  const safeLocal = local ?? emptyData();
-  const safeRemote = remote ?? emptyData();
-  const lUpd = safeLocal.updatedAt;
-  const rUpd = safeRemote.updatedAt;
-
-  // Plan: vince local se non vuoto E differente; altrimenti remote.
-  const localPlanFilled = Array.isArray(safeLocal.plan) && safeLocal.plan.length > 0;
-  const plan = localPlanFilled ? safeLocal.plan : (safeRemote.plan ?? []);
-
-  // Weeks: union per chiave settimana.
-  const wkKeys = new Set([
-    ...Object.keys(safeLocal.weeks ?? {}),
-    ...Object.keys(safeRemote.weeks ?? {}),
-  ]);
+function mergeSheetWeeks(localWeeks, remoteWeeks, lUpd, rUpd) {
+  const wkKeys = new Set([...Object.keys(localWeeks ?? {}), ...Object.keys(remoteWeeks ?? {})]);
   const weeks = {};
   for (const wk of wkKeys) {
-    const lw = safeLocal.weeks?.[wk];
-    const rw = safeRemote.weeks?.[wk];
+    const lw = localWeeks?.[wk];
+    const rw = remoteWeeks?.[wk];
     weeks[wk] = {
       label: lw?.label ?? rw?.label ?? wk,
       entries: mergeWeekEntries(lw, rw, lUpd, rUpd),
       dates: mergeWeekDates(lw?.dates, rw?.dates),
     };
   }
+  return weeks;
+}
+
+export function mergeBlobs(local, remote) {
+  const L = toSheetsBlob(local);
+  const R = toSheetsBlob(remote);
+  const lUpd = L.updatedAt;
+  const rUpd = R.updatedAt;
+
+  const byId = new Map();
+  for (const s of L.sheets) byId.set(s.id, { local: s, remote: null });
+  for (const s of R.sheets) {
+    const e = byId.get(s.id);
+    if (e) e.remote = s; else byId.set(s.id, { local: null, remote: s });
+  }
+
+  const sheets = [];
+  for (const { local: ls, remote: rs } of byId.values()) {
+    if (ls && !rs) { sheets.push(structuredClone(ls)); continue; }
+    if (rs && !ls) { sheets.push(structuredClone(rs)); continue; }
+    const localPlanFilled = Array.isArray(ls.plan) && ls.plan.length > 0;
+    sheets.push({
+      id: ls.id,
+      name: ls.name ?? rs.name,
+      plan: localPlanFilled ? ls.plan : (rs.plan ?? []),
+      weeks: mergeSheetWeeks(ls.weeks, rs.weeks, lUpd, rUpd),
+    });
+  }
 
   const updatedAt = (lUpd ?? "") > (rUpd ?? "") ? lUpd : rUpd;
-  return { ...safeRemote, ...safeLocal, plan, weeks, updatedAt };
+  const ids = sheets.map((s) => s.id);
+  let activeSheetId = (lUpd ?? "") >= (rUpd ?? "") ? L.activeSheetId : R.activeSheetId;
+  if (!ids.includes(activeSheetId)) activeSheetId = ids[0];
+  return { schema: 6, updatedAt, activeSheetId, sheets };
 }
 
 export class ConflictError extends Error {
