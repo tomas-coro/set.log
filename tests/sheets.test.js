@@ -86,6 +86,23 @@ test("hydrate∘dehydrate è round-trip stabile", () => {
   assert.deepEqual(dehydrate(hydrate(blob)), blob);
 });
 
+test("dehydrate è idempotente: ridehydrare un blob non azzera la scheda attiva", () => {
+  // Regressione: cache localStorage salvata già deidratata (niente plan/weeks
+  // top-level). Un secondo dehydrate NON deve svuotare il piano della scheda attiva.
+  const blob = dehydrate(hydrate({
+    schema: 6, updatedAt: "t", activeSheetId: "b",
+    sheets: [
+      { id: "a", name: "A", plan: [{ day: "A" }], weeks: {} },
+      { id: "b", name: "B", plan: [{ day: "B", title: "vivo" }], weeks: { wB: { label: "wB", entries: {} } } },
+    ],
+  }));
+  const again = dehydrate(blob);                 // blob già deidratato → niente plan top-level
+  assert.deepEqual(again, blob);                 // stabile
+  const b = again.sheets.find((s) => s.id === "b");
+  assert.deepEqual(b.plan, [{ day: "B", title: "vivo" }]);   // piano attivo intatto, NON azzerato
+  assert.deepEqual(b.weeks, { wB: { label: "wB", entries: {} } });
+});
+
 // Task 4 — CRUD: addSheet, renameSheet, deleteSheet, setActiveSheet
 import { addSheet, renameSheet, deleteSheet, setActiveSheet } from "../sheets.js";
 

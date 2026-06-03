@@ -84,8 +84,11 @@ export function dehydrate(data) {
   const ids = out.sheets.map((s) => s.id);
   if (!ids.includes(out.activeSheetId)) out.activeSheetId = out.sheets[0].id;
   const act = out.sheets.find((s) => s.id === out.activeSheetId);
-  act.plan = structuredClone(data.plan ?? []);
-  act.weeks = structuredClone(data.weeks ?? {});
+  // Idempotenza: se `data` è già un blob deidratato (niente plan/weeks top-level),
+  // NON azzerare la scheda attiva — conserva il plan/weeks già presenti in sheets[].
+  // Solo quando il top-level è definito (forma in-memory idratata) lo si riscrive.
+  act.plan = data.plan !== undefined ? structuredClone(data.plan) : structuredClone(act.plan ?? []);
+  act.weeks = data.weeks !== undefined ? structuredClone(data.weeks) : structuredClone(act.weeks ?? {});
   return out;
 }
 

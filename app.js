@@ -2993,7 +2993,7 @@ async function boot() {
     const remote = await store.load();
     if (cached && profileStorage.get("dirty")) {
       // Locale dirty → merge + push.
-      const merged = mergeBlobs(dehydrate(cached), remote.data);
+      const merged = mergeBlobs(dehydrate(data), remote.data);
       dataVersion = await store.save(merged, remote.version);
       data = hydrate(merged);
       profileStorage.set("data", data);
@@ -3248,9 +3248,14 @@ function dismissSplash() {
     const minDelay = new Promise((r) => setTimeout(r, minMs));
     const safety = new Promise((r) => setTimeout(r, 7000));
     Promise.race([Promise.all([ready, minDelay]), safety]).then(dismissSplash);
-    // Skip al tap/click: chi conosce già l'intro la salta subito. `once` così
-    // non resta appeso; dismissSplash è idempotente (splashDismissed).
-    splash.addEventListener("click", dismissSplash, { once: true });
+    // Skip al tap/click, ma NON aggressivo: una finestra di grazia iniziale evita
+    // che un tap accidentale nell'istante dell'apertura salti subito l'intro.
+    // Lo skip si arma dopo `skipArmMs`; prima i tap sono ignorati. dismissSplash
+    // è idempotente (splashDismissed), quindi nessun rischio di doppio dismiss.
+    const skipArmMs = reduce ? 0 : 700;
+    let skipArmed = false;
+    setTimeout(() => { skipArmed = true; }, skipArmMs);
+    splash.addEventListener("click", () => { if (skipArmed) dismissSplash(); });
   }
 }
 
