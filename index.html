@@ -271,6 +271,18 @@
     </div>
   </div>
 
+  <!-- Gestore schede: overlay a schermo intero (stessa cornice del calendario) -->
+  <div id="sheetsOverlay" class="focus-ov hidden" aria-hidden="true">
+    <header class="focus-top">
+      <button id="sheetsBack" class="focus-back" aria-label="Chiudi schede">←</button>
+      <div class="focus-id">
+        <div class="fn">Schede</div>
+        <div id="sheetsSub" class="fs">programma attivo e archivio</div>
+      </div>
+    </header>
+    <div id="sheetsBody" class="sheets-body"></div>
+  </div>
+
   <!-- Pop-up sessione completa del calendario (stile terminale) -->
   <dialog id="calDayDialog" class="cal-modal">
     <div class="cal-mbar"><span class="cal-dot"></span><span id="calDayTtl" class="cal-mttl">SESSIONE</span><button id="calDayClose" class="cal-x" type="button" aria-label="Chiudi">✕</button></div>
@@ -378,7 +390,7 @@
     <div id="drawerPanel" class="drawer-panel" role="menu">
       <button class="dr-item" data-act="nutrition" role="menuitem"><span class="e">🥗</span><span class="t">Alimentazione</span></button>
       <button class="dr-item" data-act="calendar" role="menuitem"><span class="e">📅</span><span class="t">Calendario</span></button>
-      <button class="dr-item" data-act="plan" role="menuitem"><span class="e">✎</span><span class="t">Modifica scheda</span></button>
+      <button class="dr-item" data-act="sheets" role="menuitem"><span class="e">📒</span><span class="t">Schede</span></button>
       <button class="dr-item" data-act="settings" role="menuitem"><span class="e">⚙</span><span class="t">Impostazioni</span></button>
     </div>
   </div>
