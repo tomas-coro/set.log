@@ -2,6 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   addCatalogEntry, renameCatalogEntry, deleteCatalogEntry, setCatalogNote,
+  seedCatalog, seedCatalogIfAbsent,
 } from "../catalog.js";
 
 const base = () => ({
@@ -56,4 +57,40 @@ test("setCatalogNote: imposta e svuota la nota", () => {
   assert.equal(set.catalog[0].note, "scapole addotte");
   const cleared = setCatalogNote(set, "c1", "   ");
   assert.equal(cleared.catalog[0].note, "");
+});
+
+test("seedCatalog: lista non vuota, voci ben formate, id univoci", () => {
+  const seed = seedCatalog();
+  assert.ok(seed.length >= 40);
+  const ids = new Set(seed.map((e) => e.id));
+  assert.equal(ids.size, seed.length);
+  for (const e of seed) {
+    assert.ok(e.id && e.name && e.muscle);
+    assert.equal(e.note, "");
+  }
+});
+
+test("seedCatalog: deterministico (stesse chiamate, stessi id)", () => {
+  assert.deepEqual(seedCatalog(), seedCatalog());
+});
+
+test("seedCatalogIfAbsent: catalog assente → seed iniettato", () => {
+  const blob = { schema: 6, updatedAt: null, activeSheetId: "s1",
+    sheets: [{ id: "s1", name: "A", plan: [], weeks: {} }] }; // niente catalog
+  const out = seedCatalogIfAbsent(blob);
+  assert.ok(out.catalog.length > 0);
+  assert.equal(blob.catalog, undefined); // input non mutato
+});
+
+test("seedCatalogIfAbsent: catalog [] esplicito resta vuoto (niente re-seed)", () => {
+  const blob = { schema: 6, updatedAt: null, activeSheetId: "s1",
+    sheets: [{ id: "s1", name: "A", plan: [], weeks: {} }], catalog: [] };
+  assert.deepEqual(seedCatalogIfAbsent(blob).catalog, []);
+});
+
+test("seedCatalogIfAbsent: catalog popolato resta invariato", () => {
+  const blob = { schema: 6, updatedAt: null, activeSheetId: "s1",
+    sheets: [{ id: "s1", name: "A", plan: [], weeks: {} }],
+    catalog: [{ id: "c1", name: "X", muscle: "Petto", note: "" }] };
+  assert.deepEqual(seedCatalogIfAbsent(blob).catalog, blob.catalog);
 });
