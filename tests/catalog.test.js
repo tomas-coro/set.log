@@ -37,6 +37,15 @@ test("renameCatalogEntry: preserva id e note, cambia nome e gruppo", () => {
   assert.equal(e.note, "cue");
 });
 
+test("renameCatalogEntry: rifiuta rinomina su nome già presente nel gruppo target", () => {
+  const blob = { ...base(), catalog: [
+    { id: "c1", name: "Panca piana bilanciere", muscle: "Petto", note: "" },
+    { id: "c2", name: "Croci ai cavi", muscle: "Petto", note: "" },
+  ] };
+  const out = renameCatalogEntry(blob, "c2", { name: "panca PIANA bilanciere", muscle: "Petto" });
+  assert.equal(out.catalog.find((e) => e.id === "c2").name, "Croci ai cavi"); // invariato
+});
+
 test("deleteCatalogEntry: rimuove per id", () => {
   const out = deleteCatalogEntry(base(), "c1");
   assert.equal(out.catalog.length, 0);
