@@ -43,3 +43,44 @@ export function toSheetsBlob(input) {
     }],
   };
 }
+
+// Scheda attiva di un blob normalizzato (fallback: prima scheda).
+export function activeSheet(blob) {
+  const sheets = blob?.sheets ?? [];
+  return sheets.find((s) => s.id === blob.activeSheetId) ?? sheets[0] ?? null;
+}
+
+// Blob normalizzato → forma in-memory: plan/weeks della scheda attiva proiettati
+// al top-level, così tutto il codice esistente che legge data.plan/data.weeks
+// funziona invariato. sheets[]/activeSheetId restano disponibili per il gestore.
+export function hydrate(input) {
+  const blob = toSheetsBlob(input);
+  const act = activeSheet(blob);
+  return {
+    schema: blob.schema,
+    updatedAt: blob.updatedAt ?? null,
+    activeSheetId: blob.activeSheetId,
+    sheets: blob.sheets,
+    plan: structuredClone(act.plan ?? []),
+    weeks: structuredClone(act.weeks ?? {}),
+  };
+}
+
+// Forma in-memory → blob normalizzato: i plan/weeks top-level (la scheda attiva)
+// vengono riscritti nella relativa entry di sheets[], poi plan/weeks top-level
+// vengono rimossi. updatedAt propagato.
+export function dehydrate(data) {
+  const base = toSheetsBlob(data); // garantisce sheets[]/activeSheetId/schema
+  const out = {
+    schema: SHEETS_SCHEMA,
+    updatedAt: data.updatedAt ?? base.updatedAt ?? null,
+    activeSheetId: data.activeSheetId ?? base.activeSheetId,
+    sheets: structuredClone(data.sheets ?? base.sheets),
+  };
+  const ids = out.sheets.map((s) => s.id);
+  if (!ids.includes(out.activeSheetId)) out.activeSheetId = out.sheets[0].id;
+  const act = out.sheets.find((s) => s.id === out.activeSheetId);
+  act.plan = structuredClone(data.plan ?? []);
+  act.weeks = structuredClone(data.weeks ?? {});
+  return out;
+}
