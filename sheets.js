@@ -84,3 +84,48 @@ export function dehydrate(data) {
   act.weeks = structuredClone(data.weeks ?? {});
   return out;
 }
+
+// Crea una nuova scheda e la rende attiva. duplicateActive=true copia il plan
+// della scheda attiva (storico SEMPRE vuoto); altrimenti scheda completamente vuota.
+export function addSheet(blob, { duplicateActive = false } = {}) {
+  const out = toSheetsBlob(blob);
+  const id = genId(out.sheets.map((s) => s.id));
+  const src = duplicateActive ? activeSheet(out) : null;
+  out.sheets.push({
+    id,
+    name: defaultSheetName(out.sheets),
+    plan: src ? structuredClone(src.plan ?? []) : [],
+    weeks: {},
+  });
+  out.activeSheetId = id;
+  return out;
+}
+
+// Rinomina per id. Trim; nome vuoto → invariato.
+export function renameSheet(blob, id, name) {
+  const out = toSheetsBlob(blob);
+  const t = String(name ?? "").trim();
+  if (!t) return out;
+  const s = out.sheets.find((x) => x.id === id);
+  if (s) s.name = t;
+  return out;
+}
+
+// Elimina per id. Rifiuta (no-op) se è l'ultima scheda. Se elimina l'attiva,
+// attiva la prima rimasta.
+export function deleteSheet(blob, id) {
+  const out = toSheetsBlob(blob);
+  if (out.sheets.length <= 1) return out;
+  const idx = out.sheets.findIndex((s) => s.id === id);
+  if (idx === -1) return out;
+  out.sheets.splice(idx, 1);
+  if (out.activeSheetId === id) out.activeSheetId = out.sheets[0].id;
+  return out;
+}
+
+// Cambia la scheda attiva. id ignoto → no-op.
+export function setActiveSheet(blob, id) {
+  const out = toSheetsBlob(blob);
+  if (out.sheets.some((s) => s.id === id)) out.activeSheetId = id;
+  return out;
+}

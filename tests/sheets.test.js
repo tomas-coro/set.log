@@ -85,3 +85,56 @@ test("hydrate∘dehydrate è round-trip stabile", () => {
   const blob = toSheetsBlob({ schema: 5, plan: [{ day: "A" }], weeks: { w: { label: "w", entries: {} } }, updatedAt: "t" });
   assert.deepEqual(dehydrate(hydrate(blob)), blob);
 });
+
+// Task 4 — CRUD: addSheet, renameSheet, deleteSheet, setActiveSheet
+import { addSheet, renameSheet, deleteSheet, setActiveSheet } from "../sheets.js";
+
+const base = () => toSheetsBlob({ schema: 5, plan: [{ day: "A" }], weeks: { w: { label: "w", entries: {} } }, updatedAt: "t" });
+
+test("addSheet vuota: appende, attiva la nuova, plan/weeks vuoti", () => {
+  const b = addSheet(base(), { duplicateActive: false });
+  assert.equal(b.sheets.length, 2);
+  assert.equal(b.sheets[1].name, "Scheda 2");
+  assert.equal(b.activeSheetId, b.sheets[1].id);
+  assert.deepEqual(b.sheets[1].plan, []);
+  assert.deepEqual(b.sheets[1].weeks, {});
+  assert.notEqual(b.sheets[1].id, b.sheets[0].id);
+});
+
+test("addSheet duplica attiva: copia plan, storico vuoto, attiva la copia", () => {
+  const b = addSheet(base(), { duplicateActive: true });
+  assert.equal(b.sheets.length, 2);
+  assert.deepEqual(b.sheets[1].plan, b.sheets[0].plan); // stesso contenuto
+  assert.notEqual(b.sheets[1].plan, b.sheets[0].plan);  // clone, non riferimento
+  assert.deepEqual(b.sheets[1].weeks, {});              // storico NON copiato
+  assert.equal(b.activeSheetId, b.sheets[1].id);
+});
+
+test("renameSheet: rinomina per id, trim, vuoto ignorato", () => {
+  const b0 = base();
+  const id = b0.sheets[0].id;
+  assert.equal(renameSheet(b0, id, "  Push/Pull  ").sheets[0].name, "Push/Pull");
+  assert.equal(renameSheet(b0, id, "   ").sheets[0].name, b0.sheets[0].name); // invariato
+});
+
+test("deleteSheet: rimuove; se era attiva attiva la prima rimasta", () => {
+  const b = addSheet(base(), { duplicateActive: false }); // attiva = sheets[1]
+  const activeId = b.activeSheetId;
+  const after = deleteSheet(b, activeId);
+  assert.equal(after.sheets.length, 1);
+  assert.equal(after.sheets.find((s) => s.id === activeId), undefined);
+  assert.equal(after.activeSheetId, after.sheets[0].id);
+});
+
+test("deleteSheet: l'ultima scheda non è eliminabile (no-op)", () => {
+  const b0 = base();
+  const after = deleteSheet(b0, b0.sheets[0].id);
+  assert.deepEqual(after, b0);
+});
+
+test("setActiveSheet: cambia attiva; id ignoto è no-op", () => {
+  const b = addSheet(base(), { duplicateActive: false });
+  const firstId = b.sheets[0].id;
+  assert.equal(setActiveSheet(b, firstId).activeSheetId, firstId);
+  assert.equal(setActiveSheet(b, "ghost").activeSheetId, b.activeSheetId);
+});
