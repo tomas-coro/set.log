@@ -280,17 +280,23 @@ export function mergeBlobs(local, remote) {
   let activeSheetId = (lUpd ?? "") >= (rUpd ?? "") ? L.activeSheetId : R.activeSheetId;
   if (!ids.includes(activeSheetId)) activeSheetId = ids[0];
 
-  const lCat = Array.isArray(L.catalog) ? L.catalog : [];
-  const rCat = Array.isArray(R.catalog) ? R.catalog : [];
-  const newerWins = (lUpd ?? "") >= (rUpd ?? "");
-  const loser = newerWins ? rCat : lCat;
-  const winner = newerWins ? lCat : rCat;
-  const catMap = new Map();
-  for (const e of loser) catMap.set(e.id, structuredClone(e));
-  for (const e of winner) catMap.set(e.id, structuredClone(e)); // a parità di id, il più recente sovrascrive
-  const catalog = [...catMap.values()];
-
-  return { schema: 6, updatedAt, activeSheetId, sheets, catalog };
+  // Catalog: union by id, a parità vince il lato con updatedAt più recente.
+  // Se ENTRAMBI i lati sono privi di catalog (blob legacy), NON emettere il campo:
+  // preserva il segnale "assente" su cui si basa il seed one-shot (vedi sheets.js/hydrate).
+  const hasCatalog = Array.isArray(L.catalog) || Array.isArray(R.catalog);
+  const out = { schema: 6, updatedAt, activeSheetId, sheets };
+  if (hasCatalog) {
+    const lCat = Array.isArray(L.catalog) ? L.catalog : [];
+    const rCat = Array.isArray(R.catalog) ? R.catalog : [];
+    const newerWins = (lUpd ?? "") >= (rUpd ?? "");
+    const loser = newerWins ? rCat : lCat;
+    const winner = newerWins ? lCat : rCat;
+    const catMap = new Map();
+    for (const e of loser) catMap.set(e.id, structuredClone(e));
+    for (const e of winner) catMap.set(e.id, structuredClone(e)); // a parità di id, il più recente sovrascrive
+    out.catalog = [...catMap.values()];
+  }
+  return out;
 }
 
 export class ConflictError extends Error {

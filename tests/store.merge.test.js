@@ -158,3 +158,20 @@ test("mergeBlobs: a parità di id vince il lato con updatedAt più recente", () 
   const merged = mergeBlobs(local, remote).catalog.find((e) => e.id === "c1");
   assert.equal(merged.note, "nuova");
 });
+
+test("mergeBlobs: due blob senza catalog → niente campo catalog (preserva 'assente' per il seed)", () => {
+  const a = { schema: 6, updatedAt: "2026-01-01T00:00:00.000Z", activeSheetId: "s1",
+    sheets: [{ id: "s1", name: "A", plan: [], weeks: {} }] };
+  const b = { schema: 6, updatedAt: "2026-01-02T00:00:00.000Z", activeSheetId: "s1",
+    sheets: [{ id: "s1", name: "A", plan: [], weeks: {} }] };
+  assert.equal("catalog" in mergeBlobs(a, b), false);
+});
+
+test("mergeBlobs: catalog presente da un lato sopravvive se l'altro è assente", () => {
+  const withCat = { schema: 6, updatedAt: "2026-01-02T00:00:00.000Z", activeSheetId: "s1",
+    sheets: [{ id: "s1", name: "A", plan: [], weeks: {} }],
+    catalog: [{ id: "c1", name: "Panca", muscle: "Petto", note: "" }] };
+  const without = { schema: 6, updatedAt: "2026-01-01T00:00:00.000Z", activeSheetId: "s1",
+    sheets: [{ id: "s1", name: "A", plan: [], weeks: {} }] };
+  assert.deepEqual(mergeBlobs(without, withCat).catalog.map((e) => e.id), ["c1"]);
+});
