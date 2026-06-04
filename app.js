@@ -320,6 +320,8 @@ function renderSheets() {
     const ar = document.createElement("span"); ar.className = "sh-ar"; ar.textContent = open ? "▸" : "▹";
     const nm = document.createElement("span"); nm.className = "sh-nm"; nm.textContent = sheetSlug(s.name) + "/";
     h.append(ar, nm);
+    h.dataset.id = s.id;
+    a11yToggle(h, open, `#sheetsBody .sh-h[data-id="${s.id}"]`);
     if (s.active) {
       const tag = document.createElement("span"); tag.className = "sh-tag"; tag.textContent = "attiva";
       h.appendChild(tag);
@@ -379,6 +381,7 @@ function renderSheets() {
   newrow.appendChild(mkNew("importa", importSheetPrompt));
   inner.appendChild(newrow);
   body.appendChild(inner);
+  a11yRestoreFocus();
 }
 
 // Bottone azione dei blocchi scheda. stopPropagation: il tap sul bottone non
@@ -390,6 +393,39 @@ function mkBtn(label, cls, onClick) {
   b.textContent = label;
   b.addEventListener("click", (e) => { e.stopPropagation(); onClick(e); });
   return b;
+}
+
+// Selettore dell'header accordion da rifocalizzare dopo il prossimo re-render.
+// Valorizzato SOLO dal ramo keydown di a11yToggle: i render ricostruiscono il
+// DOM e distruggono l'elemento focusato, da mouse/touch non serve ripristino.
+let a11yRefocus = null;
+
+// Rende un div clickable azionabile da tastiera (header accordion):
+// role/tabindex/aria-expanded + Enter/Spazio che riusa il click-handler già
+// presente via el.click() (diretto, o via bubbling se l'handler è sul parent,
+// es. .sh-h → .sh-blk). refocusSel: selettore per ritrovare l'header dopo il
+// re-render (ancorato al contenitore, vedi spec).
+// PRECONDIZIONE: el è un elemento fresco (appena ricostruito dal render);
+// su elementi riusati i keydown-listener si accumulerebbero.
+function a11yToggle(el, expanded, refocusSel) {
+  el.setAttribute("role", "button");
+  el.setAttribute("tabindex", "0");
+  el.setAttribute("aria-expanded", String(expanded));
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault(); // Spazio non deve scrollare la pagina
+      a11yRefocus = refocusSel;
+      el.click();
+    }
+  });
+}
+
+// Da chiamare in coda ai render che ricostruiscono accordion accessibili.
+function a11yRestoreFocus() {
+  if (!a11yRefocus) return;
+  const el = document.querySelector(a11yRefocus);
+  a11yRefocus = null;
+  if (el) el.focus();
 }
 
 // Riga prompt stile terminale ("$ comando" / "› hint").
@@ -546,7 +582,11 @@ function renderCatalog() {
     const hd = document.createElement("div");
     hd.className = "db-ghd";
     hd.innerHTML = `<span class="car">${isOpen ? "▾" : "▸"}</span><span class="nm">${muscle.toLowerCase()}</span><span class="fill"></span><span class="ct">${String(items.length).padStart(2, "0")}</span>`;
-    if (!f) hd.onclick = () => { dbOpenGroups[muscle] = !(dbOpenGroups[muscle] !== false); renderCatalog(); };
+    if (!f) {
+      hd.onclick = () => { dbOpenGroups[muscle] = !(dbOpenGroups[muscle] !== false); renderCatalog(); };
+      hd.dataset.muscle = muscle;
+      a11yToggle(hd, isOpen, `#dbTree .db-ghd[data-muscle="${muscle}"]`);
+    }
     node.appendChild(hd);
     const kids = document.createElement("div");
     kids.className = "db-kids";
@@ -559,7 +599,10 @@ function renderCatalog() {
       k.innerHTML = `<div class="db-krow"><span class="br">${last ? "└─" : "├─"}</span>` +
         `<span class="knm">${dbHL(entry.name)}${noteDot}</span><span class="car2">▸</span></div>` +
         (isExOpen ? dbDetHTML(entry) : "");
-      k.querySelector(".db-krow").onclick = () => { dbOpenEx = isExOpen ? null : entry.id; renderCatalog(); };
+      const krow = k.querySelector(".db-krow");
+      krow.onclick = () => { dbOpenEx = isExOpen ? null : entry.id; renderCatalog(); };
+      krow.dataset.id = entry.id;
+      a11yToggle(krow, isExOpen, `#dbTree .db-krow[data-id="${entry.id}"]`);
       if (isExOpen) wireDetail(k, entry);
       kids.appendChild(k);
     });
@@ -572,13 +615,19 @@ function renderCatalog() {
       `<button class="mk" id="dbMkNew">+ aggiungi "${dbEsc(dbFilter)}"</button></div>`;
     document.getElementById("dbMkNew").onclick = () => openCatalogForm(null, dbFilter);
   }
+  a11yRestoreFocus();
 }
 
 // Aggancia gli handler del dettaglio inline (nota + azioni). La modale è il Task 10.
 function wireDetail(k, entry) {
   const ta = k.querySelector(".note");
   ta.onclick = (e) => e.stopPropagation();
-  ta.onblur = () => mutateCatalog((b) => setCatalogNote(b, entry.id, ta.value));
+  // Salva (e ri-renderizza) solo se la nota è cambiata: il re-render al blur
+  // distruggerebbe i bottoni del dettaglio a metà Tab da tastiera.
+  ta.onblur = () => {
+    if (ta.value === (entry.note || "")) return;
+    mutateCatalog((b) => setCatalogNote(b, entry.id, ta.value));
+  };
   k.querySelector(".edit").onclick = (e) => { e.stopPropagation(); openCatalogForm(entry); };
   k.querySelector(".del").onclick = (e) => { e.stopPropagation(); openCatalogDelete(entry); };
 }
