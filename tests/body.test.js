@@ -96,3 +96,10 @@ test("freshnessByGroup: never → set di zone cold per il render", () => {
   const { never } = freshnessByGroup({}, "2026-06-04");
   assert.ok(never.has("chest") && never.has("calves") && never.has("abs"));
 });
+
+test("freshnessByGroup: confini esatti d=2 (→0.6) e d=5 (→0.25)", () => {
+  const r2 = freshnessByGroup({ Petto: "2026-06-02" }, "2026-06-04");
+  assert.equal(r2.zones.chest, 0.6);   // 2 giorni: prima fascia finita
+  const r5 = freshnessByGroup({ Petto: "2026-05-30" }, "2026-06-04");
+  assert.equal(r5.zones.chest, 0.25);  // 5 giorni: ultima fascia accesa
+});
