@@ -17,6 +17,7 @@ import { bindAuthScreen, hideAuthScreen, signOut } from "./auth.js";
 import { ProfileStorage } from "./profile-storage.js";
 import {
   parseTarget, activeSetIndex, isEntryComplete, bestKg, isWeekRecord, isSetRecord, progressionDelta,
+  historyIsBodyweight, bestReps,
   withSet, withoutSet, withSupersetSet, withoutSupersetSet, withNote, previousNote,
   previousSetInSession, previousWeekSet,
   sessionVolume, volumeByMuscle, exerciseTrend, nextExercisePreview,
@@ -2110,8 +2111,11 @@ function renderFocusNormal(ex, idx, container, footer) {
     const cta = document.createElement("button");
     cta.className = "cta"; cta.textContent = "Serie fatta · avvia recupero ▸";
     cta.addEventListener("click", () => {
-      const _prevBest = bestKg(data, currentDay, exId);
-      if (isSetRecord(_prevBest, draft.kg)) showRecordToast();
+      // Corpo libero (storico senza kg E serie corrente senza kg) → PR su reps.
+      const _kgNum = parseFloat(String(draft.kg).replace(",", "."));
+      const _bw = historyIsBodyweight(data, currentDay, exId) && !(_kgNum > 0);
+      const _prevBest = _bw ? bestReps(data, currentDay, exId) : bestKg(data, currentDay, exId);
+      if (isSetRecord(_prevBest, _bw ? draft.reps : draft.kg)) showRecordToast();
       data = setEntry(data, currentWeek, currentDay, exId,
         withSet(v, curIdx, { reps: draft.reps, kg: draft.kg, done: true, feel: entry.sets[curIdx]?.feel ?? "", comments: draft.comments }), new Date().toISOString());
       persist(idx);

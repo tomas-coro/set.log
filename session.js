@@ -147,17 +147,66 @@ export function bestKgBefore(data, day, exId, weekKey, track = null) {
   return best;
 }
 
+// true se TUTTO lo storico working (no warmup/failed) dell'esercizio è senza
+// kg (vuoto, non numerico o 0): esercizio "a corpo libero" per la logica PR.
+// Vacuamente true senza storico (primo allenamento → primo PR, come per i kg).
+export function historyIsBodyweight(data, day, exId, track = null) {
+  for (const k of Object.keys(data?.weeks ?? {})) {
+    const t = entryTrack(getEntry(data, k, day, exId), track);
+    for (const s of t.sets) {
+      if (s.warmup || s.failed) continue;
+      const v = parseNum(s.kg);
+      if (v !== null && v > 0) return false;
+    }
+  }
+  return true;
+}
+
+// Max reps working su tutte le settimane (gemello di bestKg, metrica reps).
+export function bestReps(data, day, exId, track = null) {
+  let best = null;
+  for (const k of Object.keys(data?.weeks ?? {})) {
+    const t = entryTrack(getEntry(data, k, day, exId), track);
+    for (const s of t.sets) {
+      if (s.warmup || s.failed) continue;
+      const v = parseNum(s.reps);
+      if (v !== null && (best === null || v > best)) best = v;
+    }
+  }
+  return best;
+}
+
+// Max reps working delle settimane precedenti a `weekKey` (gemello di bestKgBefore).
+export function bestRepsBefore(data, day, exId, weekKey, track = null) {
+  let best = null;
+  for (const k of Object.keys(data?.weeks ?? {})) {
+    if (k >= weekKey) continue;
+    const t = entryTrack(getEntry(data, k, day, exId), track);
+    for (const s of t.sets) {
+      if (s.warmup || s.failed) continue;
+      const v = parseNum(s.reps);
+      if (v !== null && (best === null || v > best)) best = v;
+    }
+  }
+  return best;
+}
+
 // true se il top-set working di `weekKey` supera STRETTAMENTE lo storico precedente.
+// Metrica: kg di default; max reps se l'intero storico è a corpo libero (kg
+// sempre vuoto/0) — così dips & co. senza zavorra generano PR sulle ripetizioni.
 export function isWeekRecord(data, day, exId, weekKey, track = null) {
+  const bw = historyIsBodyweight(data, day, exId, track);
   const t = entryTrack(getEntry(data, weekKey, day, exId), track);
   let top = null;
   for (const s of t.sets) {
     if (s.warmup || s.failed) continue;
-    const v = parseNum(s.kg);
+    const v = parseNum(bw ? s.reps : s.kg);
     if (v !== null && (top === null || v > top)) top = v;
   }
   if (top === null) return false;
-  const prev = bestKgBefore(data, day, exId, weekKey, track);
+  const prev = bw
+    ? bestRepsBefore(data, day, exId, weekKey, track)
+    : bestKgBefore(data, day, exId, weekKey, track);
   return prev === null || top > prev;
 }
 

@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { parseTargetTrack, parseTarget, activeSetIndex, isEntryComplete, activeExerciseIndex, nextExercisePreview } from "../session.js";
 import { withSet, withoutSet, withSupersetSet, withoutSupersetSet } from "../session.js";
 import { bestKg, bestKgBefore, isWeekRecord, isSetRecord, progressionDelta, withNote, previousNote, previousSetInSession, previousWeekSet, lastWorkingSet, sessionVolume, volumeByMuscle, exerciseTrend, topSetSeries, chartGeometry } from "../session.js";
+import { historyIsBodyweight, bestReps, bestRepsBefore } from "../session.js";
 import { sessionDates, monthGrid, sessionHasDoneSet } from "../session.js";
 import { isDumbbell, volumeMeta, exerciseVolume, setVolume } from "../session.js";
 import { emptyData, setEntry, getEntry } from "../store.js";
@@ -882,4 +883,76 @@ test("volumeByMuscle: manubri ×2 nel breakdown, traccia sec a 0", () => {
     { muscle: "Spalle", volume: 400 },
     { muscle: "Core", volume: 75 },
   ]);
+});
+
+// ---- PR a reps per esercizi a corpo libero ----
+
+// helper locale: settimane → entry con sets [{reps, kg}]
+function dataSets(weeksSets) {
+  let d = emptyData();
+  for (const [wk, sets] of Object.entries(weeksSets)) {
+    d = setEntry(d, wk, "A", "dips1", { sets, note: "" });
+  }
+  return d;
+}
+
+test("historyIsBodyweight: true se tutti i working set sono senza kg (vuoto o 0)", () => {
+  const d = dataSets({ "2026-W20": [{ reps: "8", kg: "", done: true }, { reps: "7", kg: "0", done: true }] });
+  assert.equal(historyIsBodyweight(d, "A", "dips1"), true);
+});
+
+test("historyIsBodyweight: false appena esiste un kg > 0 storico", () => {
+  const d = dataSets({ "2026-W20": [{ reps: "8", kg: "", done: true }], "2026-W21": [{ reps: "8", kg: "5", done: true }] });
+  assert.equal(historyIsBodyweight(d, "A", "dips1"), false);
+});
+
+test("historyIsBodyweight: ignora warmup e failed con kg", () => {
+  const d = dataSets({ "2026-W20": [
+    { reps: "8", kg: "20", done: true, warmup: true },
+    { reps: "8", kg: "10", done: true, failed: true },
+    { reps: "8", kg: "", done: true },
+  ] });
+  assert.equal(historyIsBodyweight(d, "A", "dips1"), true);
+});
+
+test("bestReps / bestRepsBefore: max reps come bestKg ma su reps", () => {
+  const d = dataSets({
+    "2026-W20": [{ reps: "8", kg: "", done: true }, { reps: "10", kg: "", done: true }],
+    "2026-W22": [{ reps: "9", kg: "", done: true }],
+  });
+  assert.equal(bestReps(d, "A", "dips1"), 10);
+  assert.equal(bestRepsBefore(d, "A", "dips1", "2026-W22"), 10);
+  assert.equal(bestRepsBefore(d, "A", "dips1", "2026-W20"), null);
+});
+
+test("isWeekRecord: corpo libero → record sul max reps", () => {
+  const d = dataSets({
+    "2026-W20": [{ reps: "8", kg: "", done: true }],
+    "2026-W22": [{ reps: "9", kg: "", done: true }],
+  });
+  assert.equal(isWeekRecord(d, "A", "dips1", "2026-W22"), true);
+});
+
+test("isWeekRecord: corpo libero → niente record se non batte le reps", () => {
+  const d = dataSets({
+    "2026-W20": [{ reps: "10", kg: "", done: true }],
+    "2026-W22": [{ reps: "10", kg: "", done: true }],
+  });
+  assert.equal(isWeekRecord(d, "A", "dips1", "2026-W22"), false);
+});
+
+test("isWeekRecord: appena compare un kg > 0 storico si torna alla metrica kg", () => {
+  // W20 a corpo libero con 12 reps; W22 zavorrato 5kg x 8: record kg (prima nessun kg).
+  const d = dataSets({
+    "2026-W20": [{ reps: "12", kg: "", done: true }],
+    "2026-W22": [{ reps: "8", kg: "5", done: true }],
+  });
+  assert.equal(isWeekRecord(d, "A", "dips1", "2026-W22"), true);
+  // e le 12 reps storiche NON generano falsi PR reps in W23 a corpo libero
+  const d2 = dataSets({
+    "2026-W20": [{ reps: "12", kg: "", done: true }],
+    "2026-W22": [{ reps: "8", kg: "5", done: true }],
+    "2026-W23": [{ reps: "13", kg: "", done: true }],
+  });
+  assert.equal(isWeekRecord(d2, "A", "dips1", "2026-W23"), false); // metrica kg: top W23 = null
 });
