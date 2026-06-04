@@ -1866,6 +1866,31 @@ function wireSetDialog() {
 // { idx, superset:true, aIdx, bIdx } (il superset rate entrambe le tracce).
 let lastDone = null;
 
+// Chiusura programmata del feel-ask (1.2s dopo il giudizio): si vede la
+// conferma, poi il pannello sparisce da solo così il prossimo esercizio è
+// visibile. Un secondo tap entro la finestra sostituisce il giudizio e
+// riparte il timer. Sull'ultima serie chiude anche l'esercizio e avanza.
+function scheduleFeelAskClose(info) {
+  clearTimeout(scheduleFeelAskClose._t);
+  scheduleFeelAskClose._t = setTimeout(() => {
+    hideFeelAsk();
+    if (info.last) advanceAfterExercise(info.idx);
+  }, 1200);
+}
+
+// Esercizio finito e valutato: chiudi il focus corrente e apri il prossimo
+// esercizio della sessione (se c'è; altrimenti torna alla lista).
+function advanceAfterExercise(idx) {
+  const exs = dayPlan().exercises;
+  if (idx + 1 < exs.length) {
+    openIndex = idx + 1;
+    supersetTab = "a";
+    render();
+  } else {
+    closeFocus();
+  }
+}
+
 // Mostra la striscia "com'è andata?" per l'ultima serie conclusa. Resta visibile
 // (anche sull'ultima serie dell'esercizio: NON si chiude più il focus prima di
 // poter valutare). Sui superset mostra DUE barre separate A e B, così si può dare
@@ -1893,6 +1918,8 @@ function showFeelAsk(info) {
           persist(info.idx);
           paint();   // riflette la selezione sulla barra
           render();  // aggiorna i badge nella lista/overlay
+          const e2 = normalizeSupersetEntry(getEntry(data, currentWeek, currentDay, exId));
+          if (e2.a.sets[info.aIdx]?.feel && e2.b.sets[info.bIdx]?.feel) scheduleFeelAskClose(info);
         });
         wrap.append(tl, bar);
         return wrap;
@@ -1907,6 +1934,7 @@ function showFeelAsk(info) {
         persist(info.idx);
         paint();
         render();
+        scheduleFeelAskClose(info);
       });
       host.append(bar);
     }
@@ -1916,6 +1944,7 @@ function showFeelAsk(info) {
 }
 
 function hideFeelAsk() {
+  clearTimeout(scheduleFeelAskClose._t);
   document.getElementById("feelAsk").classList.add("hidden");
   lastDone = null;
 }
@@ -2157,7 +2186,7 @@ function renderFocusNormal(ex, idx, container, footer) {
       render();
       // Anche sull'ultima serie: mostra "com'è andata?" (prima si chiudeva il
       // focus e non si poteva valutare). Si torna alla lista con il tasto ←.
-      showFeelAsk({ idx, superset: false, setIndex: curIdx });
+      showFeelAsk({ idx, superset: false, setIndex: curIdx, last: curIdx + 1 >= total });
     });
     footer.appendChild(cta);
   }
@@ -2376,7 +2405,7 @@ function renderFocusSuperset(ex, idx, container, footer) {
       render();
       // Due barre A/B separate (sensazione indipendente per traccia); resta
       // aperto anche sull'ultima serie. Si torna alla lista con il tasto ←.
-      showFeelAsk({ idx, superset: true, aIdx: a.curIdx, bIdx: b.curIdx });
+      showFeelAsk({ idx, superset: true, aIdx: a.curIdx, bIdx: b.curIdx, last: _doneAll });
     });
     footer.appendChild(cta);
   }
