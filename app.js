@@ -1059,6 +1059,14 @@ function notifyOn() {
     && "Notification" in window && Notification.permission === "granted";
 }
 
+// Volume dei suoni timer: 0–40 (%), default 10. 0 = muto (resta la vibrazione).
+const TIMERVOL_KEY = "gymsched_timervol";
+function getTimerVol() {
+  const n = parseInt(localStorage.getItem(TIMERVOL_KEY), 10);
+  return Number.isFinite(n) && n >= 0 && n <= 40 ? n : 10;
+}
+function setTimerVol(v) { localStorage.setItem(TIMERVOL_KEY, String(v)); }
+
 // ---- Commenti veloci (preset, browser only) ----
 const QC_KEY = "gymsched_quickcomments";
 const QC_DEFAULT = ["alzare 1kg", "diminuire leggermente", "ultima reps forzata/sporca"];
@@ -1135,28 +1143,32 @@ function ensureAudio() {
   audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
   if (audioCtx.state === "suspended") audioCtx.resume();
 }
-// Tono singolo WebAudio (freq Hz, durata s, volume di picco). after = ritardo s.
-function tone(freq, dur = 0.18, peak = 0.3, after = 0) {
+// Tono singolo WebAudio (sinusoide): freq Hz, durata s, ritardo s. Il volume
+// viene dalla preferenza utente (getTimerVol, 0–40%): attacco dolce 50ms e
+// coda esponenziale — pensato per non "sparare" in cuffia.
+function tone(freq, dur = 0.18, after = 0) {
+  const vol = getTimerVol() / 100;
+  if (vol <= 0) return;
   try {
     ensureAudio();
     const t0 = audioCtx.currentTime + after;
     const osc = audioCtx.createOscillator();
     const gain = audioCtx.createGain();
     osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.001, t0);
-    gain.gain.exponentialRampToValueAtTime(peak, t0 + 0.02);
-    gain.gain.exponentialRampToValueAtTime(0.001, t0 + dur);
+    gain.gain.setValueAtTime(0.0001, t0);
+    gain.gain.linearRampToValueAtTime(vol, t0 + 0.05);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
     osc.connect(gain).connect(audioCtx.destination);
     osc.start(t0);
-    osc.stop(t0 + dur + 0.02);
+    osc.stop(t0 + dur + 0.05);
   } catch (_) { /* audio unavailable; ignore */ }
 }
-// Fine recupero: due toni ascendenti ben udibili. Preavviso (−10s): doppio tono
-// basso. Countdown (3-2-1): tick acuto breve. Suoni distinti tra loro così si
-// riconoscono a orecchio anche con la musica nelle cuffie.
-function beep() { tone(880, 0.45, 0.32); tone(1180, 0.4, 0.3, 0.16); }
-function cueWarning() { tone(440, 0.16, 0.24); tone(440, 0.16, 0.24, 0.2); if (navigator.vibrate) navigator.vibrate(120); }
-function cueCountdown() { tone(700, 0.11, 0.26); }
+// Fine recupero: arpeggio do-mi-sol. Preavviso (−10s): doppio do5 morbido.
+// Countdown (3-2-1): singolo mi5. Sinusoidi brevi e distinte, riconoscibili
+// a orecchio anche con la musica nelle cuffie senza risultare stridule.
+function beep() { tone(523, 0.22); tone(659, 0.22, 0.18); tone(784, 0.5, 0.36); }
+function cueWarning() { tone(523, 0.25); tone(523, 0.25, 0.35); if (navigator.vibrate) navigator.vibrate(120); }
+function cueCountdown() { tone(659, 0.18); }
 let lastTickSecond = null;
 
 function showRestDoneBanner() {
@@ -2685,6 +2697,8 @@ function wireSettings() {
     document.getElementById("platesInput").value = getPlateSet().join(", ");
     renderQcList();
     document.getElementById("notifyToggle").checked = notifyOn();
+    document.getElementById("timerVolSlider").value = getTimerVol();
+    document.getElementById("timerVolPct").textContent = getTimerVol() + "%";
     syncThemeCards();
     document.getElementById("fxGlowToggle").checked = getFx(localStorage, "glow");
     document.getElementById("fxScanToggle").checked = getFx(localStorage, "scan");
@@ -2717,6 +2731,12 @@ function wireSettings() {
       localStorage.setItem(NOTIFY_KEY, "0");
       alert("Permesso notifiche negato dal browser/sistema.");
     }
+  });
+
+  document.getElementById("timerVolSlider").addEventListener("input", (e) => {
+    setTimerVol(parseInt(e.target.value, 10));
+    document.getElementById("timerVolPct").textContent = getTimerVol() + "%";
+    cueCountdown(); // anteprima live del volume scelto
   });
 
   // Selettore tema a card (Carta / Graphite): scelta nominata, applicata live.
