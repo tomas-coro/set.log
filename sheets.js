@@ -205,3 +205,24 @@ export function sortSheetSummaries(sums) {
     return a.lastDate < b.lastDate ? 1 : -1;
   });
 }
+
+// Slug display-only del nome scheda, stile directory ("Focus alto" → "focus-alto").
+// Analogo a goSlug (timer.js) ma con separatore "-" e fallback "scheda".
+// Il nome reale nel modello resta invariato.
+export function sheetSlug(name) {
+  const s = String(name ?? "")
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .toLowerCase().replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 24).replace(/-+$/, "");
+  return s || "scheda";
+}
+
+// Data breve per il gestore: "oggi", "DD.MM" (anno corrente), "DD.MM.YY",
+// o "mai usata" se null. todayIso ("YYYY-MM-DD") iniettato per testabilità.
+export function fmtSheetDate(iso, todayIso) {
+  if (!iso) return "mai usata";
+  if (iso === todayIso) return "oggi";
+  const [y, m, d] = String(iso).split("-");
+  return y === String(todayIso).slice(0, 4) ? `${d}.${m}` : `${d}.${m}.${y.slice(2)}`;
+}

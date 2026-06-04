@@ -1,7 +1,7 @@
 // tests/sheets.test.js
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { SHEETS_SCHEMA, defaultSheetName, toSheetsBlob, hydrate, dehydrate, sortSheetSummaries } from "../sheets.js";
+import { SHEETS_SCHEMA, defaultSheetName, toSheetsBlob, hydrate, dehydrate, sortSheetSummaries, sheetSlug, fmtSheetDate } from "../sheets.js";
 
 test("SHEETS_SCHEMA è 6", () => {
   assert.equal(SHEETS_SCHEMA, 6);
@@ -275,4 +275,24 @@ test("sortSheetSummaries: non muta l'input e regge input nullo", () => {
   sortSheetSummaries(sums);
   assert.deepEqual(sums.map((s) => s.id), before);
   assert.deepEqual(sortSheetSummaries(null), []);
+});
+
+// Task 3 — sheetSlug, fmtSheetDate
+test("sheetSlug: minuscole, accenti, separatore '-', taglio a 24", () => {
+  assert.equal(sheetSlug("Focus alto"), "focus-alto");
+  assert.equal(sheetSlug("Forza & Massa — über"), "forza-massa-uber");
+  assert.equal(sheetSlug("Una scheda con nome davvero lungo"), "una-scheda-con-nome-davv");
+});
+
+test("sheetSlug: vuoto/garbage/null → 'scheda'", () => {
+  assert.equal(sheetSlug(""), "scheda");
+  assert.equal(sheetSlug("⚡⚡⚡"), "scheda");
+  assert.equal(sheetSlug(null), "scheda");
+});
+
+test("fmtSheetDate: oggi / anno corrente / anno diverso / null", () => {
+  assert.equal(fmtSheetDate("2026-06-04", "2026-06-04"), "oggi");
+  assert.equal(fmtSheetDate("2026-05-26", "2026-06-04"), "26.05");
+  assert.equal(fmtSheetDate("2025-12-31", "2026-06-04"), "31.12.25");
+  assert.equal(fmtSheetDate(null, "2026-06-04"), "mai usata");
 });
