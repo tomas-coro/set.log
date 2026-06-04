@@ -392,6 +392,36 @@ function mkBtn(label, cls, onClick) {
   return b;
 }
 
+// Selettore dell'header accordion da rifocalizzare dopo il prossimo re-render.
+// Valorizzato SOLO dal ramo keydown di a11yToggle: i render ricostruiscono il
+// DOM e distruggono l'elemento focusato, da mouse/touch non serve ripristino.
+let a11yRefocus = null;
+
+// Rende un div clickable azionabile da tastiera (header accordion):
+// role/tabindex/aria-expanded + Enter/Spazio che riusa il click-handler già
+// presente via el.click(). refocusSel: selettore per ritrovare l'header dopo
+// il re-render (ancorato al contenitore, vedi spec).
+function a11yToggle(el, expanded, refocusSel) {
+  el.setAttribute("role", "button");
+  el.setAttribute("tabindex", "0");
+  el.setAttribute("aria-expanded", String(expanded));
+  el.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault(); // Spazio non deve scrollare la pagina
+      a11yRefocus = refocusSel;
+      el.click();
+    }
+  });
+}
+
+// Da chiamare in coda ai render che ricostruiscono accordion accessibili.
+function a11yRestoreFocus() {
+  if (!a11yRefocus) return;
+  const el = document.querySelector(a11yRefocus);
+  a11yRefocus = null;
+  if (el) el.focus();
+}
+
 // Riga prompt stile terminale ("$ comando" / "› hint").
 function mkPrompt(sym, text) {
   const p = document.createElement("div");
