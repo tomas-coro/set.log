@@ -201,8 +201,9 @@ input.num::-webkit-outer-spin-button,input.num::-webkit-inner-spin-button{-webki
 #bottomStack{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;
   z-index:60;display:flex;flex-direction:column;}
 
-/* timer bar — due righe: nome esercizio intero sopra, tempo + controlli sotto */
-.timerbar{background:var(--surf2);border-top:1px solid var(--line);
+/* timer bar — due righe: nome esercizio intero sopra, tempo + controlli sotto.
+   position:relative: contiene lo ::after scanline del go-on (Graphite). */
+.timerbar{position:relative;background:var(--surf2);border-top:1px solid var(--line);
   padding:14px 18px 16px;backdrop-filter:blur(8px);}
 .t-row1{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
 .t-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
