@@ -5,6 +5,7 @@ import { withSet, withoutSet, withSupersetSet, withoutSupersetSet } from "../ses
 import { bestKg, bestKgBefore, isWeekRecord, isSetRecord, progressionDelta, withNote, previousNote, previousSetInSession, previousWeekSet, lastWorkingSet, sessionVolume, volumeByMuscle, exerciseTrend, topSetSeries, chartGeometry } from "../session.js";
 import { historyIsBodyweight, bestReps, bestRepsBefore } from "../session.js";
 import { sessionDates, monthGrid, sessionHasDoneSet } from "../session.js";
+import { muscleContributions, lastTrainedByGroup } from "../session.js";
 import { isDumbbell, volumeMeta, exerciseVolume, setVolume } from "../session.js";
 import { emptyData, setEntry, getEntry } from "../store.js";
 
@@ -955,4 +956,59 @@ test("isWeekRecord: appena compare un kg > 0 storico si torna alla metrica kg", 
     "2026-W23": [{ reps: "13", kg: "", done: true }],
   });
   assert.equal(isWeekRecord(d2, "A", "dips1", "2026-W23"), false); // metrica kg: top W23 = null
+});
+
+// ---- muscleContributions / lastTrainedByGroup (heatmap anatomica) ----
+
+const heatData = () => ({
+  plan: [{ day: "A", title: "Push", exercises: [
+    { id: "x1", name: "Panca piana bilanciere", muscle: "Petto" },
+    { id: "x2", name: "Spinte inclinata manubri", muscle: "Petto" },
+    { id: "x3", name: "Plank + Crunch a terra", muscle: "Core", muscleB: "Core", superset: true, unit: "sec", unitB: "reps" },
+  ] }],
+  weeks: { "2026-W23": {
+    dates: { A: "2026-06-02" },
+    entries: { A: {
+      x1: { sets: [{ reps: "8", kg: "80", done: true }, { reps: "5", kg: "60", done: true, warmup: true }] },
+      x2: { sets: [{ reps: "10", kg: "20", done: true }] },
+      x3: { a: { sets: [{ reps: "60", done: true }] }, b: { sets: [{ reps: "15", done: true }] } },
+    } },
+  } },
+});
+
+test("muscleContributions: per-traccia con nome, manubri x2, warmup/sec esclusi", () => {
+  const d = heatData();
+  const out = muscleContributions(d, "2026-W23", "A", d.plan[0]);
+  // x1: 8*80=640 (warmup escluso) · x2: 10*20*2=400 (manubri) ·
+  // x3 traccia A a tempo → volume 0 (esclusa) · traccia B reps senza kg → 0 (esclusa)
+  assert.deepEqual(out, [
+    { muscle: "Petto", name: "Panca piana bilanciere", volume: 640 },
+    { muscle: "Petto", name: "Spinte inclinata manubri", volume: 400 },
+  ]);
+});
+
+test("lastTrainedByGroup: data più recente per gruppo, anche con volume 0", () => {
+  const d = heatData();
+  // Core: serie done a tempo/senza kg → volume 0 ma ALLENATO (conta per freschezza)
+  const out = lastTrainedByGroup(d);
+  assert.equal(out.Petto, "2026-06-02");
+  assert.equal(out.Core, "2026-06-02");
+  assert.equal(out.Dorso, undefined);
+});
+
+test("lastTrainedByGroup: vince la data più recente tra più settimane", () => {
+  const d = heatData();
+  d.weeks["2026-W22"] = {
+    dates: { A: "2026-05-26" },
+    entries: { A: { x1: { sets: [{ reps: "8", kg: "70", done: true }] } } },
+  };
+  assert.equal(lastTrainedByGroup(d).Petto, "2026-06-02");
+});
+
+test("lastTrainedByGroup: serie solo warmup o non-done non contano", () => {
+  const d = heatData();
+  d.weeks["2026-W23"].entries.A = {
+    x1: { sets: [{ reps: "5", kg: "60", done: true, warmup: true }, { reps: "8", kg: "80", done: false }] },
+  };
+  assert.equal(lastTrainedByGroup(d).Petto, undefined);
 });

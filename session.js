@@ -374,6 +374,26 @@ export function volumeByMuscle(data, weekKey, day, dayPlan) {
     .sort((a, b) => b.volume - a.volume);
 }
 
+// Contributi volume per-traccia CON NOME (per la heatmap anatomica: i gruppi
+// secondari si risolvono per nome a valle, in body.js/heatByGroup). Come
+// volumeByMuscle ma non aggregato; tracce a volume 0 escluse.
+export function muscleContributions(data, weekKey, day, dayPlan) {
+  const out = [];
+  for (const ex of dayPlan?.exercises ?? []) {
+    const v = getEntry(data, weekKey, day, ex.id);
+    const name = String(ex?.name ?? "");
+    if (ex?.superset) {
+      const e = normalizeSupersetEntry(v);
+      const [nameA, nameB] = name.includes(" + ") ? name.split(" + ") : [name, name];
+      out.push({ muscle: ex.muscle, name: nameA, volume: trackVolume(e.a, volumeMeta(ex, "a")) });
+      out.push({ muscle: ex.muscleB, name: nameB, volume: trackVolume(e.b, volumeMeta(ex, "b")) });
+    } else {
+      out.push({ muscle: ex?.muscle, name, volume: trackVolume(normalizeEntry(v), volumeMeta(ex, null)) });
+    }
+  }
+  return out.filter((c) => c.volume > 0);
+}
+
 // Top-set (kg max) di una settimana per quell'esercizio; null se nessun kg numerico.
 function weekTopKg(data, weekKey, day, exId, superset) {
   const v = getEntry(data, weekKey, day, exId);
@@ -465,6 +485,31 @@ export function sessionDates(data) {
     }
   }
   out.sort((a, b) => (a.date < b.date ? -1 : a.date > b.date ? 1 : 0));
+  return out;
+}
+
+// Gruppo → data ISO dell'ultima sessione con almeno una serie done non-warmup
+// per quel gruppo. Conta anche corpo libero/a tempo (volume 0): per la
+// freschezza vale l'aver allenato, non i kg. Solo gruppi PRIMARI (i secondari
+// pesano solo sulla vista settimana). Scansiona le settimane della scheda attiva.
+export function lastTrainedByGroup(data) {
+  const out = {};
+  const plan = Array.isArray(data?.plan) ? data.plan : [];
+  for (const s of sessionDates(data)) {
+    const dp = plan.find((d) => d.day === s.day);
+    if (!dp) continue;
+    for (const ex of dp.exercises ?? []) {
+      const v = getEntry(data, s.weekKey, s.day, ex.id);
+      const tracks = ex?.superset
+        ? [{ t: normalizeSupersetEntry(v).a, m: ex.muscle }, { t: normalizeSupersetEntry(v).b, m: ex.muscleB }]
+        : [{ t: normalizeEntry(v), m: ex?.muscle }];
+      for (const { t, m } of tracks) {
+        if (!m) continue;
+        if (!t.sets.some((st) => st.done && !st.warmup)) continue;
+        if (!out[m] || s.date > out[m]) out[m] = s.date;
+      }
+    }
+  }
   return out;
 }
 
