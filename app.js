@@ -1896,6 +1896,7 @@ function advanceAfterExercise(idx) {
 // poter valutare). Sui superset mostra DUE barre separate A e B, così si può dare
 // una sensazione diversa a ciascuna traccia. La selezione corrente è evidenziata.
 function showFeelAsk(info) {
+  clearTimeout(scheduleFeelAskClose._t); // riapertura: annulla l'auto-chiusura pendente del giudizio precedente
   lastDone = info;
   const exId = exIdAt(info.idx);
   const labelN = document.getElementById("feelAskN");
