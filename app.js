@@ -1190,6 +1190,7 @@ const timer = new RestTimer({
   onTick: (remaining, label) => {
     document.getElementById("timerTime").textContent = formatTime(remaining);
     document.getElementById("timerLabel").textContent = label;
+    document.getElementById("timerTime").classList.toggle("final", remaining > 0 && remaining <= 3);
     // Cue sonori una sola volta per secondo (onTick gira ogni 250ms): preavviso a
     // 10s, poi countdown 3-2-1. Il suono di fine è in onEnd.
     if (remaining !== lastTickSecond) {

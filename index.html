@@ -424,17 +424,21 @@
     </div>
   </div>
 
-  <!-- Rest timer -->
+  <!-- Rest timer: riga 1 = nome esercizio + chiudi; riga 2 = tempo + controlli -->
   <div id="timerBar" class="timerbar hidden">
-    <div class="t-info">
-      <span id="timerLabel" class="t-label"></span>
-      <span id="timerTime" class="t-time">0:00</span>
-    </div>
-    <div class="t-controls">
-      <button id="tMinus" class="t-btn">−10</button>
-      <button id="tToggle" class="t-btn">⏸</button>
-      <button id="tPlus" class="t-btn">+10</button>
-      <button id="tStop" class="t-btn t-stop">✕</button>
+    <div id="timerRun">
+      <div class="t-row1">
+        <span id="timerLabel" class="t-label"></span>
+        <button id="tStop" class="t-x">✕</button>
+      </div>
+      <div class="t-row2">
+        <span id="timerTime" class="t-time">0:00</span>
+        <div class="t-controls">
+          <button id="tMinus" class="t-btn">−10</button>
+          <button id="tToggle" class="t-btn">⏸</button>
+          <button id="tPlus" class="t-btn">+10</button>
+        </div>
+      </div>
     </div>
   </div>
   </div>

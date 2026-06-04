@@ -51,7 +51,7 @@ html,body{margin:0;padding:0;overscroll-behavior-x:none;overflow-x:hidden;}
 body{background:var(--frame);color:var(--ink);font-family:var(--mono);
   display:flex;justify-content:center;min-height:100vh;font-size:15px;line-height:1.45;}
 .mono{font-family:"JetBrains Mono",monospace;}
-.wrap{width:100%;max-width:440px;background:var(--bg);min-height:100vh;padding:20px 16px 132px;position:relative;}
+.wrap{width:100%;max-width:440px;background:var(--bg);min-height:100vh;padding:20px 16px 168px;position:relative;}
 .hidden{display:none !important;}
 .empty-state{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:40px 4px;}
 .empty-state .es-cta{margin-top:8px;padding:12px 18px;cursor:pointer;}
@@ -196,18 +196,22 @@ input.num::-webkit-outer-spin-button,input.num::-webkit-inner-spin-button{-webki
 .item .body{display:none;padding:0 14px 16px;border-top:1px solid var(--line);}
 .item.open .body{display:block;}
 
-/* timer bar */
+/* timer bar — due righe: nome esercizio intero sopra, tempo + controlli sotto */
 .timerbar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;
-  background:var(--surf2);border-top:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;
-  padding:13px 16px;backdrop-filter:blur(8px);}
-.t-info{display:flex;flex-direction:column;min-width:0;}
-.t-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);
-  max-width:170px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.t-time{font-family:"JetBrains Mono",monospace;font-size:34px;font-weight:700;letter-spacing:1px;line-height:1;color:var(--acc);}
-.t-controls{display:flex;gap:7px;}
-.t-btn{background:transparent;border:1px solid var(--line);border-radius:10px;padding:10px 11px;
+  background:var(--surf2);border-top:1px solid var(--line);
+  padding:14px 18px 16px;backdrop-filter:blur(8px);}
+.t-row1{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
+.t-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
+.t-x{background:transparent;border:none;color:var(--dim);font-size:18px;line-height:1;cursor:pointer;
+  padding:4px 8px;min-width:36px;min-height:36px;}
+.t-row2{display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.t-time{font-family:"JetBrains Mono",monospace;font-size:40px;font-weight:700;letter-spacing:1px;line-height:1;
+  color:var(--acc);font-variant-numeric:tabular-nums;}
+.t-time.final{color:var(--down);animation:t-tick .9s ease infinite;}
+@keyframes t-tick{0%{transform:scale(1)}12%{transform:scale(1.14)}30%{transform:scale(1)}}
+.t-controls{display:flex;gap:10px;}
+.t-btn{background:transparent;border:1px solid var(--line);border-radius:10px;padding:11px 16px;
   font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;min-height:44px;}
-.t-stop{background:var(--acc);border-color:var(--acc);color:var(--acc-ink);}
 
 /* settings dialog */
 dialog{border:none;border-radius:16px;padding:18px;max-width:340px;background:var(--surf);color:var(--ink);margin:auto;}
@@ -578,7 +582,7 @@ dialog#settingsDialog.settings-v2-host::backdrop{
 .restdone.hidden{display:none;}
 
 /* il timer (fixed) non deve più coprire le note del focus */
-body.timer-on .focus-body{padding-bottom:160px;}
+body.timer-on .focus-body{padding-bottom:196px;}
 
 /* ---- Lotto 2 Task 4: serie non riuscita ---- */
 /* Badge rosso "✗ non riuscita" nella riga serie */
