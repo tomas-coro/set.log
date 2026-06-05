@@ -296,3 +296,22 @@ test("fmtSheetDate: oggi / anno corrente / anno diverso / null", () => {
   assert.equal(fmtSheetDate("2025-12-31", "2026-06-04"), "31.12.25");
   assert.equal(fmtSheetDate(null, "2026-06-04"), "mai usata");
 });
+
+// ---- Batch sessione-ux: i campi vol2/plates sopravvivono al roundtrip ----
+test("dehydrate/hydrate: vol2, vol2B, plates, platesB restano sugli esercizi", () => {
+  const mem = hydrate(null); // scheda vuota
+  mem.plan = [{ day: "A", title: "Test", exercises: [
+    { id: "x1", name: "Affondo bulgaro", setsReps: "3 × 10", recText: "90 sec",
+      restSeconds: 90, superset: false, vol2: true, plates: false },
+    { id: "x2", name: "Curl + Skull", setsReps: "3 × 10 / 3 × 10", recText: "75 sec",
+      restSeconds: 75, superset: true, vol2: false, vol2B: true, plates: true, platesB: true },
+  ] }];
+  const back = hydrate(dehydrate(mem));
+  const [e1, e2] = back.plan[0].exercises;
+  assert.equal(e1.vol2, true);
+  assert.equal(e1.plates, false);
+  assert.equal(e2.vol2, false);
+  assert.equal(e2.vol2B, true);
+  assert.equal(e2.plates, true);
+  assert.equal(e2.platesB, true);
+});
