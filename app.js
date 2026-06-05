@@ -186,6 +186,17 @@ function renderPlanEditor() {
     bar.append(ttl, ren, del);
     body.appendChild(bar);
 
+    // Pannello copertura muscolare del giorno: cosa copre questo giorno della
+    // scheda (presenze, non volumi). Zone non coperte spente normali, mai rosse.
+    const cov = dayCoverage(dp, dehydrate(data).catalog ?? []);
+    if (Object.keys(cov.zones).length) {
+      const pan = document.createElement("div");
+      pan.className = "crt-panel pe-scan";
+      pan.innerHTML = renderBody({ zones: cov.zones, w: 78 }) + CRT_CORNERS +
+        `<span class="crt-tag">DAY·${dbEsc(String(dp.day))}</span>`;
+      body.appendChild(pan);
+    }
+
     dp.exercises.forEach((ex, i) => body.appendChild(buildPlanRow(ex, i, dp.exercises.length)));
     const add = document.createElement("button");
     add.type = "button"; add.className = "pe-add"; add.textContent = "＋ Aggiungi esercizio";
