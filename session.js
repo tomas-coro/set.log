@@ -289,15 +289,24 @@ export function isDumbbell(name) {
   return /manubr/i.test(String(name ?? ""));
 }
 
-// Fattore volume (1 o 2) e unità ("reps"|"sec") di una traccia di un esercizio.
-// track: null/"a" = traccia normale/A ; "b" = traccia B del superset. I manubri
-// si valutano per singola traccia: nei superset il nome è "A + B".
-export function volumeMeta(ex, track) {
+// Nome della singola traccia di un esercizio ("A + B" nei superset).
+function trackName(ex, track) {
   const name = String(ex?.name ?? "");
   const [nameA, nameB] = name.includes(" + ") ? name.split(" + ") : [name, name];
-  const trackName = track === "b" ? nameB : nameA;
+  return track === "b" ? nameB : nameA;
+}
+
+// Fattore volume (1 o 2) e unità ("reps"|"sec") di una traccia di un esercizio.
+// track: null/"a" = traccia normale/A ; "b" = traccia B del superset.
+// Override esplicito ex.vol2 / ex.vol2B (boolean); assente -> derivazione dal
+// nome traccia (manubri = ×2, regex isDumbbell).
+export function volumeMeta(ex, track) {
+  const ov = track === "b" ? ex?.vol2B : ex?.vol2;
   const unit = (track === "b" ? ex?.unitB : ex?.unit) === "sec" ? "sec" : "reps";
-  return { factor: isDumbbell(trackName) ? 2 : 1, unit };
+  const factor = typeof ov === "boolean"
+    ? (ov ? 2 : 1)
+    : (isDumbbell(trackName(ex, track)) ? 2 : 1);
+  return { factor, unit };
 }
 
 // Volume di una singola serie (reps*kg*fattore). 0 se a tempo (sec), non done,

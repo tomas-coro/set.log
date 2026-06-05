@@ -1012,3 +1012,25 @@ test("lastTrainedByGroup: serie solo warmup o non-done non contano", () => {
   };
   assert.equal(lastTrainedByGroup(d).Petto, undefined);
 });
+
+// ---- Task 1 batch sessione-ux: override vol2/vol2B ----
+test("volumeMeta: vol2=true forza factor 2 anche senza 'manubri' nel nome", () => {
+  const ex = { name: "Affondo bulgaro", vol2: true };
+  assert.equal(volumeMeta(ex, null).factor, 2);
+});
+
+test("volumeMeta: vol2=false forza factor 1 anche con 'manubri' nel nome", () => {
+  const ex = { name: "Lento avanti manubri", vol2: false };
+  assert.equal(volumeMeta(ex, null).factor, 1);
+});
+
+test("volumeMeta: vol2 assente -> derivazione dal nome (comportamento attuale)", () => {
+  assert.equal(volumeMeta({ name: "Lento avanti manubri" }, null).factor, 2);
+  assert.equal(volumeMeta({ name: "Panca piana bilanciere" }, null).factor, 1);
+});
+
+test("volumeMeta: vol2B override sulla traccia B del superset", () => {
+  const ex = { name: "Pushdown + Curl a corpo libero", superset: true, vol2B: true };
+  assert.equal(volumeMeta(ex, "a").factor, 1);
+  assert.equal(volumeMeta(ex, "b").factor, 2);
+});
