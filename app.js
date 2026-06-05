@@ -2446,7 +2446,7 @@ function catalogByName(name) {
 // chip REC/VOL×2 + i 2 frame wger se disponibili. Null se non c'è nulla.
 function buildFocusTop(ex) {
   const wrap = document.createElement("div");
-  wrap.className = "focus-top";
+  wrap.className = "f-top"; // NON "focus-top": quella classe è già la barra-cornice del focus
   const chips = document.createElement("div");
   chips.className = "f-chips";
   const rec = Number.isFinite(ex.restSeconds) ? formatTime(ex.restSeconds) : (ex.recText || "");
