@@ -805,6 +805,9 @@ function renderScan() {
     const { zones } = heatByGroup(contribs, catalog);
     const wTag = currentWeek.split("-")[1] || currentWeek; // "2026-W23" → "W23"
     document.getElementById("scanSub").textContent = `◈ SCAN · settimana ${wTag}`;
+    // "Vuoto" qui = nessun volume NELLA SETTIMANA selezionata (contribs);
+    // nel tab freschezza invece = mai allenato in TUTTO lo storico (lastBy).
+    // I due predicati sono volutamente diversi: stessa UI, domande diverse.
     const empty = contribs.length === 0;
     body.innerHTML =
       `<div class="crt-panel big${empty ? " scan-dim" : ""}">${CRT_RULER}${renderBody({ zones, w: 108 })}` +
@@ -819,7 +822,7 @@ function renderScan() {
       ? `<div class="bd-leg"><span class="warn">⚠ fermi da ≥6 giorni: ${warnGroups.map((g) => g.toLowerCase()).join(" · ")}</span></div>` : "";
     const neverTxt = neverGroups.length
       ? `<div class="bd-leg"><span class="warn"><span class="sw" style="border:1px dashed #e0705a"></span> mai allenato: ${neverGroups.map((g) => g.toLowerCase()).join(" · ")}</span></div>` : "";
-    const emptyF = Object.keys(lastBy).length === 0;
+    const emptyF = Object.keys(lastBy).length === 0; // vedi nota sul tab week
     body.innerHTML =
       `<div class="crt-panel big${emptyF ? " scan-dim" : ""}">${CRT_RULER}${renderBody({ zones, cold: never, w: 108 })}` +
       `${warnTxt}${neverTxt}${CRT_CORNERS}<span class="crt-tag">SCAN·FRESH</span></div>` +
