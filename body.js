@@ -122,8 +122,10 @@ export function dayCoverage(dayPlan, catalog = []) {
 // Boot-log esplicativo per lo Scan senza dati (mockup scan-empty.html variante B).
 // Stringa HTML pura; palette X-ray fissa coerente col pannello. Il chiamante lo
 // mostra SOLO quando il tab è vuoto e attenua la figura.
+const escapeHtml = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+
 export function scanBootLog(tab, { wTag = "" } = {}) {
-  const cmd = tab === "week" ? `$ scan --week ${wTag}` : "$ scan --fresh";
+  const cmd = tab === "week" ? `$ scan --week ${escapeHtml(wTag)}` : "$ scan --fresh";
   const stato = tab === "week"
     ? `<span class="sb-amber">▸ 0 serie loggate</span> <span class="sb-dim">— figura in standby</span>`
     : `<span class="sb-amber">▸ nessuno storico recente</span> <span class="sb-dim">— figura in standby</span>`;

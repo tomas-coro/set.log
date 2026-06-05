@@ -163,10 +163,18 @@ test("scanBootLog fresh: spiega acceso/spento e tratteggio mai allenato", () => 
   assert.ok(html.includes("$ scan --fresh"));
   assert.ok(html.includes("mai allenato"));
   assert.ok(html.includes("tratteggio"));
+  assert.ok(html.includes("scan-boot"));
+  assert.ok(html.includes("primario"));
 });
 
 test("scanBootLog: include la mini legenda primario/secondario", () => {
   const html = scanBootLog("week", { wTag: "W01" });
   assert.ok(html.includes("primario"));
   assert.ok(html.includes("secondario"));
+});
+
+test("scanBootLog: wTag con HTML viene escapato", () => {
+  const html = scanBootLog("week", { wTag: "<img src=x onerror=alert(1)>" });
+  assert.ok(!html.includes("<img"));
+  assert.ok(html.includes("&lt;img"));
 });
