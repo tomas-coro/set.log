@@ -31,7 +31,7 @@ import {
 } from "./session.js";
 import { renderBody, heatByGroup, freshnessByGroup, dayCoverage, GROUP_ZONES } from "./body.js";
 import { mediaFor } from "./media-map.js";
-import { RestTimer, formatTime, withoutSession, goSlug } from "./timer.js";
+import { RestTimer, formatTime, withoutSession, goSlug, VisibleCountdown } from "./timer.js";
 import { ScreenWakeLock } from "./wakelock.js";
 import { renderNutritionGuide } from "./nutrition.js";
 import { createPusher } from "./sync.js";
@@ -1511,6 +1511,22 @@ const timer = new RestTimer({
 });
 const wakeLock = new ScreenWakeLock();
 
+// Auto-dismiss dello stato GO: 8s di schermo visibile (spec §3, mockup go-dismiss B).
+const goDismiss = new VisibleCountdown({ durationMs: 8000, onDone: () => dismissTimerGo() });
+function goDrainRun() {
+  const d = document.getElementById("goDrain");
+  d.style.transition = "none";
+  d.style.width = Math.round((goDismiss.remaining / goDismiss.durationMs) * 100) + "%";
+  void d.offsetWidth; // reflow: parte dallo stato corrente
+  d.style.transition = `width ${goDismiss.remaining}ms linear`;
+  d.style.width = "0%";
+}
+function goDrainFreeze() {
+  const d = document.getElementById("goDrain");
+  d.style.width = getComputedStyle(d).width; // congela il valore animato
+  d.style.transition = "none";
+}
+
 // Trasforma la barra nello stato GO "boot log". Resta finché non viene toccata.
 function showTimerGo(label) {
   const go = restCtx?.go;
@@ -1527,10 +1543,15 @@ function showTimerGo(label) {
   document.getElementById("timerRun").classList.add("hidden");
   document.getElementById("timerGo").classList.remove("hidden");
   document.getElementById("timerBar").classList.add("go-on");
+  document.body.classList.remove("scroll-lock"); // GO = scroll di nuovo libero
+  goDismiss.start(!document.hidden);
+  if (!document.hidden) goDrainRun();
 }
 
 // Chiude lo stato GO e nasconde la barra (tap dell'utente).
 function dismissTimerGo() {
+  goDismiss.cancel();
+  document.body.classList.remove("scroll-lock");
   document.getElementById("timerGo").classList.add("hidden");
   document.getElementById("timerRun").classList.remove("hidden");
   document.getElementById("timerBar").classList.add("hidden");
@@ -1548,6 +1569,8 @@ function startRest(seconds, label, go = null) {
   document.getElementById("timerRun").classList.remove("hidden");
   document.getElementById("timerBar").classList.remove("go-on");
   document.body.classList.add("timer-on");
+  goDismiss.cancel();
+  document.body.classList.add("scroll-lock");
   document.getElementById("timerBar").classList.remove("hidden");
   document.getElementById("tToggle").textContent = "⏸";
   timer.start(seconds, label);
@@ -3288,15 +3311,18 @@ function wireTimerControls() {
   document.getElementById("tStop").addEventListener("click", () => {
     timer.stop();
     hideFeelAsk();
+    document.body.classList.remove("scroll-lock");
     dismissTimerGo();
   });
   document.getElementById("timerGo").addEventListener("click", dismissTimerGo);
   document.getElementById("tToggle").addEventListener("click", (e) => {
-    if (timer.paused) { timer.resume(); e.target.textContent = "⏸"; }
-    else { timer.pause(); e.target.textContent = "▶"; }
+    if (timer.paused) { timer.resume(); e.target.textContent = "⏸"; document.body.classList.add("scroll-lock"); }
+    else { timer.pause(); e.target.textContent = "▶"; document.body.classList.remove("scroll-lock"); }
   });
   document.addEventListener("visibilitychange", () => {
     if (!document.hidden) { timer.sync(); wakeLock.onVisible(); }
+    if (document.hidden) { goDismiss.hide(); goDrainFreeze(); }
+    else if (goDismiss.active) { goDismiss.show(); goDrainRun(); }
   });
 }
 
@@ -3395,6 +3421,12 @@ async function boot() {
   document.getElementById("btnImportLegacy").addEventListener("click", rescueLegacyLocalStorage);
   document.getElementById("btnRecoverCloud").addEventListener("click", recoverLogsFromOldCloud);
   document.getElementById("btnForceUpdate").addEventListener("click", forceAppUpdate);
+
+  // Altezza reale dello stack fisso in basso → CSS var per i padding (fix overlap).
+  const _bs = document.getElementById("bottomStack");
+  new ResizeObserver(() => {
+    document.documentElement.style.setProperty("--bottom-pad", _bs.offsetHeight + "px");
+  }).observe(_bs);
 
   wireTimerControls();
   wireSetDialog();
