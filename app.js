@@ -1145,6 +1145,10 @@ function toggleMuscleB(on) {
   document.getElementById("exMuscleBLabel").style.display = on ? "" : "none";
   document.getElementById("exUnitB").style.display = on ? "" : "none";
   document.getElementById("exUnitBLabel").style.display = on ? "" : "none";
+  document.getElementById("exMuscleC").style.display = on ? "" : "none";
+  document.getElementById("exMuscleCLabel").style.display = on ? "" : "none";
+  document.getElementById("exUnitC").style.display = on ? "" : "none";
+  document.getElementById("exUnitCLabel").style.display = on ? "" : "none";
 }
 
 // Chip-toggle "opzioni carico" del dialog esercizio. Finché l'utente non tocca
@@ -1172,6 +1176,8 @@ function applyChipDefaults() {
   setChip("exPlates", platesOn(probe, null));
   setChip("exVol2B", volumeMeta(probe, "b").factor === 2);
   setChip("exPlatesB", platesOn(probe, "b"));
+  setChip("exVol2C", volumeMeta(probe, "c").factor === 2);
+  setChip("exPlatesC", platesOn(probe, "c"));
 }
 
 // day: giorno; id: id esercizio da modificare, oppure null per aggiungerne uno nuovo.
@@ -1193,15 +1199,20 @@ function openExDialog(day, id) {
   document.getElementById("exMuscleB").value = ex && ex.muscleB != null ? ex.muscleB : "";
   document.getElementById("exUnit").value = ex && ex.unit === "sec" ? "sec" : "reps";
   document.getElementById("exUnitB").value = ex && ex.unitB === "sec" ? "sec" : "reps";
+  document.getElementById("exMuscleC").value = ex && ex.muscleC != null ? ex.muscleC : "";
+  document.getElementById("exUnitC").value = ex && ex.unitC === "sec" ? "sec" : "reps";
   toggleMuscleB(!!(ex && ex.superset));
   document.getElementById("exChipsB").style.display = (ex && ex.superset) ? "" : "none";
+  document.getElementById("exChipsC").style.display = (ex && ex.superset) ? "" : "none";
   if (ex) {
     setChip("exVol2", typeof ex.vol2 === "boolean" ? ex.vol2 : volumeMeta(ex, null).factor === 2);
     setChip("exPlates", typeof ex.plates === "boolean" ? ex.plates : platesOn(ex, null));
     setChip("exVol2B", typeof ex.vol2B === "boolean" ? ex.vol2B : volumeMeta(ex, "b").factor === 2);
     setChip("exPlatesB", typeof ex.platesB === "boolean" ? ex.platesB : platesOn(ex, "b"));
+    setChip("exVol2C", typeof ex.vol2C === "boolean" ? ex.vol2C : volumeMeta(ex, "c").factor === 2);
+    setChip("exPlatesC", typeof ex.platesC === "boolean" ? ex.platesC : platesOn(ex, "c"));
     // Campi espliciti già salvati: la derivazione non li deve più toccare.
-    exChipsTouched = [ex.vol2, ex.plates, ex.vol2B, ex.platesB].some((v) => typeof v === "boolean");
+    exChipsTouched = [ex.vol2, ex.plates, ex.vol2B, ex.platesB, ex.vol2C, ex.platesC].some((v) => typeof v === "boolean");
   } else {
     exChipsTouched = false;
     applyChipDefaults();
@@ -1226,15 +1237,20 @@ function readExDialog() {
   if (muscle) ex.muscle = muscle;
   const muscleB = document.getElementById("exMuscleB").value;
   if (superset && muscleB) ex.muscleB = muscleB;
+  const muscleC = document.getElementById("exMuscleC").value;
+  if (superset && muscleC) ex.muscleC = muscleC;
   // Unità a tempo: "sec" salvato esplicito, "reps" -> undefined così updateExercise
   // (merge) ripulisce una eventuale unit precedente quando si torna a ripetizioni.
   ex.unit = document.getElementById("exUnit").value === "sec" ? "sec" : undefined;
   ex.unitB = (superset && document.getElementById("exUnitB").value === "sec") ? "sec" : undefined;
+  ex.unitC = (superset && document.getElementById("exUnitC").value === "sec") ? "sec" : undefined;
   // Chip "opzioni carico": sempre esplicite al salvataggio (spec §1).
   ex.vol2 = chipOn("exVol2");
   ex.plates = chipOn("exPlates");
   ex.vol2B = superset ? chipOn("exVol2B") : undefined;
   ex.platesB = superset ? chipOn("exPlatesB") : undefined;
+  ex.vol2C = superset ? chipOn("exVol2C") : undefined;
+  ex.platesC = superset ? chipOn("exPlatesC") : undefined;
   return ex;
 }
 
@@ -3410,7 +3426,7 @@ async function boot() {
     if (e.target.id === "calDayDialog") e.target.close(); // tap sul backdrop
   });
   document.getElementById("exDlgSave").addEventListener("click", saveExDialog);
-  for (const id of ["exVol2", "exPlates", "exVol2B", "exPlatesB"]) {
+  for (const id of ["exVol2", "exPlates", "exVol2B", "exPlatesB", "exVol2C", "exPlatesC"]) {
     document.getElementById(id).addEventListener("click", () => {
       setChip(id, !chipOn(id));
       exChipsTouched = true;
@@ -3421,6 +3437,8 @@ async function boot() {
   document.getElementById("exSuperset").addEventListener("change", (e) => {
     toggleMuscleB(e.target.checked);
     document.getElementById("exChipsB").style.display =
+      document.getElementById("exSuperset").checked ? "" : "none";
+    document.getElementById("exChipsC").style.display =
       document.getElementById("exSuperset").checked ? "" : "none";
     applyChipDefaults();
   });

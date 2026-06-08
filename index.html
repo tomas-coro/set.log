@@ -390,7 +390,11 @@
       <button type="button" id="exVol2B" class="ex-chip" aria-pressed="false">B · VOL ×2</button>
       <button type="button" id="exPlatesB" class="ex-chip" aria-pressed="false">B · DISCHI/LATO</button>
     </div>
-    <label class="notifyrow"><input type="checkbox" id="exSuperset"> Superset (serie×reps: <code>A / B</code>)</label>
+    <div class="ex-chips" id="exChipsC" style="display:none">
+      <button type="button" id="exVol2C" class="ex-chip" aria-pressed="false">C · VOL ×2</button>
+      <button type="button" id="exPlatesC" class="ex-chip" aria-pressed="false">C · DISCHI/LATO</button>
+    </div>
+    <label class="notifyrow"><input type="checkbox" id="exSuperset"> Superset / circuito (serie×reps: <code>A / B / C</code>)</label>
     <label class="editlabel" for="exMuscle">Gruppo muscolare</label>
     <select id="exMuscle" class="ex-inp">
       <option value="">— nessuno —</option>
@@ -410,6 +414,17 @@
     </select>
     <label class="editlabel" for="exUnitB" id="exUnitBLabel">Unità traccia B</label>
     <select id="exUnitB" class="ex-inp">
+      <option value="reps">Ripetizioni</option>
+      <option value="sec">Secondi (a tempo, es. plank)</option>
+    </select>
+    <label class="editlabel" for="exMuscleC" id="exMuscleCLabel">Gruppo traccia C</label>
+    <select id="exMuscleC" class="ex-inp">
+      <option value="">— nessuno —</option>
+      <option>Petto</option><option>Dorso</option><option>Spalle</option><option>Bicipiti</option>
+      <option>Tricipiti</option><option>Gambe</option><option>Polpacci</option><option>Core</option>
+    </select>
+    <label class="editlabel" for="exUnitC" id="exUnitCLabel">Unità traccia C</label>
+    <select id="exUnitC" class="ex-inp">
       <option value="reps">Ripetizioni</option>
       <option value="sec">Secondi (a tempo, es. plank)</option>
     </select>
