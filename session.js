@@ -99,13 +99,13 @@ export function withoutSet(entry, index) {
 // Superset: stessa cosa sulla traccia "a"/"b".
 export function withSupersetSet(entry, track, index, patch) {
   const e = normalizeSupersetEntry(entry);
-  const t = track === "b" ? "b" : "a";
+  const t = track === "b" || track === "c" ? track : "a";
   return { ...e, [t]: withSet(e[t], index, patch) };
 }
 
 export function withoutSupersetSet(entry, track, index) {
   const e = normalizeSupersetEntry(entry);
-  const t = track === "b" ? "b" : "a";
+  const t = track === "b" || track === "c" ? track : "a";
   return { ...e, [t]: withoutSet(e[t], index) };
 }
 
@@ -244,7 +244,7 @@ export function progressionDelta(curKg, prevKg) {
 
 // Traccia (normale o superset-a/b) di un'entry, normalizzata.
 function entryTrack(entry, track) {
-  if (track === "a" || track === "b") return normalizeSupersetEntry(entry)[track];
+  if (track === "a" || track === "b" || track === "c") return normalizeSupersetEntry(entry)[track];
   return normalizeEntry(entry);
 }
 
@@ -322,10 +322,12 @@ export function trackMuscle(ex, track) {
 }
 
 // Nome della singola traccia di un esercizio ("A + B" nei superset).
-function trackName(ex, track) {
+export function trackName(ex, track) {
   const name = String(ex?.name ?? "");
-  const [nameA, nameB] = name.includes(" + ") ? name.split(" + ") : [name, name];
-  return track === "b" ? nameB : nameA;
+  const parts = name.includes(" + ") ? name.split(" + ") : [name];
+  if (track === "c") return (parts[2] ?? parts[0]).trim();
+  if (track === "b") return (parts[1] ?? parts[0]).trim();
+  return (parts[0] ?? name).trim();
 }
 
 // Fattore volume (1 o 2) e unità ("reps"|"sec") di una traccia di un esercizio.
@@ -333,8 +335,8 @@ function trackName(ex, track) {
 // Override esplicito ex.vol2 / ex.vol2B (boolean); assente -> derivazione dal
 // nome traccia (manubri = ×2, regex isDumbbell).
 export function volumeMeta(ex, track) {
-  const ov = track === "b" ? ex?.vol2B : ex?.vol2;
-  const unit = (track === "b" ? ex?.unitB : ex?.unit) === "sec" ? "sec" : "reps";
+  const ov = track === "c" ? ex?.vol2C : track === "b" ? ex?.vol2B : ex?.vol2;
+  const unit = (track === "c" ? ex?.unitC : track === "b" ? ex?.unitB : ex?.unit) === "sec" ? "sec" : "reps";
   const factor = typeof ov === "boolean"
     ? (ov ? 2 : 1)
     : (isDumbbell(trackName(ex, track)) ? 2 : 1);
@@ -345,7 +347,7 @@ export function volumeMeta(ex, track) {
 // esplicito ex.plates / ex.platesB; assente -> bar impostato oppure nome
 // traccia che indica un bilanciere (bilanciere/stacco/squat/EZ).
 export function platesOn(ex, track) {
-  const ov = track === "b" ? ex?.platesB : ex?.plates;
+  const ov = track === "c" ? ex?.platesC : track === "b" ? ex?.platesB : ex?.plates;
   if (typeof ov === "boolean") return ov;
   if (typeof ex?.bar === "number" && Number.isFinite(ex.bar) && ex.bar > 0) return true;
   return /bilancier|stacco|squat|\bez\b/i.test(trackName(ex, track));

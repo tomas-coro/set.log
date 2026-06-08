@@ -6,7 +6,7 @@ import { bestKg, bestKgBefore, isWeekRecord, isSetRecord, progressionDelta, with
 import { historyIsBodyweight, bestReps, bestRepsBefore } from "../session.js";
 import { sessionDates, monthGrid, sessionHasDoneSet } from "../session.js";
 import { muscleContributions, lastTrainedByGroup } from "../session.js";
-import { isDumbbell, volumeMeta, exerciseVolume, setVolume, platesOn, supersetTrackKeys, trackMuscle } from "../session.js";
+import { isDumbbell, volumeMeta, exerciseVolume, setVolume, platesOn, supersetTrackKeys, trackMuscle, trackName } from "../session.js";
 import { emptyData, setEntry, getEntry } from "../store.js";
 
 test("sessionDates: estrae le date da weeks[].dates, ordinate per data", () => {
@@ -1116,4 +1116,36 @@ test("trackMuscle: a -> muscle, b -> muscleB, c -> muscleC", () => {
   assert.equal(trackMuscle(ex, "a"), "Core");
   assert.equal(trackMuscle(ex, "b"), "Spalle");
   assert.equal(trackMuscle(ex, "c"), "Gambe");
+});
+
+describe("traccia c", () => {
+  const ex = { name: "M1 + M2 + Plank manubri", superset: true, unitC: "sec", muscle: "Core", muscleB: "Core", muscleC: "Core" };
+  const entry = {
+    a: { sets: [{ reps: "8", kg: "", done: true }] },
+    b: { sets: [{ reps: "10", kg: "", done: true }] },
+    c: { sets: [{ reps: "20", kg: "30", done: true }] },
+  };
+  it("withSupersetSet scrive sulla traccia c", () => {
+    const nv = withSupersetSet(entry, "c", 1, { reps: "22", kg: "30", done: true });
+    assert.equal(nv.c.sets.length, 2);
+    assert.equal(nv.c.sets[1].reps, "22");
+    assert.equal(nv.a.sets.length, 1); // a/b intatte
+  });
+  it("withoutSupersetSet rimuove dalla traccia c", () => {
+    const nv = withoutSupersetSet(entry, "c", 0);
+    assert.equal(nv.c.sets.length, 0);
+  });
+  it("trackName ritorna il terzo pezzo per c", () => {
+    assert.equal(trackName(ex, "c"), "Plank manubri");
+  });
+  it("volumeMeta c: unitC sec", () => {
+    assert.equal(volumeMeta(ex, "c").unit, "sec");
+  });
+  it("platesOn c usa platesC se booleano", () => {
+    assert.equal(platesOn({ ...ex, platesC: true }, "c"), true);
+  });
+  it("bestKg su track c (passa da entryTrack)", () => {
+    const data = { weeks: { "2026-W23": { entries: { A: { x1: entry } } } } };
+    assert.equal(bestKg(data, "A", "x1", "c"), 30);
+  });
 });
