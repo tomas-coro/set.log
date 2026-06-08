@@ -1,4 +1,4 @@
-import test from "node:test";
+import test, { describe, it } from "node:test";
 import assert from "node:assert/strict";
 import { parseTargetTrack, parseTarget, activeSetIndex, isEntryComplete, activeExerciseIndex, nextExercisePreview } from "../session.js";
 import { withSet, withoutSet, withSupersetSet, withoutSupersetSet } from "../session.js";
@@ -91,6 +91,41 @@ test("parseTarget gestisce reps a numero singolo (senza range)", () => {
   assert.deepEqual(parseTarget("3 × 10 / 3 × 10", true), {
     a: { sets: 3, reps: "10" },
     b: { sets: 3, reps: "10" },
+  });
+});
+
+describe("parseTarget 3 tracce", () => {
+  it("trio: split su ' / ' spaziato in {a,b,c}", () => {
+    const r = parseTarget("2 × 10 / 2 × 20-25 / 2 × 8", true, 3);
+    assert.deepEqual(r, {
+      a: { sets: 2, reps: "10" }, b: { sets: 2, reps: "20-25" }, c: { sets: 2, reps: "8" },
+    });
+  });
+  it("trio: qualificatore '8/lato' in traccia NON-ultima non spezza", () => {
+    const r = parseTarget("2 × 8/lato / 2 × 10 / 2 × 25-30", true, 3);
+    assert.equal(r.a.reps, "8/lato");
+    assert.equal(r.b.reps, "10");
+    assert.equal(r.c.reps, "25-30");
+  });
+  it("trio: ultima traccia tiene il resto, incl. 'max/lato'", () => {
+    const r = parseTarget("2 × 10 / 2 × 12 / 2 × max/lato", true, 3);
+    assert.equal(r.c.reps, "max/lato");
+  });
+});
+
+describe("parseTarget regressione duo", () => {
+  it("duo separatore spaziato invariato", () => {
+    const r = parseTarget("3 × 15 / 3 × max/lato", true);
+    assert.deepEqual(r, { a: { sets: 3, reps: "15" }, b: { sets: 3, reps: "max/lato" } });
+  });
+  it("duo: slash con spazi in A separa, qualificatore senza spazi resta", () => {
+    const r = parseTarget("3 × 8/lato / 3 × 10", true);
+    assert.equal(r.a.reps, "8/lato");
+    assert.equal(r.b.reps, "10");
+  });
+  it("duo senza '/' ricade su entrambe le tracce", () => {
+    const r = parseTarget("3 × 10", true);
+    assert.deepEqual(r, { a: { sets: 3, reps: "10" }, b: { sets: 3, reps: "10" } });
   });
 });
 

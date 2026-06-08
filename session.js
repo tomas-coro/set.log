@@ -9,17 +9,34 @@ export function parseTargetTrack(str) {
   return { sets: parseInt(m[1], 10), reps: m[2].trim() };
 }
 
-// Normale -> { sets, reps } (prima parte prima di "/").
-// Superset -> { a, b } splittando sul PRIMO "/" (così qualificatori come "max/lato" restano in B).
-export function parseTarget(setsReps, superset = false) {
+// Normale -> { sets, reps } (prima parte prima di " / ").
+// Superset -> { a, b } o { a, b, c }. Separatore = slash CIRCONDATO DA SPAZI
+// (" / "), così qualificatori senza spazi ("8/lato", "max/lato") restano nella
+// loro traccia. Si splittano i primi (n-1) separatori; l'ultima traccia tiene il resto.
+export function parseTarget(setsReps, superset = false, n = 2) {
   const s = String(setsReps ?? "");
-  const i = s.indexOf("/");
   if (superset) {
-    const aPart = i === -1 ? s : s.slice(0, i);
-    const bPart = i === -1 ? s : s.slice(i + 1);
-    return { a: parseTargetTrack(aPart), b: parseTargetTrack(bPart) };
+    const parts = splitTracks(s, n);
+    const out = { a: parseTargetTrack(parts[0] ?? s), b: parseTargetTrack(parts[1] ?? parts[0] ?? s) };
+    if (n >= 3) out.c = parseTargetTrack(parts[2] ?? parts[1] ?? parts[0] ?? s);
+    return out;
   }
-  return parseTargetTrack(i === -1 ? s : s.slice(0, i));
+  return parseTargetTrack(splitTracks(s, 1)[0] ?? s);
+}
+
+// Splitta una stringa sui primi (n-1) separatori " / " (slash tra spazi);
+// l'ultimo elemento conserva tutto il resto. Ritorna fino a n segmenti trimmati.
+function splitTracks(s, n) {
+  const re = /\s+\/\s+/g;
+  const parts = [];
+  let last = 0, m, count = 0;
+  while (count < n - 1 && (m = re.exec(s)) !== null) {
+    parts.push(s.slice(last, m.index));
+    last = re.lastIndex;
+    count++;
+  }
+  parts.push(s.slice(last));
+  return parts.map((p) => p.trim());
 }
 
 // Indice della serie corrente = prima non done (o length se tutte fatte).
