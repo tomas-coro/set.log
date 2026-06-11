@@ -134,8 +134,12 @@ versione e un contenitore per il tag dinamico, popolati da `renderAppLine()`. Il
 
 ### 3.5 `sw.js`
 
-Bump cache `gymsched-v74` → `v75`. Aggiungere `./release.js` e `./version.json` a `ASSETS`
-così l'app resta installabile/offline come prima.
+Bump cache `gymsched-v74` → `v75`. Aggiungere `./release.js` a `ASSETS` (è codice
+dell'app, serve offline). **`version.json` NON va precacheato**: il fetch handler del SW è
+cache-first e cacheerebbe ogni GET same-origin, servendo un manifest stantio e scavalcando
+il `cache:"no-store"` lato app. Quindi `version.json` resta **network-only** — escluso da
+`ASSETS` e con un bypass nel fetch handler (`if (pathname.endsWith("/version.json")) return;`)
+che lo lascia passare diretto alla rete senza intercettarlo né cacheario.
 
 ### 3.6 `style.css`
 
