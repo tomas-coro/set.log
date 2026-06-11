@@ -1499,6 +1499,19 @@ function renderSessionControl() {
   el.append(toggle, x);
 }
 
+// Tick 1s: aggiorna lo slot home e, se l'overlay è aperto, solo il testo del
+// tempo nella status bar (niente re-render dell'intero overlay ogni secondo).
+function tickSessionDisplays() {
+  renderSessionControl();
+  if (openIndex !== null) {
+    const clk = document.getElementById("focusSbarClock");
+    if (clk) {
+      const entry = getSessionMap()[sessClockKey()];
+      clk.textContent = sessionState(entry) === "PRONTO" ? "" : "⏱ " + fmtDuration(elapsedMs(entry, Date.now()) / 1000) + " · ";
+    }
+  }
+}
+
 // ---- Status indicator ----
 function setStatus(text, kind = "") {
   const el = document.getElementById("status");
@@ -3082,7 +3095,15 @@ function renderFocusOverlay() {
   const ctxEl = document.getElementById("focusSbarCtx");
   const cntEl = document.getElementById("focusSbarCount");
   if (ctxEl) ctxEl.textContent = `◈ LOG · ${currentDay}`;
-  if (cntEl) cntEl.textContent = `ex ${String(openIndex + 1).padStart(2, "0")}/${exsForBar.length} · ${currentWeek.split("-").pop()}`;
+  if (cntEl) {
+    const entry = getSessionMap()[sessClockKey()];
+    const clk = document.createElement("span");
+    clk.id = "focusSbarClock";
+    clk.textContent = sessionState(entry) === "PRONTO" ? "" : "⏱ " + fmtDuration(elapsedMs(entry, Date.now()) / 1000) + " · ";
+    const rest = document.createElement("span");
+    rest.textContent = `ex ${String(openIndex + 1).padStart(2, "0")}/${exsForBar.length}`;
+    cntEl.replaceChildren(clk, rest);
+  }
   document.getElementById("focusName").textContent = ex.name;
   body.textContent = "";
   foot.textContent = "";
@@ -3831,7 +3852,7 @@ function dismissSplash() {
 window.addEventListener("load", boot);
 
 // Aggiorna la durata della sessione ogni secondo (no-op finché il cronometro è nascosto).
-setInterval(renderSessionControl, 1000);
+setInterval(tickSessionDisplays, 1000);
 
 // PWA: registra il service worker e gestisce l'aggiornamento (best-effort).
 // `swUpdating` distingue l'aggiornamento voluto dall'utente (tap sul banner)
