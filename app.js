@@ -37,6 +37,7 @@ import { createPusher } from "./sync.js";
 import { getFx, setFx, applyFx } from "./fx.js";
 import { getTheme, setTheme, applyTheme } from "./theme.js";
 import { actionBarSpec } from "./focus-ui.js";
+import { APP_VERSION, STORE_UPDATE_ENABLED, checkStoreUpdate } from "./release.js";
 
 const PENDING_KEY = "gymsched_pending"; // local buffer of unsynced edits
 const SEED_URL = "https://xbacco.github.io/gym-schedule/data.json";
@@ -3957,6 +3958,91 @@ function showUpdateBanner(reg) {
   b.append(dot, tx, go, x);
   document.body.appendChild(b);
 }
+
+// --- Store update (scaffolding fase 3) ---------------------------------------
+// Attivo SOLO se STORE_UPDATE_ENABLED è true (build nativa). A OFF non viene mai
+// eseguito: nessun fetch di version.json, nessun banner store. L'update resta sul SW.
+
+// Toast minimale "Aggiorna · vX.Y.Z" che apre lo store. Dismiss di sessione, idempotente.
+let storeUpdateDismissed = false;
+function showStoreUpdateBanner(latest, storeUrl) {
+  if (storeUpdateDismissed) return;
+  if (document.getElementById("storeUpdateBanner")) return;
+  const b = document.createElement("div");
+  b.id = "storeUpdateBanner";
+  b.className = "update-toast";
+  b.setAttribute("role", "status");
+
+  const dot = document.createElement("span");
+  dot.className = "ut-dot";
+
+  const tx = document.createElement("span");
+  tx.className = "ut-tx";
+  tx.append("Aggiorna · ");
+  const v = document.createElement("span");
+  v.style.color = "var(--acc)";
+  v.textContent = "v" + latest;
+  tx.append(v);
+
+  const go = document.createElement("button");
+  go.type = "button";
+  go.className = "ut-go";
+  go.textContent = "›";
+  go.setAttribute("aria-label", "Apri lo store");
+  go.addEventListener("click", () => window.open(storeUrl, "_blank", "noopener"));
+
+  const x = document.createElement("button");
+  x.type = "button";
+  x.className = "ut-x";
+  x.textContent = "✕";
+  x.setAttribute("aria-label", "Rimanda");
+  x.addEventListener("click", () => { storeUpdateDismissed = true; b.remove(); });
+
+  b.append(dot, tx, go, x);
+  document.body.appendChild(b);
+}
+
+// Popola la riga `app` di Impostazioni. Mostra sempre la versione; a flag ON con update
+// disponibile aggiunge il tag "↑ vX.Y.Z" e nasconde il force-update manuale del SW.
+function renderAppLine(update) {
+  const vEl = document.getElementById("appVersion");
+  if (vEl) vEl.textContent = "v" + APP_VERSION;
+
+  const fu = document.getElementById("btnForceUpdate");
+  if (fu) fu.style.display = STORE_UPDATE_ENABLED ? "none" : "";
+
+  const tagEl = document.getElementById("appUpdateTag");
+  if (!tagEl) return;
+  tagEl.innerHTML = "";
+  if (STORE_UPDATE_ENABLED && update && update.updateAvailable) {
+    const t = document.createElement("button");
+    t.type = "button";
+    t.className = "sv-tag";
+    t.textContent = "↑ v" + update.latest;
+    t.addEventListener("click", () => window.open(update.storeUrl, "_blank", "noopener"));
+    tagEl.appendChild(t);
+  }
+}
+
+// La versione va mostrata sempre (anche a flag OFF) appena la UI è pronta.
+window.addEventListener("load", () => renderAppLine());
+
+// Il controllo store gira solo a flag acceso.
+if (STORE_UPDATE_ENABLED) {
+  const runStoreCheck = () => {
+    checkStoreUpdate().then((u) => {
+      if (u && u.updateAvailable) {
+        showStoreUpdateBanner(u.latest, u.storeUrl);
+        renderAppLine(u);
+      }
+    });
+  };
+  window.addEventListener("load", runStoreCheck);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible") runStoreCheck();
+  });
+}
+// --- fine Store update -------------------------------------------------------
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.addEventListener("controllerchange", () => {
