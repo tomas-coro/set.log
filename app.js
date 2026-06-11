@@ -1437,6 +1437,11 @@ function fmtDuration(totalSec) {
   const mm = String(m).padStart(h ? 2 : 1, "0");
   return (h ? `${h}:${mm}` : `${mm}`) + `:${String(s).padStart(2, "0")}`;
 }
+// Testo del cronometro per la status bar dell'overlay: "" se PRONTO, altrimenti
+// "⏱ MM:SS · ". Centralizzato (usato da renderFocusOverlay e tickSessionDisplays).
+function clockText(entry, now) {
+  return sessionState(entry) === "PRONTO" ? "" : "⏱ " + fmtDuration(elapsedMs(entry, now) / 1000) + " · ";
+}
 // Annulla il cronometro del giorno corrente (es. sessione avviata per sbaglio).
 // Rimuove SOLO la voce gymsched_session: le serie loggate (in `data`) restano intatte.
 function cancelSessionClock() {
@@ -1517,13 +1522,20 @@ function renderSessionControl() {
 // Tick 1s: aggiorna lo slot home e, se l'overlay è aperto, solo il testo del
 // tempo nella status bar (niente re-render dell'intero overlay ogni secondo).
 function tickSessionDisplays() {
-  renderSessionControl();
+  const el = document.getElementById("sessClock");
+  const entry = getSessionMap()[sessClockKey()];
+  const target = planIsEmpty(data) ? "EMPTY" : sessionState(entry);
+  // Rebuild completo SOLO al cambio di stato (così il pallino .sc-dot non si
+  // resetta a ogni secondo). A stato invariato aggiorna solo il testo del tempo.
+  if (!el || el.dataset.state !== target) {
+    renderSessionControl();
+  } else if (target === "IN_CORSO" || target === "IN_PAUSA" || target === "FINITO") {
+    const t = document.getElementById("sessClockText");
+    if (t) t.textContent = fmtDuration(elapsedMs(entry, Date.now()) / 1000);
+  }
   if (openIndex !== null) {
     const clk = document.getElementById("focusSbarClock");
-    if (clk) {
-      const entry = getSessionMap()[sessClockKey()];
-      clk.textContent = sessionState(entry) === "PRONTO" ? "" : "⏱ " + fmtDuration(elapsedMs(entry, Date.now()) / 1000) + " · ";
-    }
+    if (clk) clk.textContent = clockText(entry, Date.now());
   }
 }
 
@@ -3143,7 +3155,7 @@ function renderFocusOverlay() {
     const entry = getSessionMap()[sessClockKey()];
     const clk = document.createElement("span");
     clk.id = "focusSbarClock";
-    clk.textContent = sessionState(entry) === "PRONTO" ? "" : "⏱ " + fmtDuration(elapsedMs(entry, Date.now()) / 1000) + " · ";
+    clk.textContent = clockText(entry, Date.now());
     const rest = document.createElement("span");
     rest.textContent = `ex ${String(openIndex + 1).padStart(2, "0")}/${exsForBar.length}`;
     cntEl.replaceChildren(clk, rest);
