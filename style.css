@@ -236,6 +236,16 @@ input.num::-webkit-outer-spin-button,input.num::-webkit-inner-spin-button{-webki
 :root[data-theme="graphite"] .timerbar.go-on::after{content:"";position:absolute;inset:0;pointer-events:none;
   background:repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 3px);}
 
+/* Recupero collassato: chip "riprendi" (la ✕ non distrugge) */
+.t-resume{display:flex;align-items:center;gap:10px;}
+.tr-open{flex:1;display:flex;align-items:center;gap:8px;min-height:40px;padding:4px 0;
+  background:transparent;border:none;cursor:pointer;text-align:left;
+  font-family:"JetBrains Mono",monospace;font-size:13px;color:var(--ink);}
+.tr-open .tr-ic{color:var(--acc);font-weight:700;}
+.tr-open .tr-go{margin-left:auto;color:var(--acc);font-weight:700;}
+.tr-x{background:transparent;border:none;color:var(--dim);font-size:18px;line-height:1;cursor:pointer;
+  padding:4px 8px;min-width:36px;min-height:36px;}
+
 /* settings dialog */
 dialog{border:none;border-radius:16px;padding:18px;max-width:340px;background:var(--surf);color:var(--ink);margin:auto;}
 dialog::backdrop{background:rgba(0,0,0,.6);}

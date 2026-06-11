@@ -1637,6 +1637,34 @@ function dismissTimerGo() {
   document.getElementById("timerBar").classList.remove("go-on");
   document.body.classList.remove("timer-on");
   wakeLock.disable();
+  document.getElementById("timerResume").classList.add("hidden");
+}
+
+// ✕ sul recupero: NON distrugge. Mette in pausa il timer e collassa la barra
+// nella chip "riprendi" (resti in recupero: wakeLock attivo, barra visibile slim).
+function collapseRest() {
+  timer.pause(); // no-op se già in pausa (es. arrivati qui da ⏸)
+  document.getElementById("timerRun").classList.add("hidden");
+  document.getElementById("resumeTime").textContent = formatTime(timer.pausedRemaining);
+  document.getElementById("timerResume").classList.remove("hidden");
+  document.body.classList.remove("scroll-lock");
+}
+
+// Tap sulla chip: riapre il recupero e riprende il conto.
+function expandRest() {
+  document.getElementById("timerResume").classList.add("hidden");
+  document.getElementById("timerRun").classList.remove("hidden");
+  document.getElementById("tToggle").textContent = "⏸";
+  document.body.classList.add("scroll-lock");
+  timer.resume();
+}
+
+// × sulla chip: chiusura vera (vecchio comportamento di tStop).
+function discardRest() {
+  document.getElementById("timerResume").classList.add("hidden");
+  timer.stop();
+  hideFeelAsk();
+  dismissTimerGo();
 }
 
 function startRest(seconds, label, go = null) {
@@ -1646,6 +1674,7 @@ function startRest(seconds, label, go = null) {
   restCtx = { seconds, go };
   document.getElementById("timerGo").classList.add("hidden");
   document.getElementById("timerRun").classList.remove("hidden");
+  document.getElementById("timerResume").classList.add("hidden");
   document.getElementById("timerBar").classList.remove("go-on");
   document.body.classList.add("timer-on");
   goDismiss.cancel();
@@ -3343,11 +3372,9 @@ function wireSettings() {
 function wireTimerControls() {
   document.getElementById("tMinus").addEventListener("click", () => timer.addSeconds(-10));
   document.getElementById("tPlus").addEventListener("click", () => timer.addSeconds(10));
-  document.getElementById("tStop").addEventListener("click", () => {
-    timer.stop();
-    hideFeelAsk();
-    dismissTimerGo();
-  });
+  document.getElementById("tStop").addEventListener("click", collapseRest);
+  document.getElementById("resumeOpen").addEventListener("click", expandRest);
+  document.getElementById("resumeDiscard").addEventListener("click", discardRest);
   document.getElementById("timerGo").addEventListener("click", dismissTimerGo);
   document.getElementById("tToggle").addEventListener("click", (e) => {
     // NB: tToggle è raggiungibile solo con #timerRun visibile (mai in stato GO).
