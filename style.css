@@ -620,6 +620,9 @@ dialog#settingsDialog.settings-v2-host::backdrop{
   display:inline-block;margin-right:7px;flex:0 0 auto;animation:scpulse 1.3s ease-in-out infinite;}
 .sc-ico{margin-right:6px;}
 .sessclock.paused{color:var(--dim);border-color:var(--line);}
+/* In corso / in pausa: chip a tutta riga, controlli al bordo destro */
+.sessclock.running,.sessclock.paused{display:flex;width:100%;}
+.sessclock .sc-left{display:inline-flex;align-items:center;min-width:0;flex:1;}
 @keyframes scpulse{0%,100%{opacity:1;transform:scale(1);}50%{opacity:.3;transform:scale(.7);}}
 @media (prefers-reduced-motion:reduce){.sc-dot{animation:none;}}
 

@@ -1478,20 +1478,23 @@ function renderSessionControl() {
   txt.className = "sc-t";
   txt.id = "sessClockText";
   txt.textContent = fmtDuration(secs); // SOLO il tempo: il tick aggiorna questo nodo
-  const kids = [];
+  // Gruppo sinistro: indicatore + label + tempo. Con `.sc-left{flex:1}` (CSS)
+  // riempie la riga full-width e spinge i controlli al bordo destro.
+  const scLeft = document.createElement("span");
+  scLeft.className = "sc-left";
   if (state === "IN_CORSO") {
     const dot = document.createElement("span");
     dot.className = "sc-dot";
-    kids.push(dot, document.createTextNode("in corso · "), txt);
+    scLeft.append(dot, document.createTextNode("in corso · "), txt);
   } else if (state === "IN_PAUSA") {
     const ico = document.createElement("span");
     ico.className = "sc-ico";
     ico.textContent = "⏸";
-    kids.push(ico, document.createTextNode("in pausa · "), txt);
+    scLeft.append(ico, document.createTextNode("in pausa · "), txt);
   } else { // FINITO
-    kids.push(document.createTextNode("⏱ allenamento "), txt);
+    scLeft.append(document.createTextNode("⏱ allenamento "), txt);
   }
-  el.replaceChildren(...kids);
+  el.replaceChildren(scLeft);
 
   if (state === "FINITO") return; // congelato, nessun controllo
 
