@@ -566,7 +566,7 @@ dialog#settingsDialog.settings-v2-host::backdrop{
 .update-toast .ut-tx{font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;flex:1;}
 .update-toast .ut-go{background:var(--acc);color:var(--acc-ink);border:none;border-radius:8px;padding:7px 12px;
   font-family:"JetBrains Mono",monospace;font-size:12px;font-weight:700;cursor:pointer;}
-.update-toast .ut-x{background:none;border:none;color:var(--dim);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;}
+.update-toast .ut-x{display:inline-flex;align-items:center;justify-content:center;min-width:24px;min-height:24px;background:none;border:none;color:var(--dim);font-size:15px;line-height:1;cursor:pointer;padding:0 2px;}
 @keyframes ut-in{from{opacity:0;transform:translate(-50%,12px);}to{opacity:1;transform:translate(-50%,0);}}
 @media (prefers-reduced-motion:reduce){.update-toast{animation:none;}.update-toast .ut-dot{animation:none;}}
 
