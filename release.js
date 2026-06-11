@@ -15,6 +15,21 @@ export const STORE = {
   android: { pkg:   "it.placeholder.setlog", url: "https://play.google.com/store/apps/details?id=it.placeholder.setlog" },
 };
 
+// 'ios' | 'android' | 'web'. Capacitor (se presente) ha priorità; poi UA; fallback 'web'.
+export function getPlatform(
+  nav = (typeof navigator !== "undefined" ? navigator : {}),
+  cap = (typeof globalThis !== "undefined" ? globalThis.Capacitor : undefined),
+) {
+  if (cap && typeof cap.getPlatform === "function") {
+    const p = cap.getPlatform();
+    if (p === "ios" || p === "android" || p === "web") return p;
+  }
+  const ua = (nav && nav.userAgent) || "";
+  if (/iPhone|iPad|iPod/i.test(ua)) return "ios";
+  if (/Android/i.test(ua)) return "android";
+  return "web";
+}
+
 // Confronto semver "x.y.z": true se remote è strettamente più nuovo di current.
 // Input malformati → false (meglio non mostrare un banner spurio).
 export function isNewer(remote, current) {

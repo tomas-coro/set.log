@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { APP_VERSION, STORE_UPDATE_ENABLED, VERSION_MANIFEST_URL, isNewer } from "../release.js";
+import { APP_VERSION, STORE_UPDATE_ENABLED, VERSION_MANIFEST_URL, isNewer, getPlatform } from "../release.js";
 
 test("costanti: APP_VERSION è semver, flag OFF, manifest url relativo", () => {
   assert.match(APP_VERSION, /^\d+\.\d+\.\d+$/);
@@ -28,4 +28,18 @@ test("isNewer: input malformato → false", () => {
   assert.equal(isNewer("abc", "1.0.0"), false);
   assert.equal(isNewer("1.0.0", null), false);
   assert.equal(isNewer(undefined, "1.0.0"), false);
+});
+
+test("getPlatform: Capacitor ha priorità sull'UA", () => {
+  assert.equal(getPlatform({ userAgent: "Mozilla iPhone" }, { getPlatform: () => "android" }), "android");
+});
+test("getPlatform: UA iPhone → ios", () => {
+  assert.equal(getPlatform({ userAgent: "Mozilla/5.0 (iPhone; CPU iPhone OS 17_0)" }, undefined), "ios");
+});
+test("getPlatform: UA Android → android", () => {
+  assert.equal(getPlatform({ userAgent: "Mozilla/5.0 (Linux; Android 14)" }, undefined), "android");
+});
+test("getPlatform: desktop/sconosciuto → web", () => {
+  assert.equal(getPlatform({ userAgent: "Mozilla/5.0 (Windows NT 10.0)" }, undefined), "web");
+  assert.equal(getPlatform({}, undefined), "web");
 });
