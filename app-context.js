@@ -10,3 +10,10 @@ export const ctx = {
 
 export const planDays = () => (Array.isArray(ctx.data.plan) && ctx.data.plan.length ? ctx.data.plan : PLAN);
 export const fmtKg = (n) => Math.round(n).toLocaleString("it-IT");
+
+// Parentesi HUD angolari e righello: markup ripetuto dei pannelli CRT, condiviso
+// fra scan-ui.js, catalog-ui.js e i pannelli di coverage in app.js.
+export const CRT_CORNERS = '<i class="crt-c tl"></i><i class="crt-c tr"></i><i class="crt-c bl"></i><i class="crt-c br"></i>';
+export const CRT_RULER =
+  `<div class="crt-ruler-x">${[0, 10, 20, 30, 40, 50, 60].map((n) => `<span>${n}</span>`).join("")}</div>` +
+  `<div class="crt-ruler-y">${[0, 10, 20, 30].map((n) => `<span>${n}</span>`).join("")}</div>`;

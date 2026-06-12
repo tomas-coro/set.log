@@ -27,9 +27,8 @@ import {
   sessionDates, monthGrid, sessionHasDoneSet,
   lastWorkingSet,
   volumeMeta, platesOn, exerciseVolume, setVolume, supersetTrackKeys, trackName,
-  muscleContributions, lastTrainedByGroup,
 } from "./session.js";
-import { renderBody, heatByGroup, freshnessByGroup, dayCoverage, GROUP_ZONES, scanBootLog } from "./body.js";
+import { renderBody, dayCoverage, GROUP_ZONES } from "./body.js";
 import { RestTimer, formatTime, withoutSession, goSlug, VisibleCountdown, normalizeSessionEntry, elapsedMs, sessionState } from "./timer.js";
 import { ScreenWakeLock } from "./wakelock.js";
 import { renderNutritionGuide } from "./nutrition.js";
@@ -42,7 +41,7 @@ import {
   DECRYPT_GLYPHS, DECRYPT_TICK_MS, WORD_DELAY_MS, CAP_DELAY_MS,
   REDUCE_MIN_MS, FULL_MIN_MS, isLocked, decryptDone,
 } from "./splash.js";
-import { ctx } from "./app-context.js";
+import { ctx, CRT_CORNERS } from "./app-context.js";
 import { ensureAudio, beep, cueWarning, cueCountdown } from "./cues.js";
 import {
   PENDING_KEY, BAR_KEY, PLATES_KEY, NOTIFY_KEY,
@@ -51,6 +50,7 @@ import {
 } from "./local-prefs.js";
 import { mkBtn, a11yToggle, a11yRestoreFocus, mkPrompt, mkNew } from "./a11y.js";
 import { openCalendar, closeCalendar, calShiftMonth, renderCalendar, closeCalDay, setCalMetric } from "./calendar.js";
+import { openScan, closeScan, renderScan, setScanTab } from "./scan-ui.js";
 
 const SEED_URL = "https://xbacco.github.io/gym-schedule/data.json";
 
@@ -92,6 +92,7 @@ Object.defineProperties(ctx, {
 ctx.render = render; // render è una function declaration (hoisted)
 ctx.weekLabel = weekLabel;       // function hoisted, usata da calendar.js (pop-up sessione)
 ctx.openCalendar = openCalendar; // import da calendar.js; lo userà il drawer (Ondata 2)
+ctx.openScan = openScan;         // import da scan-ui.js; lo userà il drawer (Ondata 2)
 
 // L'overlay dell'esercizio è registrato come voce di history, così la gesture
 // "indietro" del telefono (swipe dal bordo / tasto back) chiude l'esercizio
@@ -685,82 +686,6 @@ function openCatalogDelete(entry) {
     dbCloseModal();
   };
   if (!dlg.open) dlg.showModal();
-}
-
-// ---- Scan: figura anatomica heatmap (overlay, stessa logica history). ----
-let scanOpen = false;
-let scanTab = "week"; // "week" | "fresh"
-
-// Parentesi HUD angolari e righello: markup ripetuto dei pannelli CRT.
-const CRT_CORNERS = '<i class="crt-c tl"></i><i class="crt-c tr"></i><i class="crt-c bl"></i><i class="crt-c br"></i>';
-const CRT_RULER =
-  `<div class="crt-ruler-x">${[0, 10, 20, 30, 40, 50, 60].map((n) => `<span>${n}</span>`).join("")}</div>` +
-  `<div class="crt-ruler-y">${[0, 10, 20, 30].map((n) => `<span>${n}</span>`).join("")}</div>`;
-
-function openScan() {
-  scanOpen = true;
-  history.pushState({ gymScan: true }, "");
-  renderScan();
-}
-function closeScan() {
-  if (!scanOpen) return;
-  if (history.state && history.state.gymScan) history.back(); // → popstate chiude
-  else { scanOpen = false; renderScan(); }
-}
-
-// Legenda della vista settimana: scala poco→tanto + spento (palette fissa).
-function scanLegendWeek() {
-  const sw = (o) => `<span class="sw" style="background:#f0a73c;opacity:${o}"></span>`;
-  return `<div class="bd-leg">poco ${[0.3, 0.55, 0.8, 1].map(sw).join("")} tanto` +
-    `<span><span class="sw" style="background:#1c2127;border:1px solid #2c343c"></span> non allenato</span></div>`;
-}
-
-function renderScan() {
-  const ov = document.getElementById("scanOverlay");
-  if (!scanOpen) {
-    ov.classList.add("hidden");
-    ov.setAttribute("aria-hidden", "true");
-    if (openIndex === null && !nutritionOpen && !planOpen) document.body.style.overflow = "";
-    return;
-  }
-  for (const b of document.querySelectorAll("#scanTabs button")) {
-    b.classList.toggle("on", b.dataset.tab === scanTab);
-  }
-  const body = document.getElementById("scanBody");
-  const plan = Array.isArray(data.plan) ? data.plan : [];
-  const catalog = dehydrate(data).catalog ?? [];
-  if (scanTab === "week") {
-    // Heat dai volumi della settimana corrente (quella selezionata in home).
-    const contribs = plan.flatMap((d) => muscleContributions(data, currentWeek, d.day, d));
-    const { zones } = heatByGroup(contribs, catalog);
-    const wTag = currentWeek.split("-")[1] || currentWeek; // "2026-W23" → "W23"
-    document.getElementById("scanSub").textContent = `◈ SCAN · settimana ${wTag}`;
-    // "Vuoto" qui = nessun volume NELLA SETTIMANA selezionata (contribs);
-    // nel tab freschezza invece = mai allenato in TUTTO lo storico (lastBy).
-    // I due predicati sono volutamente diversi: stessa UI, domande diverse.
-    const empty = contribs.length === 0;
-    body.innerHTML =
-      `<div class="crt-panel big${empty ? " scan-dim" : ""}">${CRT_RULER}${renderBody({ zones, w: 108 })}` +
-      `${scanLegendWeek()}${CRT_CORNERS}<span class="crt-tag">SCAN·${wTag}</span></div>` +
-      (empty ? scanBootLog("week", { wTag }) : "");
-  } else {
-    const todayIso = new Date().toISOString().slice(0, 10);
-    const lastBy = lastTrainedByGroup(data);
-    const { zones, never, warnGroups, neverGroups } = freshnessByGroup(lastBy, todayIso);
-    document.getElementById("scanSub").textContent = "◈ SCAN · freschezza";
-    const warnTxt = warnGroups.length
-      ? `<div class="bd-leg"><span class="warn">⚠ fermi da ≥6 giorni: ${warnGroups.map((g) => g.toLowerCase()).join(" · ")}</span></div>` : "";
-    const neverTxt = neverGroups.length
-      ? `<div class="bd-leg"><span class="warn"><span class="sw" style="border:1px dashed #e0705a"></span> mai allenato: ${neverGroups.map((g) => g.toLowerCase()).join(" · ")}</span></div>` : "";
-    const emptyF = Object.keys(lastBy).length === 0; // vedi nota sul tab week
-    body.innerHTML =
-      `<div class="crt-panel big${emptyF ? " scan-dim" : ""}">${CRT_RULER}${renderBody({ zones, cold: never, w: 108 })}` +
-      `${warnTxt}${neverTxt}${CRT_CORNERS}<span class="crt-tag">SCAN·FRESH</span></div>` +
-      (emptyF ? scanBootLog("fresh", {}) : `<div class="scan-cap">acceso = allenato da poco · spento = sta recuperando</div>`);
-  }
-  ov.classList.remove("hidden");
-  ov.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
 }
 
 // ---- Menu drawer in fondo: stessa logica history degli overlay. ----
@@ -3177,7 +3102,7 @@ async function boot() {
   document.getElementById("scanBack").addEventListener("click", closeScan);
   document.getElementById("scanTabs").addEventListener("click", (e) => {
     const b = e.target.closest("button"); if (!b) return;
-    scanTab = b.dataset.tab; renderScan();
+    setScanTab(b.dataset.tab);
   });
   document.getElementById("dbQ").oninput = (e) => { dbFilter = e.target.value; renderCatalog(); };
   document.getElementById("dbAddInline").onclick = () => openCatalogForm(null, dbFilter);
@@ -3231,7 +3156,7 @@ async function boot() {
       else if (nutritionOpen) history.pushState({ gymNutrition: true }, "");
       else if (ctx.calendarOpen) history.pushState({ gymCalendar: true }, "");
       else if (catalogOpen) history.pushState({ gymCatalog: true }, "");
-      else if (scanOpen) history.pushState({ gymScan: true }, "");
+      else if (ctx.scanOpen) history.pushState({ gymScan: true }, "");
       else if (openIndex !== null) history.pushState({ gymFocus: true }, "");
       return;
     }
@@ -3248,7 +3173,7 @@ async function boot() {
     if (ctx.calendarOpen) { ctx.calendarOpen = false; renderCalendar(); }
     if (sheetsOpen) { sheetsOpen = false; renderSheets(); const t = sheetsPending; sheetsPending = null; if (t) t(); }
     if (catalogOpen) { catalogOpen = false; renderCatalog(); }
-    if (scanOpen) { scanOpen = false; renderScan(); }
+    if (ctx.scanOpen) { ctx.scanOpen = false; renderScan(); }
   });
 
   // 4. Carica dati: prima da localStorage (mostra subito), poi da remote.
