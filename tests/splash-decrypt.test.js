@@ -38,10 +38,11 @@ test("la permanenza reduced-motion supera la fine della decrittazione", () => {
   );
 });
 
-// app.js deve pilotare il decrypt e usare la costante condivisa, non un 250 hardcoded.
-test("app.js usa startSplashDecrypt e la permanenza condivisa", () => {
-  const app = readFileSync(fileURLToPath(new URL("../app.js", import.meta.url)), "utf8");
-  assert.match(app, /startSplashDecrypt/, "app.js deve chiamare startSplashDecrypt");
-  assert.match(app, /REDUCE_MIN_MS/, "app.js deve usare REDUCE_MIN_MS");
-  assert.doesNotMatch(app, /reduce\s*\?\s*250/, "niente più permanenza 250ms hardcoded per reduce");
+// splash-control.js deve pilotare il decrypt e usare la costante condivisa, non un 250 hardcoded.
+// (Logica splash estratta da app.js in splash-control.js, Ondata 3 dello split.)
+test("splash-control.js usa startSplashDecrypt e la permanenza condivisa", () => {
+  const src = readFileSync(fileURLToPath(new URL("../splash-control.js", import.meta.url)), "utf8");
+  assert.match(src, /startSplashDecrypt/, "splash-control.js deve chiamare startSplashDecrypt");
+  assert.match(src, /REDUCE_MIN_MS/, "splash-control.js deve usare REDUCE_MIN_MS");
+  assert.doesNotMatch(src, /reduce\s*\?\s*250/, "niente più permanenza 250ms hardcoded per reduce");
 });
