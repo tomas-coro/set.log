@@ -11,6 +11,12 @@ export const ctx = {
 export const planDays = () => (Array.isArray(ctx.data.plan) && ctx.data.plan.length ? ctx.data.plan : PLAN);
 export const fmtKg = (n) => Math.round(n).toLocaleString("it-IT");
 
+// Escape HTML generico per body E attributi (copre anche le virgolette): così i
+// valori interpolati in `value="..."` sono sicuri senza doppio-escape. Condiviso
+// fra catalog-ui.js e i pannelli CRT di app.js/plan-editor.
+export const dbEsc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+  .replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+
 // Parentesi HUD angolari e righello: markup ripetuto dei pannelli CRT, condiviso
 // fra scan-ui.js, catalog-ui.js e i pannelli di coverage in app.js.
 export const CRT_CORNERS = '<i class="crt-c tl"></i><i class="crt-c tr"></i><i class="crt-c bl"></i><i class="crt-c br"></i>';
