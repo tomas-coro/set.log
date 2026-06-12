@@ -4,10 +4,12 @@
   "description": "Personal workout web app with cross-device sync and rest timer",
   "type": "module",
   "scripts": {
-    "test": "node --test"
+    "test": "node --test",
+    "e2e": "playwright test"
   },
   "private": true,
   "devDependencies": {
+    "@playwright/test": "1.60.0",
     "@supabase/supabase-js": "2.108.1",
     "esbuild": "0.28.1"
   }

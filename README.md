@@ -19,9 +19,12 @@ Due temi: **Carta** (chiaro, default) e **Graphite** (scuro), commutabili da ⚙
 ## Sviluppo locale
 
 ```bash
-npm test                    # 215+ test
-python -m http.server 8765  # server statico
-# poi apri http://localhost:8765
+npm test                          # test unit (node --test)
+npx playwright install chromium   # una-tantum: scarica il browser per gli E2E
+npm run e2e                        # smoke test E2E (boot online + offline)
+node scripts/static-server.cjs    # server statico (porta 8766) — oppure:
+python -m http.server 8765        # server statico alternativo
+# poi apri http://localhost:8765 (o :8766)
 ```
 
 I file `supabase-client.js` contengono URL + anon key del progetto Supabase

@@ -5,3 +5,5 @@ Thumbs.db
 .superpowers/
 mockups/
 .playwright-mcp/
+test-results/
+playwright-report/
