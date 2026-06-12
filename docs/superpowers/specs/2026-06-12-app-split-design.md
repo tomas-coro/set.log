@@ -33,28 +33,22 @@ Spezzare `app.js` in moduli più piccoli e a confini netti, **un'estrazione alla
 
 Il nodo tecnico è lo **stato mutabile a livello di modulo** (`data`, `store`, `currentWeek`, `openIndex`, …) e `render()`, referenziati ovunque. In ESM non si possono "spezzare" delle `let` di modulo tra più file.
 
-**Soluzione (decisa): un oggetto context condiviso.**
+**Soluzione (decisa): un oggetto context condiviso, con bridge ad accessor.**
+
+`app.js` ha 228 riferimenti a `data` (più ~300 agli altri stati). Riscriverli tutti a `ctx.data` è fragile: la parola `data` compare anche in punti **critici da non toccare** — la chiave di storage `profileStorage.set("data", …)`, i selettori `data-id`/`data-muscle`/`data-g`/`data-date`, il destructuring `const { data: sessionData }`. Un replace meccanico li corromperebbe.
+
+**Quindi `app.js` NON viene migrato.** Tiene i suoi `let data`, `let currentWeek`, … invariati, e `ctx` espone quegli stessi local come **proprietà accessor vive** (`get`/`set`), cablate una volta in `app.js`. I moduli estratti usano l'interfaccia approvata `ctx.data`, `ctx.openIndex`, ecc.; sotto, l'accessor legge/scrive il local di `app.js` → **un'unica fonte di verità, zero churn in `app.js`** (e il cuore focus che resta non viene toccato).
 
 Nuovo modulo `app-context.js`:
 
 ```js
-import { emptyData, isoWeekKey } from "./store.js";
 import { PLAN } from "./plan.js";
 
-// Stato condiviso fra app.js e i moduli estratti.
+// Stato condiviso. I campi di stato (data, currentWeek, …) sono definiti come
+// accessor da app.js al boot (vedi bridge sotto); qui c'è solo il default di render
+// e gli helper trasversali, così niente crasha se chiamato prima del wiring.
 export const ctx = {
-  data: emptyData(),
-  store: null,
-  session: null,
-  profileStorage: null,
-  dataVersion: 0,
-  pusher: null,
-  currentWeek: isoWeekKey(new Date()),
-  currentDay: "A",
-  openIndex: null,       // esercizio aperto nel focus (letto dagli overlay per il blocco-scroll)
-  nutritionOpen: false,  // letto da plan-editor/scan/calendar
-  planOpen: false,       // letto da scan/calendar
-  render: () => {},      // registrato al boot da app.js
+  render: () => {},   // sovrascritto da app.js: ctx.render = render
 };
 
 // Helper trasversali (dipendono solo da ctx + moduli puri).
@@ -62,9 +56,32 @@ export const planDays = () => (Array.isArray(ctx.data.plan) && ctx.data.plan.len
 export const fmtKg = (n) => Math.round(n).toLocaleString("it-IT");
 ```
 
+Bridge in `app.js` (dopo le dichiarazioni `let` esistenti, lasciate intatte):
+
+```js
+import { ctx } from "./app-context.js";
+// Espone i local di app.js come proprietà vive di ctx, così i moduli estratti
+// leggono/scrivono ctx.<x> senza che app.js cambi i propri riferimenti.
+Object.defineProperties(ctx, {
+  data:           { get: () => data,           set: (v) => { data = v; },           configurable: true },
+  currentWeek:    { get: () => currentWeek,    set: (v) => { currentWeek = v; },    configurable: true },
+  currentDay:     { get: () => currentDay,     set: (v) => { currentDay = v; },     configurable: true },
+  openIndex:      { get: () => openIndex,      set: (v) => { openIndex = v; },      configurable: true },
+  nutritionOpen:  { get: () => nutritionOpen,  set: (v) => { nutritionOpen = v; },  configurable: true },
+  planOpen:       { get: () => planOpen,       set: (v) => { planOpen = v; },       configurable: true },
+  store:          { get: () => store,          set: (v) => { store = v; },          configurable: true },
+  session:        { get: () => session,        set: (v) => { session = v; },        configurable: true },
+  profileStorage: { get: () => profileStorage, set: (v) => { profileStorage = v; }, configurable: true },
+  dataVersion:    { get: () => dataVersion,    set: (v) => { dataVersion = v; },    configurable: true },
+  pusher:         { get: () => pusher,         set: (v) => { pusher = v; },         configurable: true },
+});
+ctx.render = render;
+```
+
 Regole:
 - `app-context.js` importa **solo moduli puri** → nessun ciclo di import.
-- I moduli estratti `import { ctx, planDays, … } from "./app-context.js"`. Dentro il codice spostato, i riferimenti allo stato condiviso diventano `ctx.data`, `ctx.openIndex`, ecc. (sostituzione meccanica). **Le firme delle funzioni non cambiano.**
+- I moduli estratti `import { ctx, planDays, … } from "./app-context.js"`. Dentro il codice spostato, i riferimenti allo stato condiviso diventano `ctx.data`, `ctx.openIndex`, ecc. (sostituzione meccanica **solo nel codice spostato**, dove non ci sono le trappole-stringa). **Le firme delle funzioni non cambiano.**
+- **Chiamate inter-modulo tra overlay con stato** (es. `sheets-ui` che lancia `openPlanEditor`): passano per `ctx` (funzione registrata da `app.js`), mai import diretto fra moduli con stato. I **leaf utility senza stato** (`a11y.js`, `cues.js`, `local-prefs.js`) e i moduli puri si importano direttamente.
 - Lo stato **privato** di un overlay (es. `calYear, calByDate, dbFilter, sheetsExpandedId, scanTab, drawerPending, planEditDay, audioCtx`) si sposta col modulo come `let` normale — **non** va in `ctx`.
 - Lo stato **solo-focus** (`focusDrawerOpen, chartExId, chartTrack, chartAll, sha`) resta `let` locale in `app.js` (ondata 4 fuori scope).
 
@@ -77,7 +94,10 @@ Regole:
 
 ### Chiamate inter-modulo
 
-Default: **import diretto** del simbolo (es. `sheets-ui.js` importa `openPlanEditor` da `plan-editor.js`), finché il grafo resta **aciclico**. Se un'estrazione creasse un ciclo, la chiamata passa per **`ctx`** (funzione registrata al boot, stesso meccanismo di `ctx.render`). `render()` resta in `app.js` (è il dispatcher che chiama i renderer dei moduli) e viene registrato come `ctx.render` al boot.
+Regola robusta e indipendente dall'ordine di estrazione:
+- **Leaf utility senza stato** (`a11y.js`, `cues.js`, `local-prefs.js`) e **moduli puri**: import diretto.
+- **Overlay/feature con stato** (calendar, sheets, plan-editor, …): non si importano mai a vicenda. Le chiamate di lancio/chiusura di *un altro* overlay passano per **`ctx`** (funzione registrata da `app.js`, stesso meccanismo di `ctx.render`). Es.: in `sheets-ui` `sheetsPending = openPlanEditor` diventa `sheetsPending = ctx.openPlanEditor`.
+- `app.js` è il hub: importa i renderer e i punti d'ingresso da ogni modulo (nessuno importa `app.js` → mai cicli), li cabla in `render()` e nei wiring, e registra su `ctx` quelli richiamati dagli altri overlay. `render()` resta in `app.js` ed è registrato come `ctx.render`.
 
 ## Ricetta ripetibile per ogni estrazione
 
@@ -126,7 +146,7 @@ Branch `refactor/app-split` (sync con `origin/main` prima di iniziare — su que
 |---|---|---|
 | 3.1 | `update-banner.js` | Banner update SW + store (`showUpdateBanner, showStoreUpdateBanner, renderAppLine`). |
 | 3.2 | `splash-control.js` | `splashBootReady, dismissSplash, startSplashDecrypt`. |
-| 3.3 | `boot.js` | `boot` + recovery/rescue/reconcile (`dumpGymschedKeys, rescueLegacyLocalStorage, forceAppUpdate, recoverLogsFromOldCloud, reconcileFromRemote`). **Alto rischio** (percorso critico) — coperto dallo smoke E2E di boot. |
+| 3.3 | `recovery.js` | Helper di recovery/rescue/reconcile (`dumpGymschedKeys, rescueLegacyLocalStorage, forceAppUpdate, recoverLogsFromOldCloud, reconcileFromRemote`). `boot()` **resta in `app.js`** come orchestratore d'ingresso (più sicuro: percorso critico coperto solo dallo smoke E2E). |
 
 ### Ondata 4 — cuore focus — **FUORI SCOPE**
 `renderFocusNormal, trackBlock, renderFocusSuperset, renderFocusOverlay, buildEditBlock, setRow, set/feel/chart dialog, persist, render()` (~1000+ righe). Resta in `app.js`. Da rivalutare dopo l'ondata 3.
