@@ -43,6 +43,7 @@ import {
   REDUCE_MIN_MS, FULL_MIN_MS, isLocked, decryptDone,
 } from "./splash.js";
 import { ctx } from "./app-context.js";
+import { ensureAudio, beep, cueWarning, cueCountdown } from "./cues.js";
 
 const PENDING_KEY = "gymsched_pending"; // local buffer of unsynced edits
 const SEED_URL = "https://xbacco.github.io/gym-schedule/data.json";
@@ -83,6 +84,7 @@ Object.defineProperties(ctx, {
   pusher:         { get: () => pusher,         set: (v) => { pusher = v; },         configurable: true },
 });
 ctx.render = render; // render è una function declaration (hoisted)
+ctx.getTimerVol = getTimerVol; // usato da cues.js (tone) finché resta in app.js
 
 // L'overlay dell'esercizio è registrato come voce di history, così la gesture
 // "indietro" del telefono (swipe dal bordo / tasto back) chiude l'esercizio
@@ -1574,38 +1576,7 @@ function setStatus(text, kind = "") {
   el.className = "status" + (kind ? " " + kind : "");
 }
 
-// ---- End-of-rest notification (vibration + WebAudio beep) ----
-let audioCtx = null;
-function ensureAudio() {
-  audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
-  if (audioCtx.state === "suspended") audioCtx.resume();
-}
-// Tono singolo WebAudio (sinusoide): freq Hz, durata s, ritardo s. Il volume
-// viene dalla preferenza utente (getTimerVol, 0–40%): attacco dolce 50ms e
-// coda esponenziale — pensato per non "sparare" in cuffia.
-function tone(freq, dur = 0.18, after = 0) {
-  const vol = getTimerVol() / 100;
-  if (vol <= 0) return;
-  try {
-    ensureAudio();
-    const t0 = audioCtx.currentTime + after;
-    const osc = audioCtx.createOscillator();
-    const gain = audioCtx.createGain();
-    osc.frequency.value = freq;
-    gain.gain.setValueAtTime(0.0001, t0);
-    gain.gain.linearRampToValueAtTime(vol, t0 + 0.05);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
-    osc.connect(gain).connect(audioCtx.destination);
-    osc.start(t0);
-    osc.stop(t0 + dur + 0.05);
-  } catch (_) { /* audio unavailable; ignore */ }
-}
-// Fine recupero: arpeggio do-mi-sol. Preavviso (−10s): doppio do5 morbido.
-// Countdown (3-2-1): singolo mi5. Sinusoidi brevi e distinte, riconoscibili
-// a orecchio anche con la musica nelle cuffie senza risultare stridule.
-function beep() { tone(523, 0.22); tone(659, 0.22, 0.18); tone(784, 0.5, 0.36); }
-function cueWarning() { tone(523, 0.25); tone(523, 0.25, 0.35); if (navigator.vibrate) navigator.vibrate(120); }
-function cueCountdown() { tone(659, 0.18); }
+// ---- End-of-rest notification: audio/vibrazione estratti in cues.js ----
 let lastTickSecond = null;
 
 // ---- Timer wiring ----
