@@ -2,7 +2,7 @@
 // dentro (vive su api.github.com, cross-origin): la sync resta gestita da app.js.
 // NB: bumpare CACHE (es. -v2) quando cambia un file dell'app-shell, per
 // invalidare la cache vecchia ed evitare codice stantio.
-const CACHE = "gymsched-v98";
+const CACHE = "gymsched-v99";
 const ASSETS = [
   "./",
   "./index.html",
@@ -52,6 +52,7 @@ const ASSETS = [
   "./splash-control.js",
   "./recovery.js",
   "./local-store.js",
+  "./demo.js",
 ];
 
 // NB: lo skipWaiting è guidato dal client: appena il nuovo SW è installato,
