@@ -1,62 +1,13 @@
-// update-banner.js — toast di aggiornamento dell'app + riga versione di
-// Impostazioni. Due varianti: (1) update del service worker (PWA web): "Nuova
-// versione disponibile › aggiorna", il tap fa skipWaiting sul SW in attesa;
-// (2) update da store (scaffolding build nativa, attivo solo se
-// STORE_UPDATE_ENABLED). I trigger (registrazione SW, load, visibilitychange)
-// restano nel boot di app.js, che importa e chiama queste funzioni passando
-// `reg`/`update`. swReg resta in app.js (cablata nel boot, usata anche da
-// rest-ui e recovery via ctx.swReg).
-import { ctx } from "./app-context.js";
+// update-banner.js — toast di update da store + riga versione di Impostazioni.
+// L'update del service worker (PWA web) è ora silenzioso: app.js fa skipWaiting
+// automatico appena un nuovo SW è installato, senza banner né reload, e la
+// versione nuova viene servita alla prossima apertura. Qui resta solo (1) il
+// toast di update da store (scaffolding build nativa, attivo solo se
+// STORE_UPDATE_ENABLED) e (2) la riga versione di Impostazioni. I trigger (load,
+// visibilitychange) restano nel boot di app.js, che importa e chiama queste
+// funzioni. swReg resta in app.js (cablata nel boot, usata anche da rest-ui e
+// recovery via ctx.swReg).
 import { APP_VERSION, STORE_UPDATE_ENABLED } from "./release.js";
-
-// `swUpdating` distingue l'aggiornamento voluto dall'utente (tap sul banner)
-// dal primo clients.claim alla prima installazione: ricarica solo nel primo caso.
-// Esposto su ctx perché il handler `controllerchange` (boot di app.js) lo legge.
-let swUpdating = false;
-Object.defineProperty(ctx, "swUpdating", {
-  get: () => swUpdating, set: (v) => { swUpdating = v; }, configurable: true,
-});
-// Toast aggiornamento rimandato col `✕`: di sola sessione (riparte a false al
-// prossimo load, così se l'update è ancora pending il toast riappare).
-let updateDismissed = false;
-
-export function showUpdateBanner(reg) {
-  if (updateDismissed) return;                                 // rimandato in questa sessione
-  if (document.getElementById("updateBanner")) return;         // già presente
-  const b = document.createElement("div");
-  b.id = "updateBanner";
-  b.className = "update-toast";
-  b.setAttribute("role", "status");
-
-  const dot = document.createElement("span");
-  dot.className = "ut-dot";
-
-  const tx = document.createElement("span");
-  tx.className = "ut-tx";
-  tx.textContent = "Nuova versione disponibile";
-
-  const go = document.createElement("button");
-  go.type = "button";
-  go.className = "ut-go";
-  go.textContent = "› aggiorna";
-  go.addEventListener("click", () => {
-    swUpdating = true;
-    if (reg.waiting) reg.waiting.postMessage({ type: "SKIP_WAITING" });
-  });
-
-  const x = document.createElement("button");
-  x.type = "button";
-  x.className = "ut-x";
-  x.textContent = "✕";
-  x.setAttribute("aria-label", "Rimanda");
-  x.addEventListener("click", () => {
-    updateDismissed = true;
-    b.remove();
-  });
-
-  b.append(dot, tx, go, x);
-  document.body.appendChild(b);
-}
 
 // --- Store update (scaffolding fase 3) ---------------------------------------
 // Attivo SOLO se STORE_UPDATE_ENABLED è true (build nativa). A OFF non viene mai

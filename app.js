@@ -46,7 +46,7 @@ import {
   clockText, renderSessionControl, tickSessionDisplays,
 } from "./session-clock.js";
 import { startRest, wireTimerControls } from "./rest-ui.js";
-import { showUpdateBanner, showStoreUpdateBanner, renderAppLine } from "./update-banner.js";
+import { showStoreUpdateBanner, renderAppLine } from "./update-banner.js";
 import { splashBootReady } from "./splash-control.js";
 import {
   rescueLegacyLocalStorage, recoverLogsFromOldCloud, reconcileFromRemote, forceAppUpdate,
@@ -2094,8 +2094,9 @@ window.addEventListener("load", boot);
 setInterval(tickSessionDisplays, 1000);
 
 // PWA: registra il service worker e gestisce l'aggiornamento (best-effort).
-// swReg resta in app.js (cablata nel boot); swUpdating/updateDismissed e i toast
-// di aggiornamento (update SW + store) sono in update-banner.js.
+// swReg resta in app.js (cablata nel boot); il toast di update da store e la riga
+// versione di Impostazioni sono in update-banner.js. L'update del SW è silenzioso
+// (skipWaiting automatico, niente banner) — vedi il blocco di registrazione sotto.
 let swReg = null;
 
 // ---- Banner aggiornamento (SW + store) e riga versione: estratti in update-banner.js ----
@@ -2122,39 +2123,42 @@ if (STORE_UPDATE_ENABLED) {
 // --- fine Store update -------------------------------------------------------
 
 if ("serviceWorker" in navigator) {
-  navigator.serviceWorker.addEventListener("controllerchange", () => {
-    if (!ctx.swUpdating) return;
-    ctx.swUpdating = false;
-    window.location.reload();
-  });
   window.addEventListener("load", () => {
     // updateViaCache:'none' → fetch del file sw.js NON usa il cache HTTP del
     // browser. Senza questo, GitHub Pages può servire un sw.js stale (Cache-
-    // Control: max-age) e reg.update() non rileva mai la nuova versione → il
-    // banner di aggiornamento non appare. Il fetch degli asset (in install)
+    // Control: max-age) e reg.update() non rileva mai la nuova versione → l'app
+    // resterebbe bloccata sul codice vecchio. Il fetch degli asset (in install)
     // resta separato: usa il proprio `cache:'reload'` (vedi sw.js).
     navigator.serviceWorker.register("./sw.js", { updateViaCache: "none" }).then((reg) => {
       swReg = reg;
       reg.update().catch(() => {});
       // Poll ogni 60s mentre la tab è visibile: così se l'utente tiene aperta
-      // l'app durante il giorno il banner spunta senza dover ricaricare.
+      // l'app durante il giorno il nuovo SW viene scaricato e attivato senza
+      // dover ricaricare.
       setInterval(() => {
         if (document.visibilityState === "visible") reg.update().catch(() => {});
       }, 60_000);
       document.addEventListener("visibilitychange", () => {
         if (document.visibilityState === "visible") reg.update().catch(() => {});
       });
+      // Update silenzioso: appena un nuovo SW è installato lo facciamo attivare
+      // subito (SKIP_WAITING) SENZA ricaricare la pagina. La sessione in corso
+      // continua col codice già in memoria; la versione nuova viene servita alla
+      // prossima apertura. Niente banner, niente reload a sorpresa.
       reg.addEventListener("updatefound", () => {
         const nw = reg.installing;
         if (!nw) return;
         nw.addEventListener("statechange", () => {
-          if (nw.state === "installed" && navigator.serviceWorker.controller) showUpdateBanner(reg);
+          if (nw.state === "installed" && navigator.serviceWorker.controller) {
+            nw.postMessage({ type: "SKIP_WAITING" });
+          }
         });
       });
-      // Se c'è già un SW "waiting" alla registrazione (es. installato prima,
-      // ma updatefound già scattato in una run precedente del tab), mostra
-      // subito il banner: senza questo, l'utente non ne vede mai notizia.
-      if (reg.waiting && navigator.serviceWorker.controller) showUpdateBanner(reg);
+      // SW già "waiting" alla registrazione (installato in una run precedente
+      // del tab): attivalo subito, stessa logica silenziosa.
+      if (reg.waiting && navigator.serviceWorker.controller) {
+        reg.waiting.postMessage({ type: "SKIP_WAITING" });
+      }
     }).catch(() => { /* SW non disponibile */ });
   });
 }

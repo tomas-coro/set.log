@@ -2,7 +2,7 @@
 // dentro (vive su api.github.com, cross-origin): la sync resta gestita da app.js.
 // NB: bumpare CACHE (es. -v2) quando cambia un file dell'app-shell, per
 // invalidare la cache vecchia ed evitare codice stantio.
-const CACHE = "gymsched-v96";
+const CACHE = "gymsched-v97";
 const ASSETS = [
   "./",
   "./index.html",
@@ -53,8 +53,9 @@ const ASSETS = [
   "./recovery.js",
 ];
 
-// NB: niente skipWaiting() automatico: il nuovo SW resta in "waiting" finché
-// l'utente non tocca il banner di aggiornamento (vedi SKIP_WAITING sotto e app.js).
+// NB: lo skipWaiting è guidato dal client: appena il nuovo SW è installato,
+// app.js invia SKIP_WAITING (update silenzioso, senza reload) e il codice nuovo
+// viene servito alla prossima apertura (vedi message handler sotto e app.js).
 // `cache: 'reload'` bypassa il cache HTTP del browser quando il SW popola
 // la propria cache all'install: senza questo, GitHub Pages può servire stale
 // (es. app.js vecchio dentro la cache nuova → button presente ma wire-up no).
