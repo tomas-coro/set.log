@@ -34,8 +34,43 @@
     <div class="sp-word">set<span class="a">.log</span></div>
     <div class="cap"><span class="pr">&gt;</span><span class="type">system ready</span><span class="cur"></span></div>
   </div>
+
+  <!-- Soglia "Boot CLI": porta d'ingresso (demo / accedi / registrati). Mostrata
+       al posto di #auth-screen quando non c'è sessione (app.js showThreshold). -->
+  <section id="threshold-screen" hidden>
+    <div class="th-card">
+      <div class="th-sbar"><span class="l">◈ set.log</span><span class="r">● pronto</span></div>
+      <div class="th-top">
+        <span class="th-badge">
+          <svg viewBox="0 0 512 512" aria-hidden="true">
+            <g class="plate"><rect x="150" y="191" width="40" height="130" rx="16"/><rect x="104" y="215" width="30" height="82" rx="12"/><rect x="322" y="191" width="40" height="130" rx="16"/><rect x="378" y="215" width="30" height="82" rx="12"/></g>
+            <g class="grip"><line x1="190" y1="244" x2="228" y2="244"/><line x1="190" y1="268" x2="228" y2="268"/><line x1="284" y1="244" x2="322" y2="244"/><line x1="284" y1="268" x2="322" y2="268"/></g>
+            <g class="pin"><rect x="236" y="214" width="8" height="14" rx="2"/><rect x="252" y="214" width="8" height="14" rx="2"/><rect x="268" y="214" width="8" height="14" rx="2"/><rect x="236" y="284" width="8" height="14" rx="2"/><rect x="252" y="284" width="8" height="14" rx="2"/><rect x="268" y="284" width="8" height="14" rx="2"/></g>
+            <rect class="chipbody" x="228" y="228" width="56" height="56" rx="6"/>
+            <rect class="core" x="246" y="246" width="20" height="20" rx="4"/>
+          </svg>
+        </span>
+        <span class="th-brand">set<span class="a">.log</span></span>
+      </div>
+      <div class="th-term">
+        <div><span class="ok">✓</span> system ready</div>
+        <div><span class="p">&gt;</span> sessione: <span class="sel">ospite</span></div>
+        <div><span class="p">&gt;</span> seleziona modalità<span class="th-cur"></span></div>
+      </div>
+      <div class="th-cmd">
+        <button type="button" class="th-cta" data-act="demo"><span class="p">$</span> prova la demo <span class="arr">→</span></button>
+        <div class="th-row2">
+          <button type="button" class="th-tlink" data-act="auth" data-tab="login"><span class="gt">&gt;</span>accedi</button>
+          <button type="button" class="th-tlink" data-act="auth" data-tab="signup"><span class="gt">&gt;</span>registrati</button>
+        </div>
+        <div class="th-foot"><span class="h">//</span> la demo gira in locale, nessun account richiesto</div>
+      </div>
+    </div>
+  </section>
+
   <section id="auth-screen" hidden>
     <div class="auth-card">
+      <button type="button" id="authBackThreshold" class="auth-back">← soglia</button>
       <div class="auth-sbar"><span class="l">◈ ACCESSO</span><span class="r">● online</span></div>
       <h1>set<span class="a">.log</span></h1>
       <p class="auth-cap"># autenticazione richiesta<span class="auth-cur"></span></p>

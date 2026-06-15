@@ -8,7 +8,10 @@ import {
 import { hydrate, dehydrate } from "./sheets.js";
 import { seedCatalogIfAbsent, migrateExerciseName, backfillCatalogSecondaries } from "./catalog.js";
 import { supabase } from "./supabase-client.js";
-import { bindAuthScreen, hideAuthScreen, signOut } from "./auth.js";
+import { bindAuthScreen, hideAuthScreen, signOut, setAuthTab } from "./auth.js";
+import { DEMO_UID, isDemoActive, enterDemo } from "./demo.js";
+import { seedDemoData } from "./demo-seed.js";
+import { LocalStore } from "./local-store.js";
 import { ProfileStorage } from "./profile-storage.js";
 import {
   parseTarget, activeSetIndex, isEntryComplete, bestKg, isWeekRecord, isSetRecord, progressionDelta,
@@ -1844,75 +1847,9 @@ function wireSettings() {
 // ---- Timer controls: wireTimerControls estratto in rest-ui.js ----
 
 // ---- Boot ----
-async function boot() {
-  localStorage.removeItem("gymsched_token"); // migration cleanup: legacy GitHub PAT
-  // 1. Verifica sessione.
-  const { data: sessionData } = await supabase.auth.getSession();
-  session = sessionData.session;
-
-  // 2. Bind dell'auth screen (idempotente, basta una volta).
-  bindAuthScreen(supabase, {
-    redirectTo: location.origin + location.pathname,
-    onLoggedIn: () => location.reload(),
-  });
-
-  if (!session) {
-    document.getElementById("auth-screen").hidden = false;
-    document.getElementById("app").hidden = true;
-    splashBootReady();
-    return;
-  }
-
-  // 3. Sessione attiva → mostra app, inizializza store.
-  hideAuthScreen();
-  profileStorage = new ProfileStorage(localStorage, session.user.id);
-  applyTheme(document.documentElement, localStorage);
-  applyFx(document.body, localStorage);
-  store = new SupabaseStore(supabase);
-
-  pusher = createPusher({
-    getData: () => dehydrate(data),
-    getVersion: () => dataVersion,
-    setVersion: (v) => { dataVersion = v; profileStorage.set("version", v); },
-    setDirty: (d) => profileStorage.set("dirty", d),
-    store,
-    onConflict: async () => {
-      const remote = await store.load();
-      const merged = mergeBlobs(dehydrate(data), remote.data);
-      dataVersion = await store.save(merged, remote.version);
-      data = hydrate(merged);
-      profileStorage.set("data", data);
-      profileStorage.set("version", dataVersion);
-      profileStorage.set("dirty", false);
-      render();
-    },
-    onAuthError: async () => { await signOut(supabase); location.reload(); },
-    onStatus: (s) => setStatus({pending:"sincronizzo ⧗",ok:"ok ✓",error:"offline ⧗"}[s], s),
-  });
-
-  // Wire UI event listeners (richiedono DOM visibile).
-  wireSettings();
-
-  // Account section bindings (session è garantita non-null qui).
-  document.getElementById("accountEmail").textContent = session.user.email;
-  document.getElementById("btnLogout").addEventListener("click", async () => {
-    if (!confirm("Esci dall'account? I dati locali verranno cancellati (restano salvati nel cloud).")) return;
-    await pusher?.flush().catch(() => {});
-    profileStorage?.clear();
-    await signOut(supabase);
-    location.reload();
-  });
-  document.getElementById("btnImportLegacy").addEventListener("click", rescueLegacyLocalStorage);
-  document.getElementById("btnRecoverCloud").addEventListener("click", recoverLogsFromOldCloud);
-  document.getElementById("btnForceUpdate").addEventListener("click", forceAppUpdate);
-
-  // Altezza reale dello stack fisso in basso → CSS var per i padding (fix overlap).
-  // Observer mai disconnesso: bottomStack vive quanto l'app.
-  const _bs = document.getElementById("bottomStack");
-  new ResizeObserver(() => {
-    document.documentElement.style.setProperty("--bottom-pad", _bs.offsetHeight + "px");
-  }).observe(_bs);
-
+// Wiring degli event listener UI condivisi tra boot autenticato e bootDemo().
+// Nessuna dipendenza dalla sessione: tutti i nodi esistono in entrambi i rami.
+function wireAppEventListeners() {
   wireTimerControls();
   wireSetDialog();
   document.getElementById("weekSelect").addEventListener("change", (e) => changeWeek(e.target.value));
@@ -1997,6 +1934,169 @@ async function boot() {
     if (ctx.catalogOpen) { ctx.catalogOpen = false; renderCatalog(); }
     if (ctx.scanOpen) { ctx.scanOpen = false; renderScan(); }
   });
+}
+
+// ---- Soglia "Boot CLI" + boot demo (ospite locale, niente Supabase) ----
+
+// Mostra la soglia (porta d'ingresso) al posto di login e app.
+function showThreshold() {
+  document.getElementById("threshold-screen").hidden = false;
+  document.getElementById("auth-screen").hidden = true;
+  document.getElementById("app").hidden = true;
+  splashBootReady();
+}
+
+// Wiring (una volta sola) delle azioni della soglia e del "← soglia" dell'auth.
+let _thresholdWired = false;
+function wireThreshold() {
+  if (_thresholdWired) return;
+  _thresholdWired = true;
+  const scr = document.getElementById("threshold-screen");
+  scr.addEventListener("click", (e) => {
+    const b = e.target.closest("[data-act]");
+    if (!b) return;
+    if (b.dataset.act === "demo") {
+      // Entra in demo: setta il flag e ricarica — il boot rientra nel ramo demo
+      // (stesso pattern robusto di onLoggedIn: location.reload()).
+      enterDemo(localStorage);
+      location.reload();
+    } else if (b.dataset.act === "auth") {
+      scr.hidden = true;
+      document.getElementById("auth-screen").hidden = false;
+      setAuthTab(b.dataset.tab || "login");
+    }
+  });
+  // Dal pannello auth, "← soglia" torna alla soglia.
+  document.getElementById("authBackThreshold").addEventListener("click", showThreshold);
+}
+
+// Boot in modalità demo: sottoinsieme del path autenticato senza Supabase né
+// sessione. Store su localStorage (LocalStore), seed-if-absent al primo ingresso.
+async function bootDemo() {
+  document.getElementById("threshold-screen").hidden = true;
+  hideAuthScreen(); // mostra #app
+  profileStorage = new ProfileStorage(localStorage, DEMO_UID);
+  applyTheme(document.documentElement, localStorage);
+  applyFx(document.body, localStorage);
+  store = new LocalStore(localStorage);
+
+  // Seed-if-absent: primo ingresso (o dopo "esci dalla demo") → semina e salva.
+  let remote;
+  try { remote = await store.load(); }
+  catch { remote = { data: emptyData(), version: 0 }; } // store corrotto → reseed
+  if (remote.version === 0 || planIsEmpty(hydrate(remote.data))) {
+    const seeded = seedDemoData();
+    dataVersion = await store.save(seeded, 0);
+    data = hydrate(seeded);
+    profileStorage.set("data", data);
+    profileStorage.set("version", dataVersion);
+  } else {
+    data = hydrate(remote.data);
+    dataVersion = remote.version;
+    profileStorage.set("data", data);
+  }
+
+  pusher = createPusher({
+    getData: () => dehydrate(data),
+    getVersion: () => dataVersion,
+    setVersion: (v) => { dataVersion = v; profileStorage.set("version", v); },
+    setDirty: (d) => profileStorage.set("dirty", d),
+    store,
+    onStatus: (s) => setStatus({ pending: "salvo ⧗", ok: "ok ✓", error: "errore ⧗" }[s], s),
+    // niente onConflict/onAuthError: LocalStore non li lancia mai.
+  });
+
+  // Altezza reale dello stack fisso in basso → CSS var per i padding. Come nel
+  // boot autenticato: #bottomStack esiste anche in demo, serve per non far finire
+  // i contenuti sotto la barra fissa.
+  const _bs = document.getElementById("bottomStack");
+  new ResizeObserver(() => {
+    document.documentElement.style.setProperty("--bottom-pad", _bs.offsetHeight + "px");
+  }).observe(_bs);
+
+  wireAppEventListeners(); // wiring UI condiviso (Task 5)
+  wireSettings();
+  // wireDemoBar();   // Task 10 (Phase 3): barra demo persistente — non ancora
+  render();
+  setStatus("ok ✓", "ok");
+  splashBootReady();
+}
+
+async function boot() {
+  localStorage.removeItem("gymsched_token"); // migration cleanup: legacy GitHub PAT
+  // 1. Verifica sessione.
+  const { data: sessionData } = await supabase.auth.getSession();
+  session = sessionData.session;
+
+  // 2. Bind dell'auth screen (idempotente, basta una volta).
+  bindAuthScreen(supabase, {
+    redirectTo: location.origin + location.pathname,
+    onLoggedIn: () => location.reload(),
+  });
+
+  if (!session) {
+    // Flag demo già attivo (es. reload dentro la demo) → rientra nella demo.
+    if (isDemoActive(localStorage)) return bootDemo();
+    // Altrimenti: soglia "Boot CLI" al posto del muro di login.
+    wireThreshold();
+    showThreshold();
+    return;
+  }
+  // Path autenticato: se il flag demo è rimasto settato ma c'è una sessione vera,
+  // puliscilo (la sessione reale ha precedenza, niente teardown dei dati demo).
+  localStorage.removeItem("gymsched_demo_active");
+
+  // 3. Sessione attiva → mostra app, inizializza store.
+  hideAuthScreen();
+  profileStorage = new ProfileStorage(localStorage, session.user.id);
+  applyTheme(document.documentElement, localStorage);
+  applyFx(document.body, localStorage);
+  store = new SupabaseStore(supabase);
+
+  pusher = createPusher({
+    getData: () => dehydrate(data),
+    getVersion: () => dataVersion,
+    setVersion: (v) => { dataVersion = v; profileStorage.set("version", v); },
+    setDirty: (d) => profileStorage.set("dirty", d),
+    store,
+    onConflict: async () => {
+      const remote = await store.load();
+      const merged = mergeBlobs(dehydrate(data), remote.data);
+      dataVersion = await store.save(merged, remote.version);
+      data = hydrate(merged);
+      profileStorage.set("data", data);
+      profileStorage.set("version", dataVersion);
+      profileStorage.set("dirty", false);
+      render();
+    },
+    onAuthError: async () => { await signOut(supabase); location.reload(); },
+    onStatus: (s) => setStatus({pending:"sincronizzo ⧗",ok:"ok ✓",error:"offline ⧗"}[s], s),
+  });
+
+  // Wire UI event listeners (richiedono DOM visibile).
+  wireSettings();
+
+  // Account section bindings (session è garantita non-null qui).
+  document.getElementById("accountEmail").textContent = session.user.email;
+  document.getElementById("btnLogout").addEventListener("click", async () => {
+    if (!confirm("Esci dall'account? I dati locali verranno cancellati (restano salvati nel cloud).")) return;
+    await pusher?.flush().catch(() => {});
+    profileStorage?.clear();
+    await signOut(supabase);
+    location.reload();
+  });
+  document.getElementById("btnImportLegacy").addEventListener("click", rescueLegacyLocalStorage);
+  document.getElementById("btnRecoverCloud").addEventListener("click", recoverLogsFromOldCloud);
+  document.getElementById("btnForceUpdate").addEventListener("click", forceAppUpdate);
+
+  // Altezza reale dello stack fisso in basso → CSS var per i padding (fix overlap).
+  // Observer mai disconnesso: bottomStack vive quanto l'app.
+  const _bs = document.getElementById("bottomStack");
+  new ResizeObserver(() => {
+    document.documentElement.style.setProperty("--bottom-pad", _bs.offsetHeight + "px");
+  }).observe(_bs);
+
+  wireAppEventListeners();
 
   // 4. Carica dati: prima da localStorage (mostra subito), poi da remote.
   const cached = profileStorage.get("data");

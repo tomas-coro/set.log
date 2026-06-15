@@ -97,6 +97,13 @@ function setMode(mode) {
   d.info.hidden = true;
 }
 
+// Imposta il tab attivo (login/signup) dall'esterno — usato dalla soglia quando
+// l'utente sceglie "accedi" o "registrati". Riusa setMode (classe is-active +
+// label del submit). Idempotente, valore ignoto → trattato come "login".
+export function setAuthTab(tab) {
+  setMode(tab === "signup" ? "signup" : "login");
+}
+
 function showError(node, text) {
   node.textContent = text;
   node.hidden = false;
@@ -117,7 +124,7 @@ export function hideAuthScreen() {
   dom().app.hidden = false;
 }
 
-export function bindAuthScreen(client, { onLoggedIn, redirectTo }) {
+export function bindAuthScreen(client, { onLoggedIn, redirectTo, initialTab } = {}) {
   const d = dom();
 
   // Tab switch.
@@ -179,6 +186,10 @@ export function bindAuthScreen(client, { onLoggedIn, redirectTo }) {
       showError(d.newPasswordMsg, res.error);
     }
   });
+
+  // Tab iniziale richiesto da chi chiama (es. ingresso dalla soglia). Non tocca
+  // il ramo reset (#reset ha una sua form dedicata, sopra).
+  if (initialTab && !location.hash.startsWith("#reset")) setMode(initialTab);
 
   return { showAuthScreen };
 }

@@ -950,6 +950,12 @@ body.timer-on .drawer,body.timer-on .drawer-scrim{display:none;}
   width: 100%; max-width: 360px; padding: 26px 22px;
   font-family: var(--mono); color: var(--tx);
 }
+.auth-back {
+  background: none; border: 0; cursor: pointer;
+  color: var(--dim); font-family: var(--mono); font-size: .8rem;
+  padding: 6px 0; margin: 0 0 10px; min-height: 44px; display: inline-flex; align-items: center;
+}
+.auth-back:hover { color: var(--acc); }
 .auth-sbar {
   display: flex; justify-content: space-between;
   font-size: .7rem; letter-spacing: .18em; color: var(--dim); margin-bottom: 30px;
@@ -1002,6 +1008,81 @@ body.timer-on .drawer,body.timer-on .drawer-scrim{display:none;}
 }
 .auth-error { color: var(--down); font-size: .85rem; margin: 10px 0 0; }
 .auth-info  { color: var(--ok);   font-size: .85rem; margin: 10px 0 0; }
+
+/* ===== Soglia "Boot CLI" (porta d'ingresso demo, al posto del login) =====
+   Variante ① del mockup mockups/soglia-demo-rev1.html. Tutto namespacizzato
+   sotto #threshold-screen (le classi .sbar/.brand/.cta esistono già altrove). */
+#threshold-screen {
+  position: fixed; inset: 0; z-index: 1000;
+  display: flex; flex-direction: column;
+  background: var(--bg); color: var(--ink);
+  font-family: var(--mono);
+  padding: max(54px, env(safe-area-inset-top)) 26px max(30px, env(safe-area-inset-bottom));
+}
+#threshold-screen[hidden] { display: none; }
+#threshold-screen .th-card {
+  width: 100%; max-width: 390px; margin: 0 auto; flex: 1;
+  display: flex; flex-direction: column;
+}
+#threshold-screen .th-sbar {
+  display: flex; justify-content: space-between; align-items: center;
+  font-size: .7rem; letter-spacing: .12em; color: var(--dim);
+}
+#threshold-screen .th-sbar .l { color: var(--faint); }
+#threshold-screen .th-sbar .r { color: var(--ok); }
+#threshold-screen .th-top { display: flex; align-items: center; gap: 12px; margin-top: 18px; }
+#threshold-screen .th-badge svg { width: 46px; height: 46px; display: block; }
+#threshold-screen .th-badge .plate { fill: var(--dim); }
+#threshold-screen .th-badge .grip { stroke: var(--faint); stroke-width: 7; stroke-linecap: round; fill: none; }
+#threshold-screen .th-badge .pin { fill: var(--faint); }
+#threshold-screen .th-badge .chipbody { fill: none; stroke: var(--acc); stroke-width: 6; }
+#threshold-screen .th-badge .core { fill: var(--acc); }
+#threshold-screen .th-brand { font-size: 30px; font-weight: 800; letter-spacing: -.02em; color: var(--tx); line-height: 1; }
+#threshold-screen .th-brand .a { color: var(--acc); }
+#threshold-screen .th-term {
+  margin-top: 26px; padding: 14px;
+  border: 1px solid var(--line); border-radius: 12px; background: var(--field);
+  font-size: 12.5px; line-height: 1.85; color: var(--dim);
+}
+#threshold-screen .th-term .ok { color: var(--ok); }
+#threshold-screen .th-term .p { color: var(--faint); }
+#threshold-screen .th-term .sel { color: var(--ink); }
+#threshold-screen .th-cur {
+  display: inline-block; width: .55em; height: 1.05em; background: var(--acc);
+  margin-left: 2px; vertical-align: -2px; animation: th-blink 1.1s steps(1) infinite;
+}
+@keyframes th-blink { 50% { opacity: 0; } }
+#threshold-screen .th-cmd { margin-top: auto; }
+#threshold-screen .th-cta {
+  display: flex; align-items: center; justify-content: flex-start; gap: 9px;
+  width: 100%; min-height: 54px; padding: 17px 16px;
+  border: none; border-radius: 12px; cursor: pointer;
+  background: var(--acc); color: var(--acc-ink);
+  font-family: var(--mono); font-weight: 800; font-size: 15px; letter-spacing: .01em;
+  box-shadow: 0 0 0 1px var(--line-acc), 0 14px 30px -16px var(--acc);
+  transition: transform .12s, filter .18s;
+}
+#threshold-screen .th-cta .p { color: var(--acc-ink); opacity: .7; font-weight: 700; margin-right: 2px; }
+#threshold-screen .th-cta .arr { margin-left: auto; transition: transform .18s; }
+#threshold-screen .th-cta:hover { filter: brightness(1.06); }
+#threshold-screen .th-cta:hover .arr { transform: translateX(3px); }
+#threshold-screen .th-cta:active { transform: scale(.985); }
+#threshold-screen .th-row2 { display: flex; gap: 6px; margin-top: 14px; }
+#threshold-screen .th-tlink {
+  background: none; border: none; cursor: pointer;
+  min-height: 44px; padding: 10px 8px;
+  color: var(--dim); font-family: var(--mono); font-size: 12.5px;
+  transition: color .18s;
+}
+#threshold-screen .th-tlink:hover { color: var(--acc); }
+#threshold-screen .th-tlink .gt { color: var(--faint); margin-right: 5px; }
+#threshold-screen .th-foot { margin-top: 14px; font-size: 10.5px; line-height: 1.5; color: var(--faint); }
+#threshold-screen .th-foot .h { color: var(--dim); }
+@media (prefers-reduced-motion: reduce) {
+  #threshold-screen .th-cur { animation: none; opacity: 1; }
+  #threshold-screen .th-cta, #threshold-screen .th-tlink { transition: none; }
+  #threshold-screen .th-cta:hover .arr { transform: none; }
+}
 
 /* ===== Effetti CRT — off di default, gestiti da fx.js (classi su body) ===== */
 body.fx-glow{ --glow1:0 0 5px #ffd36b44; }
