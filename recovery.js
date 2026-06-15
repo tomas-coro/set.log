@@ -12,7 +12,7 @@ import { migrate, backfillMuscles, patchPlanV4, patchPlanV5 } from "./editor.js"
 import { PLAN } from "./plan.js";
 import { PENDING_KEY } from "./local-prefs.js";
 
-const SEED_URL = "https://xbacco.github.io/gym-schedule/data.json";
+const SEED_URL = "https://tomas-coro.github.io/set.log/data.json";
 
 function dumpGymschedKeys() {
   const out = [];
