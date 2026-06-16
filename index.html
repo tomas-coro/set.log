@@ -119,6 +119,13 @@
   </section>
 
   <div id="app">
+    <!-- Barra demo persistente (Task 10): full-bleed in cima alla colonna, nascosta
+         di default. Solo bootDemo() la accende via wireDemoBar(); nel ramo
+         autenticato resta hidden. -->
+    <div id="demo-bar" class="demobar hidden">
+      <span class="db-l"><span class="db-dot"></span>demo <span class="db-sub">· dati finti</span></span>
+      <button type="button" id="demoSignup" class="db-cta">registrati ›</button>
+    </div>
     <div class="wrap">
     <section id="emptyState" class="empty-state hidden" aria-hidden="true">
       <p class="es-hint"># nessuna scheda</p>
@@ -161,9 +168,14 @@
 
         <div class="sv-body sv-term">
           <div class="sv-sec">account</div>
-          <div class="sv-line">
+          <div class="sv-line" id="svAccountLine">
             <span class="k">email</span>
             <span class="v"><span id="accountEmail">…</span> <button type="button" id="btnLogout" class="sv-tag">esci</button></span>
+          </div>
+          <!-- Blocco demo (Task 11): sostituisce la riga account quando isDemoActive. -->
+          <div class="sv-line hidden" id="svDemoLine">
+            <span class="k">modalità</span>
+            <span class="v">demo · dati finti <button type="button" id="btnDemoExport" class="sv-tag">↓ esporta</button> <button type="button" id="btnDemoExit" class="sv-tag sv-tag-warn">esci</button></span>
           </div>
           <div class="sv-line">
             <span class="k">app</span>
@@ -217,7 +229,7 @@
             <span class="v sv-switch"><input type="checkbox" id="fxScanToggle"><span class="sv-switch-track"></span></span>
           </label>
 
-          <details class="sv-card sv-details">
+          <details class="sv-card sv-details" id="svRecovery">
             <summary>
               <span class="sv-toggle-ic">🛟</span>
               <span class="sv-toggle-lbl">Recupero dati</span>
@@ -236,6 +248,22 @@
           <button value="save" class="sv-pill sv-pill-acc">Salva</button>
         </footer>
       </form>
+    </dialog>
+
+    <!-- Sheet di uscita demo (Task 12): mostrato SOLO se la demo è modificata.
+         Demo pristina → uscita diretta senza sheet (handleDemoExit). -->
+    <dialog id="demoExitDialog" class="demoexit-host">
+      <div class="demoexit">
+        <div class="dx-h"><span>~/demo · esci</span><button type="button" id="dxClose" class="dx-x">[esc]</button></div>
+        <h3 class="dx-title">esci dalla demo</h3>
+        <p class="dx-p">hai modificato i dati di prova. se esci e cancelli, riparti da capo col seed. cosa vuoi fare?</p>
+        <div class="dx-acts">
+          <button type="button" id="dxSignup" class="dx-btn dx-prim">★ registrati e tieni i dati</button>
+          <button type="button" id="dxExport" class="dx-btn dx-ghost">↓ esporta un file JSON</button>
+          <button type="button" id="dxWipe" class="dx-btn dx-danger">✕ esci e cancella</button>
+        </div>
+        <button type="button" id="dxCancel" class="dx-cancel">annulla</button>
+      </div>
     </dialog>
   </div>
 

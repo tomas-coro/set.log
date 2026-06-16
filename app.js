@@ -9,8 +9,9 @@ import { hydrate, dehydrate } from "./sheets.js";
 import { seedCatalogIfAbsent, migrateExerciseName, backfillCatalogSecondaries } from "./catalog.js";
 import { supabase } from "./supabase-client.js";
 import { bindAuthScreen, hideAuthScreen, signOut, setAuthTab } from "./auth.js";
-import { DEMO_UID, isDemoActive, enterDemo } from "./demo.js";
-import { seedDemoData } from "./demo-seed.js";
+import { DEMO_UID, isDemoActive, enterDemo, exitDemo } from "./demo.js";
+import { seedDemoData, isDemoModified } from "./demo-seed.js";
+import { buildDemoExport } from "./demo-export.js";
 import { LocalStore } from "./local-store.js";
 import { ProfileStorage } from "./profile-storage.js";
 import {
@@ -1787,6 +1788,30 @@ function wireSettings() {
     }
   });
 
+  // Task 11/12: in demo, sostituisci il blocco account (email/esci + recupero
+  // legacy) con un blocco demo (esporta + esci dalla demo). Decisione una-tantum:
+  // il flag demo non cambia durante la sessione.
+  // Classe .hidden (display:none !important), non l'attributo: .sv-line ha
+  // display:flex che vincerebbe su [hidden] per specificità (bug colto in verifica).
+  const _demoMode = isDemoActive(localStorage);
+  document.getElementById("svAccountLine").classList.toggle("hidden", _demoMode);
+  document.getElementById("svRecovery").classList.toggle("hidden", _demoMode);
+  document.getElementById("svDemoLine").classList.toggle("hidden", !_demoMode);
+  document.getElementById("btnDemoExport").addEventListener("click", downloadDemoExport);
+  document.getElementById("btnDemoExit").addEventListener("click", handleDemoExit);
+  // Sheet di uscita (demo modificata): cablaggio delle 3 vie + cleanup scroll-lock.
+  const exitDlg = document.getElementById("demoExitDialog");
+  const closeExit = () => { if (exitDlg.open) exitDlg.close(); };
+  exitDlg.addEventListener("close", () => {
+    document.documentElement.classList.remove("modal-open");
+    document.body.classList.remove("modal-open");
+  });
+  document.getElementById("dxClose").addEventListener("click", closeExit);
+  document.getElementById("dxCancel").addEventListener("click", closeExit);
+  document.getElementById("dxExport").addEventListener("click", downloadDemoExport);
+  document.getElementById("dxWipe").addEventListener("click", wipeAndExitDemo);
+  document.getElementById("dxSignup").addEventListener("click", () => { closeExit(); goToSignupFromDemo(); });
+
   // X in alto a destra: chiude come "Chiudi" (returnValue vuoto, niente save).
   document.getElementById("settingsClose").addEventListener("click", () => dlg.close());
 
@@ -1970,6 +1995,57 @@ function wireThreshold() {
   document.getElementById("authBackThreshold").addEventListener("click", showThreshold);
 }
 
+// Flag effimero (sessionStorage): "veniamo dalla demo" → al signup riuscito,
+// il ramo autenticato offrirà di migrare i dati demo nel nuovo account (Task 13).
+const DEMO_MIGRATE_KEY = "gymsched_demo_migrate";
+
+// Dalla demo al signup: nascondi l'app, mostra l'auth su tab registrati, e marca
+// il flag di migrazione. Usata dalla barra demo (Task 10) e da Impostazioni (Task 11).
+function goToSignupFromDemo() {
+  sessionStorage.setItem(DEMO_MIGRATE_KEY, "1");
+  document.getElementById("app").hidden = true;
+  document.getElementById("auth-screen").hidden = false;
+  setAuthTab("signup");
+}
+
+// Task 10: barra demo persistente. Mostrata solo in bootDemo() (qui togliamo
+// l'attributo hidden); nel ramo autenticato resta nascosta. Wiring una volta sola.
+let _demoBarWired = false;
+function wireDemoBar() {
+  // Classe .hidden (display:none !important), non l'attributo hidden: .demobar ha
+  // display:flex che vincerebbe su [hidden]{display:none} per specificità.
+  document.getElementById("demo-bar").classList.remove("hidden");
+  if (_demoBarWired) return;
+  _demoBarWired = true;
+  document.getElementById("demoSignup").addEventListener("click", goToSignupFromDemo);
+}
+
+// Task 12: scarica il blob demo come file JSON. Il payload puro è buildDemoExport
+// (testato); qui solo la parte DOM (Blob + <a download> + revoke).
+function downloadDemoExport() {
+  const { filename, json } = buildDemoExport(dehydrate(data));
+  const url = URL.createObjectURL(new Blob([json], { type: "application/json" }));
+  const a = document.createElement("a");
+  a.href = url; a.download = filename;
+  document.body.appendChild(a); a.click(); a.remove();
+  URL.revokeObjectURL(url);
+}
+
+// Task 12: cancella i dati demo e torna alla soglia (reseed al prossimo ingresso).
+function wipeAndExitDemo() { exitDemo(localStorage); location.reload(); }
+
+// Task 12: uscita guardata. Demo pristina (== seed) → esci diretto. Demo
+// modificata → sheet a 3 vie (esporta / registrati e tieni / esci e cancella).
+function handleDemoExit() {
+  const settings = document.getElementById("settingsDialog");
+  if (settings.open) settings.close();
+  if (!isDemoModified(dehydrate(data))) { wipeAndExitDemo(); return; }
+  const dlg = document.getElementById("demoExitDialog");
+  document.documentElement.classList.add("modal-open");
+  document.body.classList.add("modal-open");
+  dlg.showModal();
+}
+
 // Boot in modalità demo: sottoinsieme del path autenticato senza Supabase né
 // sessione. Store su localStorage (LocalStore), seed-if-absent al primo ingresso.
 async function bootDemo() {
@@ -2016,7 +2092,7 @@ async function bootDemo() {
 
   wireAppEventListeners(); // wiring UI condiviso (Task 5)
   wireSettings();
-  // wireDemoBar();   // Task 10 (Phase 3): barra demo persistente — non ancora
+  wireDemoBar();           // Task 10: barra demo persistente con CTA registrati
   render();
   setStatus("ok ✓", "ok");
   splashBootReady();

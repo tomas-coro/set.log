@@ -102,6 +102,11 @@ export function seedDemoData(now = new Date()) {
 
 // "Modificato" = il blob differisce dal seed fresco (a parità di `now`).
 // Confronto strutturale: se l'utente ha loggato/editato qualcosa, cambia.
+// `updatedAt` è ESCLUSO: è un timestamp ristampato a ogni dehydrate (riga store.js
+// `next.updatedAt = ...`), quindi differirebbe sempre tra il blob salvato e un seed
+// rigenerato → una demo intatta risulterebbe sempre "modificata". È metadato, non
+// contenuto utente: a parità di tutto il resto, la demo è pristina.
 export function isDemoModified(blob, now = new Date()) {
-  return JSON.stringify(blob) !== JSON.stringify(seedDemoData(now));
+  const content = (b) => { const { updatedAt, ...rest } = b ?? {}; return JSON.stringify(rest); };
+  return content(blob) !== content(seedDemoData(now));
 }

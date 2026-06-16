@@ -1106,6 +1106,65 @@ body.fx-scan::after{
 .sbar .l{ color:var(--ac2); }
 .sbar .r{ display:flex; align-items:center; gap:8px; }
 
+/* ===== Barra demo (Task 10) — variante A "mode line": strip terminale sottile,
+   full-bleed in cima alla colonna. Sfondo accento-tenue, lingua del terminale.
+   Funziona in Carta + Graphite (token semantici). ===== */
+.demobar{
+  display:flex; align-items:center; justify-content:space-between; gap:10px;
+  min-height:44px; padding:6px 14px;
+  background:var(--acc-soft); border-bottom:1px solid var(--line-acc);
+  font-family:var(--mono); font-size:11px; letter-spacing:.04em;
+}
+.demobar .db-l{ display:flex; align-items:center; gap:8px; color:var(--ac2); font-weight:700; }
+.demobar .db-sub{ color:var(--dim); font-weight:400; letter-spacing:.02em; }
+.demobar .db-dot{
+  width:8px; height:8px; border-radius:50%; background:var(--acc); flex:none;
+  box-shadow:0 0 0 0 color-mix(in srgb, var(--acc) 60%, transparent);
+}
+.demobar .db-cta{
+  display:flex; align-items:center; min-height:44px; padding:0 4px;
+  background:none; border:none; cursor:pointer;
+  font-family:var(--mono); font-size:11px; font-weight:700; letter-spacing:.04em; color:var(--acc);
+}
+.demobar .db-cta:active{ opacity:.6; }
+/* Pulsazione del pallino solo se il movimento è permesso (utente con Riduci
+   movimento ON → resta pieno e leggibile, niente animazione). */
+@media (prefers-reduced-motion: no-preference){
+  .demobar .db-dot{ animation:demopulse 2.4s ease-out infinite; }
+  @keyframes demopulse{
+    0%  { box-shadow:0 0 0 0 color-mix(in srgb, var(--acc) 55%, transparent); }
+    70% { box-shadow:0 0 0 7px color-mix(in srgb, var(--acc) 0%, transparent); }
+    100%{ box-shadow:0 0 0 0 color-mix(in srgb, var(--acc) 0%, transparent); }
+  }
+}
+
+/* ===== Blocco demo in Impostazioni (Task 11) + sheet di uscita (Task 12) ===== */
+.sv-tag-warn{ color:var(--down); border-color:var(--line-warm); }
+.demoexit-host{
+  border:none; padding:0; background:transparent;
+  position:fixed; inset:auto 0 0 0; margin:0 auto; width:100%; max-width:440px;
+}
+.demoexit-host::backdrop{ background:rgba(8,7,5,.55); }
+.demoexit{
+  background:var(--bg); border:1px solid var(--line); border-bottom:none;
+  border-radius:18px 18px 0 0; padding:18px 16px calc(18px + env(safe-area-inset-bottom));
+  font-family:var(--mono);
+}
+.dx-h{ display:flex; justify-content:space-between; font-size:10px; letter-spacing:.08em;
+  color:var(--dim); border-bottom:1px solid var(--line); padding-bottom:8px; margin-bottom:12px; }
+.dx-x{ background:none; border:none; color:var(--dim); font-family:var(--mono); font-size:12px; cursor:pointer; min-height:36px; }
+.dx-title{ font-size:16px; font-weight:700; color:var(--tx); margin-bottom:4px; }
+.dx-title::before{ content:"$ "; color:var(--ac2); }
+.dx-p{ font-size:12.5px; color:var(--dim); line-height:1.5; margin-bottom:16px; }
+.dx-acts{ display:flex; flex-direction:column; gap:9px; }
+.dx-btn{ width:100%; min-height:44px; text-align:left; border-radius:12px; padding:13px 14px;
+  font-family:var(--mono); font-size:13.5px; font-weight:700; letter-spacing:.02em; cursor:pointer; }
+.dx-prim{ background:var(--acc); border:1px solid var(--acc); color:var(--acc-ink); }
+.dx-ghost{ background:var(--surf2); border:1px solid var(--line); color:var(--ink); }
+.dx-danger{ background:transparent; border:1px solid var(--line-warm); color:var(--down); }
+.dx-cancel{ width:100%; min-height:40px; margin-top:8px; text-align:center; background:none; border:none;
+  color:var(--faint); font-family:var(--mono); font-size:12px; cursor:pointer; padding:8px; }
+
 /* ===== Home: header con prompt ===== */
 .kicker{ color:var(--dim); }
 .kicker b{ color:var(--acc); }

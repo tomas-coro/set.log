@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { seedDemoData, isDemoModified } from "../demo-seed.js";
-import { hydrate, activeSheet } from "../sheets.js";
+import { hydrate, dehydrate, activeSheet } from "../sheets.js";
 import { isoWeekKey } from "../store.js";
 
 const NOW = new Date("2026-06-15T10:00:00Z"); // lunedì fisso → keys deterministiche
@@ -46,4 +46,15 @@ test("isDemoModified: seed fresco = non modificato; con edit = modificato", () =
   const wk = Object.keys(edited.sheets[0].weeks)[0];
   edited.sheets[0].weeks[wk].entries.A = { extraId: { sets: [{ reps: "5", kg: "99", done: true }], note: "" } };
   assert.equal(isDemoModified(edited, NOW), true);
+});
+
+// Scenario REALE: bootDemo semina a t0, l'utente esce a t1 (qualche secondo dopo).
+// Il blob passa per hydrate→dehydrate (che RISTAMPA updatedAt). Senza ignorare
+// updatedAt, una demo intatta risulterebbe sempre "modificata" → l'uscita diretta
+// non scatterebbe mai. updatedAt è metadato, non contenuto: va ignorato.
+test("isDemoModified: demo pristina via round-trip (now diverso) NON è modificata", () => {
+  const t0 = new Date("2026-06-15T10:00:00Z");
+  const t1 = new Date("2026-06-15T10:00:05Z"); // 5s dopo, stesso giorno
+  const blob = dehydrate(hydrate(seedDemoData(t0)), t1.toISOString());
+  assert.equal(isDemoModified(blob, t1), false);
 });

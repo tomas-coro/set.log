@@ -45,10 +45,51 @@ test("demo: la soglia entra in demo, l'app mostra il seed e persiste al reload",
   await expect(page.locator("#threshold-screen")).toBeHidden();
   // Il seed ha una scheda → niente empty-state (prova che i dati finti sono caricati).
   await expect(page.locator("#emptyState")).toBeHidden();
+  // Task 10: la barra demo persistente è visibile in demo.
+  await expect(page.locator("#demo-bar")).toBeVisible();
 
   // Reload: il flag demo persiste → si rientra nella demo coi dati.
   await page.reload();
   await expect(page.locator("#app")).toBeVisible();
   await expect(page.locator("#emptyState")).toBeHidden();
+  await expect(page.locator("#demo-bar")).toBeVisible();
   expect(errors, "nessun errore nel flusso demo").toEqual([]);
+});
+
+test("demo: la barra demo 'registrati' porta all'auth su signup", async ({ page }) => {
+  const errors = [];
+  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
+
+  await page.goto("/");
+  await page.getByText(/prova la demo/).click();
+  await expect(page.locator("#demo-bar")).toBeVisible();
+
+  // "registrati ›" nella barra → nascondi app, mostra auth-screen su tab registrati.
+  await page.locator("#demoSignup").click();
+  await expect(page.locator("#auth-screen")).toBeVisible();
+  await expect(page.locator("#app")).toBeHidden();
+  expect(errors, "nessun errore nel passaggio demo→signup").toEqual([]);
+});
+
+test("demo: Impostazioni mostra il blocco demo e nasconde quello account (Task 11)", async ({ page }) => {
+  await page.goto("/");
+  await page.getByText(/prova la demo/).click();
+  await expect(page.locator("#app")).toBeVisible();
+  // Apri Impostazioni e verifica la VISIBILITÀ REALE (non solo l'attributo hidden:
+  // .sv-line ha display:flex che vince su [hidden], quindi serve la classe .hidden).
+  await page.evaluate(() => document.getElementById("settingsDialog").showModal());
+  await expect(page.locator("#svDemoLine")).toBeVisible();
+  await expect(page.locator("#svAccountLine")).toBeHidden();
+  await expect(page.locator("#svRecovery")).toBeHidden();
+});
+
+test("demo: 'esci dalla demo' su demo pristina torna alla soglia (Task 12)", async ({ page }) => {
+  await page.goto("/");
+  await page.getByText(/prova la demo/).click();
+  await expect(page.locator("#app")).toBeVisible();
+  // Apri Impostazioni e premi "esci": demo == seed (pristina) → esce diretto, niente sheet.
+  await page.evaluate(() => document.getElementById("settingsDialog").showModal());
+  await page.locator("#btnDemoExit").click();
+  await expect(page.getByText(/prova la demo/)).toBeVisible(); // tornati alla soglia
 });
