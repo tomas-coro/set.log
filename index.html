@@ -530,28 +530,20 @@
     </div>
   </div>
 
-  <!-- Stack fisso in basso: striscia giudizio sopra, barra timer sotto (mai sovrapposte) -->
+  <!-- Stack fisso in basso: barra recupero slim — countdown sopra, riga giudizio sotto (mai sovrapposte) -->
   <div id="bottomStack">
 
-  <!-- Striscia sensazione durante il recupero -->
-  <div id="feelAsk" class="feelask hidden">
-    <div class="q">Serie <span id="feelAskN"></span> · <b>com'è andata?</b></div>
-    <div id="feelAskBar"></div>
-  </div>
-
-  <!-- Rest timer: riga 1 = nome esercizio + chiudi; riga 2 = tempo + controlli -->
+  <!-- Rest timer (slim): countdown + nome esercizio + controlli su UNA riga -->
   <div id="timerBar" class="timerbar hidden">
     <div id="timerRun">
-      <div class="t-row1">
-        <span id="timerLabel" class="t-label"></span>
-        <button id="tStop" class="t-x">✕</button>
-      </div>
-      <div class="t-row2">
+      <div class="t-row">
         <span id="timerTime" class="t-time">0:00</span>
+        <span id="timerLabel" class="t-label"></span>
         <div class="t-controls">
           <button id="tMinus" class="t-btn">−10</button>
           <button id="tToggle" class="t-btn">⏸</button>
           <button id="tPlus" class="t-btn">+10</button>
+          <button id="tStop" class="t-x">×</button>
         </div>
       </div>
     </div>
@@ -561,6 +553,13 @@
       <div class="g-drain"><i id="goDrain"></i></div>
     </div>
   </div>
+
+  <!-- Striscia giudizio "com'è andata?" — sotto il countdown, stessa barra -->
+  <div id="feelAsk" class="feelask hidden">
+    <div class="q">Serie <span id="feelAskN"></span> · <b>com'è andata?</b></div>
+    <div id="feelAskBar"></div>
+  </div>
+
   </div><!-- /bottomStack -->
   </div>
 

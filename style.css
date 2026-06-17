@@ -201,22 +201,24 @@ input.num::-webkit-outer-spin-button,input.num::-webkit-inner-spin-button{-webki
 #bottomStack{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:440px;
   z-index:60;display:flex;flex-direction:column;}
 
-/* timer bar — due righe: nome esercizio intero sopra, tempo + controlli sotto.
-   position:relative: contiene lo ::after scanline del go-on (Graphite). */
-.timerbar{position:relative;background:var(--surf2);border-top:1px solid var(--line);
-  padding:14px 18px calc(16px + env(safe-area-inset-bottom,0px));backdrop-filter:blur(8px);}
-.t-row1{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:12px;}
-.t-label{font-family:"JetBrains Mono",monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dim);}
-.t-x{background:transparent;border:none;color:var(--dim);font-size:18px;line-height:1;cursor:pointer;
-  padding:4px 8px;min-width:36px;min-height:36px;}
-.t-row2{display:flex;align-items:center;justify-content:space-between;gap:12px;}
-.t-time{font-family:"JetBrains Mono",monospace;font-size:40px;font-weight:700;letter-spacing:1px;line-height:1;
-  color:var(--acc);font-variant-numeric:tabular-nums;}
+/* barra recupero SLIM — una sola riga: countdown grande · nome (ellissi) · controlli −10/⏸/+10/×.
+   Non copre la schermata; position:relative contiene lo ::after scanline del go-on (Graphite). */
+.timerbar{position:relative;background:var(--surf2);border-top:2px solid var(--acc);
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
+  box-shadow:0 -14px 30px rgba(0,0,0,.4);backdrop-filter:blur(8px);}
+/* quando la riga giudizio è sotto, il timer non è più il fondo della barra → niente safe-area doppia */
+body.feel-on .timerbar{padding-bottom:8px;}
+.t-row{display:flex;align-items:center;gap:12px;}
+.t-time{font-family:"JetBrains Mono",monospace;font-size:30px;font-weight:800;letter-spacing:.01em;line-height:1;
+  color:var(--acc);font-variant-numeric:tabular-nums;flex:0 0 auto;}
 .t-time.final{color:var(--down);animation:t-tick .9s ease infinite;}
 @keyframes t-tick{0%{transform:scale(1)}12%{transform:scale(1.14)}30%{transform:scale(1)}}
-.t-controls{display:flex;gap:10px;}
-.t-btn{background:transparent;border:1px solid var(--line);border-radius:10px;padding:11px 16px;
-  font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;min-height:44px;}
+.t-label{flex:1;min-width:0;font-family:"JetBrains Mono",monospace;font-size:11px;letter-spacing:.04em;
+  text-transform:uppercase;color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.t-controls{display:flex;gap:6px;flex:0 0 auto;}
+.t-btn,.t-x{min-width:42px;height:38px;background:var(--field);border:1px solid var(--line);border-radius:9px;
+  font-family:"JetBrains Mono",monospace;font-size:13px;font-weight:600;color:var(--ink);cursor:pointer;}
+.t-x{color:var(--dim);font-size:17px;line-height:1;}
 
 /* Stato GO a fine recupero: boot-log persistente, tocca per chiudere */
 .timerbar.go-on{background:var(--field);border-top:2px solid var(--acc);}
@@ -594,10 +596,14 @@ dialog#settingsDialog.settings-v2-host::backdrop{
   border:1px solid var(--acc);background:var(--acc);color:var(--acc-ink);}
 .set-dialog .confirm:active{opacity:.85;}
 
-/* dentro #bottomStack, sopra la barra timer (lo stack la posiziona) */
-.feelask{background:var(--surf2);border-top:2px solid var(--acc);padding:12px 14px 14px;
+/* dentro #bottomStack, SOTTO la barra timer (lo stack la posiziona). Bordo ambra
+   di default (caso raro: feel senza timer); quando il timer è attivo sopra, niente
+   bordo/ombra e padding-top ridotto → si legge come un'unica barra slim. */
+.feelask{background:var(--surf2);border-top:2px solid var(--acc);
+  padding:10px 14px calc(10px + env(safe-area-inset-bottom,0px));
   box-shadow:0 -8px 24px rgba(0,0,0,.45);}
 .feelask.hidden{display:none;}
+body.timer-on .feelask{border-top:none;box-shadow:none;padding-top:2px;}
 .feelask .q{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink);margin-bottom:9px;text-align:center;}
 .feelask .q b{color:var(--acc);}
 .feelask .rpebar{margin:0;}
