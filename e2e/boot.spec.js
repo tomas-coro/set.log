@@ -93,3 +93,25 @@ test("demo: 'esci dalla demo' su demo pristina torna alla soglia (Task 12)", asy
   await page.locator("#btnDemoExit").click();
   await expect(page.getByText(/prova la demo/)).toBeVisible(); // tornati alla soglia
 });
+
+test("focus: apre l'esercizio, sheet Altro sale e blocca lo sfondo", async ({ page }) => {
+  const errors = [];
+  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
+
+  await page.goto("/");
+  await page.getByText(/prova la demo/).click();
+  await expect(page.locator("#app")).toBeVisible();
+  await page.locator("#list .row").first().click();
+  await expect(page.locator("#focusOverlay")).toBeVisible();
+  // riga recupero read-only + CTA presenti nel footer
+  await expect(page.locator("#focusOverlay .restline")).toBeVisible();
+  // apre lo sheet "Altro"
+  await page.locator("#focusOverlay .rl-more").click();
+  await expect(page.locator("#focusSheet")).toBeVisible();
+  await expect(page.locator("#focusScrim")).toBeVisible();
+  // chiude toccando lo scrim in alto (lo sheet copre il centro: tap sull'area scura sopra)
+  await page.locator("#focusScrim").click({ position: { x: 20, y: 20 } });
+  await expect(page.locator("#focusSheet")).toBeHidden();
+  expect(errors, "nessun errore nel focus").toEqual([]);
+});
