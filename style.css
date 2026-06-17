@@ -1615,3 +1615,24 @@ body.scroll-lock{overflow:hidden;}
   font-size:9.5px;color:#6b7682;}
 .scan-boot .sb-dot{display:inline-block;width:8px;height:8px;border-radius:50%;
   vertical-align:middle;margin-right:4px;}
+
+/* ===== Focus redesign Task 2 — pannello HUD "serie corrente" =====
+   Append in fondo: vince per ordine sulle regole .editblock "terminale"
+   (1278-1289) a pari specificità. Riferimento: mockups/focus-redesign-rev1.html */
+.focus-body .panel{border:1px solid var(--line-acc);border-radius:12px;
+  background:linear-gradient(180deg,rgba(240,167,60,.05),rgba(240,167,60,.015));
+  padding:11px 12px;margin-top:10px;}
+/* editblock trasparente: il riquadro ambra è il pannello stesso */
+.focus-body .panel .editblock{margin:0;padding:0;border:none;background:transparent;}
+.focus-body .panel .editlabel{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--acc);text-align:center;margin-bottom:9px;}
+/* carico = numero protagonista (la UNA cosa memorabile della schermata) */
+.focus-body .panel .stepper .val .num{font-size:30px;font-weight:800;color:var(--tx);letter-spacing:-.02em;}
+.focus-body .panel .stepper .val .u{font-size:13px;}
+.focus-body .panel .stepper .mb{min-width:64px;height:48px;color:var(--acc);font-weight:700;}
+/* "la volta scorsa" (dentro editblock) come box di riferimento verde, non editabile */
+.focus-body .panel .reprow .chip.prevbest{border:1px dashed var(--line-acc);background:rgba(127,208,138,.05);}
+.focus-body .panel .reprow .chip.prevbest .rv{color:var(--ok);font-weight:700;}
+/* chip "↶ Wxx" (ripeti volta scorsa) come riferimento verde coerente */
+.focus-body .panel .repeats .rchip.scorsa{border:1px dashed var(--line-acc);background:rgba(127,208,138,.04);}
+.focus-body .panel .repeats .rchip.scorsa .rv{color:var(--ok);font-weight:700;}

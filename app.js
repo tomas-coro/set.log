@@ -1082,15 +1082,19 @@ function renderFocusNormal(ex, idx, container, footer) {
   if (!allDone) {
     const editLabel = meta.unit === "sec" ? `Serie ${curIdx + 1} — secondi` : `Serie ${curIdx + 1} — carico · step 0.5 kg`;
     const edit = buildEditBlock(editLabel, draft, prev[curIdx] || null, exerciseBar(ex, getBar()), meta.unit, platesOn(ex, null));
-    container.appendChild(edit.block);
+
+    // Pannello HUD "serie corrente": editblock + chip ripeti dentro un riquadro ambra.
+    const panel = document.createElement("div");
+    panel.className = "panel";
+    panel.appendChild(edit.block);
 
     const repInSession = previousSetInSession(v, curIdx);
     const repPrevWeek = previousWeekSet(data, currentDay, exId, currentWeek, curIdx);
     const repChips = buildRepeatChips(repInSession, repPrevWeek, ({ reps, kg }) => {
       draft.reps = reps; draft.kg = kg; edit.refresh();
     });
-    if (repChips) container.appendChild(repChips);
-
+    if (repChips) panel.appendChild(repChips);
+    container.appendChild(panel);
   }
 
   const dots = document.createElement("div");
