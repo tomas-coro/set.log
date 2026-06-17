@@ -1273,12 +1273,18 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
   if (!allDone) {
     const editLabel = meta.unit === "sec" ? `Serie ${curIdx + 1} ${trackKey.toUpperCase()} — secondi` : `Serie ${curIdx + 1} ${trackKey.toUpperCase()} — step 0.5 kg`;
     const edit = buildEditBlock(editLabel, state, prevSets[curIdx] || null, bar, meta.unit, showPlates);
-    wrap.appendChild(edit.block);
+
+    // Pannello HUD "serie corrente" della traccia: editblock + chip ripeti dentro
+    // un riquadro ambra (stesso linguaggio del normale, Task 2).
+    const panel = document.createElement("div");
+    panel.className = "panel";
+    panel.appendChild(edit.block);
 
     const inSess = previousSetInSession(trackEntry, curIdx);
     const prevWk = previousWeekSet(data, currentDay, exId, currentWeek, curIdx, trackKey);
     const chips = buildRepeatChips(inSess, prevWk, ({ reps, kg }) => { state.reps = reps; state.kg = kg; edit.refresh(); });
-    if (chips) wrap.appendChild(chips);
+    if (chips) panel.appendChild(chips);
+    wrap.appendChild(panel);
   }
   const onAddSet = () => {
     data = setEntry(data, currentWeek, currentDay, exId, withSupersetSet(getEntry(data, currentWeek, currentDay, exId), trackKey, trackEntry.sets.length, { reps: "", kg: "", done: false }), new Date().toISOString());
