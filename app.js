@@ -29,7 +29,6 @@ import { formatTime, goSlug, normalizeSessionEntry } from "./timer.js";
 import { createPusher } from "./sync.js";
 import { getFx, setFx, applyFx } from "./fx.js";
 import { getTheme, setTheme, applyTheme } from "./theme.js";
-import { actionBarSpec } from "./focus-ui.js";
 import { STORE_UPDATE_ENABLED, checkStoreUpdate } from "./release.js";
 import { ctx } from "./app-context.js";
 import { cueCountdown } from "./cues.js";
@@ -62,7 +61,7 @@ let sha = null;
 let currentWeek = isoWeekKey(new Date());
 let currentDay = "A";
 let openIndex = null;        // esercizio aperto nel focus a schermo intero (null = nessuno)
-let focusDrawerOpen = false; // cassetto "⋯ Altro" del focus esercizio (UI effimera, non persistita)
+let focusSheetOpen = false; // sheet "⋯ Altro" del focus esercizio (UI effimera, non persistita)
 let store = null;
 let session = null;        // { user: {id, email}, ... } da Supabase
 let profileStorage = null; // ProfileStorage per la sessione corrente
@@ -122,7 +121,7 @@ Object.defineProperty(ctx, "swReg", {
 // (che fa scattare popstate, dove avviene la chiusura vera).
 function openFocus(i) {
   openIndex = i;
-  focusDrawerOpen = false;
+  focusSheetOpen = false;
   history.pushState({ gymFocus: true }, "");
   render();
 }
@@ -1187,11 +1186,23 @@ function renderFocusNormal(ex, idx, container, footer) {
     });
   };
 
-  // NB (Task 1): la barra azioni/cassetto è stata tolta dal body. I blocchi
-  // secondari (restEditor/noteField/volLine/addRow) + fail/commenti + "Salta"
-  // verranno ricollegati dentro lo sheet "⋯ Altro" in Task 3. Per ora restano
-  // costruiti ma non montati nel DOM.
-  void [restEditor, noteField, volLine, addRow, onComment, onFail];
+  // --- Sheet "⋯ Altro": secondario (recupero/nota/volume/add) + fail/commenti ---
+  const sheetRows = [restEditor, noteField, volLine, addRow];
+  if (!allDone) {
+    const actions = document.createElement("div");
+    actions.className = "sheet-actions";
+    const failBtn = document.createElement("button");
+    failBtn.type = "button"; failBtn.className = "sheet-act fail";
+    failBtn.textContent = "✗ Serie non riuscita";
+    failBtn.addEventListener("click", () => { closeFocusSheet(); onFail(); });
+    const cmtBtn = document.createElement("button");
+    cmtBtn.type = "button"; cmtBtn.className = "sheet-act";
+    cmtBtn.textContent = "💬 Commenti";
+    cmtBtn.addEventListener("click", () => { closeFocusSheet(); onComment(); });
+    actions.append(failBtn, cmtBtn);
+    sheetRows.push(actions);
+  }
+  buildFocusSheet(sheetRows);
 }
 
 // Bozze separate per traccia (A/B/C) della serie corrente del superset.
@@ -1326,6 +1337,9 @@ function renderFocusSuperset(ex, idx, container, footer) {
   document.getElementById("focusSet").textContent =
     `serie ${Math.min(active.curIdx + 1, tgtT.sets)} / ${tgtT.sets}`;
 
+  // Footer: riga recupero read-only + "⋯ Altro" (sempre), poi la CTA (se non completo).
+  footer.appendChild(buildRestLine(`${getRest(currentDay, exId, ex.restSeconds)}″`, openFocusSheet));
+
   if (!isEntryComplete(getEntry(data, currentWeek, currentDay, exId), ex)) {
     const label = keys.filter((k, i) => !blocks[i].allDone).map((k) => k.toUpperCase()).join("+");
     const cta = document.createElement("button");
@@ -1375,12 +1389,23 @@ function renderFocusSuperset(ex, idx, container, footer) {
   addS.addEventListener("click", active.onAddSet);
   addRow.appendChild(addS);
 
+  // Sheet "⋯ Altro": secondario (recupero/nota/volume/add) + fail/commenti traccia attiva
   const drawerChildren = [buildRestEditor(idx, ex), buildNoteField(true, idx), ...volNodes, addRow];
-  container.appendChild(buildFocusActions(drawerChildren, {
-    allDone: active.allDone,
-    restValue: `${getRest(currentDay, exId, ex.restSeconds)}″`,
-    handlers: { rest: openFocusDrawer, comment: active.onComment, fail: active.onFail, more: toggleFocusDrawer },
-  }));
+  if (!active.allDone) {
+    const ssActions = document.createElement("div");
+    ssActions.className = "sheet-actions";
+    const failBtn = document.createElement("button");
+    failBtn.type = "button"; failBtn.className = "sheet-act fail";
+    failBtn.textContent = "✗ Serie non riuscita";
+    failBtn.addEventListener("click", () => { closeFocusSheet(); active.onFail(); });
+    const cmtBtn = document.createElement("button");
+    cmtBtn.type = "button"; cmtBtn.className = "sheet-act";
+    cmtBtn.textContent = "💬 Commenti";
+    cmtBtn.addEventListener("click", () => { closeFocusSheet(); active.onComment(); });
+    ssActions.append(failBtn, cmtBtn);
+    drawerChildren.push(ssActions);
+  }
+  buildFocusSheet(drawerChildren);
 }
 
 // Sets della settimana loggata più recente, per ogni traccia ({a:[...], b:[...], c:[...]}).
@@ -1491,14 +1516,18 @@ function renderList() {
   });
 }
 
-// Apre/chiude il cassetto "⋯ Altro" del focus. Passa da render() così lo stato
-// (focusDrawerOpen) sopravvive alla ricostruzione del DOM.
-function toggleFocusDrawer() { focusDrawerOpen = !focusDrawerOpen; render(); }
-function openFocusDrawer() { focusDrawerOpen = true; render(); }
+// Sheet "⋯ Altro": sale dal basso con scrim, sfondo bloccato. Lo stato vive in
+// focusSheetOpen così sopravvive alla ricostruzione del DOM in render().
+function openFocusSheet() { focusSheetOpen = true; render(); }
+function closeFocusSheet() { focusSheetOpen = false; render(); }
 
-// Stub temporaneo: lo sheet "⋯ Altro" arriva in Task 3. Per ora il bottone Altro
-// della riga recupero non apre nulla.
-function openFocusSheet() {} // TODO Task 3: sheet a sfondo bloccato
+// Popola lo sheet "⋯ Altro" col secondario (filtrato) + "Salta esercizio" in coda.
+function buildFocusSheet(children) {
+  const sb = document.getElementById("focusSheetBody");
+  sb.textContent = "";
+  children.filter(Boolean).forEach((c) => sb.appendChild(c));
+  sb.appendChild(buildSkipExercise()); // ultima voce dello sheet
+}
 
 // Riga recupero read-only in fondo al focus: mostra il tempo impostato (il
 // countdown vero vive nella barra recupero) + bottone "⋯ Altro" per lo sheet.
@@ -1520,29 +1549,6 @@ function buildRestLine(restValue, onMore) {
   return row;
 }
 
-// Barra azioni in fondo al focus. `handlers` mappa key→funzione (rest/comment/
-// fail/more); comment e fail possono mancare (esercizio completato). `restValue`
-// è l'etichetta del pulsante recupero (es. "90s").
-function buildActionBar({ allDone, restValue, handlers }) {
-  const bar = document.createElement("div");
-  bar.className = "actbar";
-  actionBarSpec({ allDone, drawerOpen: focusDrawerOpen }).forEach((s) => {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.className = "actbtn"
-      + (s.key === "fail" ? " fail" : "")
-      + (s.key === "more" ? " more" + (s.active ? " open" : "") : "");
-    const g = document.createElement("span"); g.className = "ab-g"; g.textContent = s.glyph;
-    const l = document.createElement("span"); l.className = "lbl";
-    l.textContent = s.key === "rest" && restValue ? restValue : s.label;
-    b.append(g, l);
-    const fn = handlers[s.key];
-    if (fn) b.addEventListener("click", fn);
-    bar.appendChild(b);
-  });
-  return bar;
-}
-
 // "Salta esercizio": va al prossimo (o chiude se è l'ultimo) senza registrare le
 // serie non fatte. Un superset/circuito è UN esercizio → lo salta tutto in blocco.
 function buildSkipExercise() {
@@ -1550,20 +1556,8 @@ function buildSkipExercise() {
   b.type = "button";
   b.className = "drawer-skip";
   b.textContent = "Salta esercizio →";
-  b.addEventListener("click", () => { focusDrawerOpen = false; advanceAfterExercise(openIndex); });
+  b.addEventListener("click", () => { focusSheetOpen = false; advanceAfterExercise(openIndex); });
   return b;
-}
-
-// Gruppo ancorato in fondo: cassetto (chiuso di default) + barra azioni.
-function buildFocusActions(drawerChildren, barOpts) {
-  const group = document.createElement("div");
-  group.className = "focus-actions";
-  const drawer = document.createElement("div");
-  drawer.className = "focus-drawer" + (focusDrawerOpen ? " open" : "");
-  drawerChildren.filter(Boolean).forEach((c) => drawer.appendChild(c));
-  drawer.appendChild(buildSkipExercise()); // ultima voce del cassetto "⋯ Altro"
-  group.append(drawer, buildActionBar(barOpts));
-  return group;
 }
 
 // Editor del tempo di recupero per esercizio, sempre visibile dentro l'overlay:
@@ -1659,6 +1653,13 @@ function renderFocusOverlay() {
   foot.appendChild(buildNextStrip(dayPlan().exercises, openIndex));
   if (ex.superset) renderFocusSuperset(ex, openIndex, body, foot);
   else renderFocusNormal(ex, openIndex, body, foot);
+  // Sheet "⋯ Altro": visibilità scrim/sheet + sfondo (core) bloccato a sheet aperto.
+  const scrim = document.getElementById("focusScrim");
+  const sheet = document.getElementById("focusSheet");
+  scrim.classList.toggle("hidden", !focusSheetOpen);
+  sheet.classList.toggle("hidden", !focusSheetOpen);
+  body.style.overflow = focusSheetOpen ? "hidden" : "";
+  body.style.touchAction = focusSheetOpen ? "none" : "";
   ov.classList.remove("hidden");
   ov.setAttribute("aria-hidden", "false");
   document.body.style.overflow = "hidden";
@@ -1700,7 +1701,7 @@ function changeWeek(key) {
   currentWeek = key;
   data = ensureWeek(data, currentWeek, data.weeks[currentWeek]?.label);
   openIndex = null;
-  focusDrawerOpen = false;
+  focusSheetOpen = false;
   volExpanded = false;
   renderWeekSelect();
   render();
@@ -1708,7 +1709,7 @@ function changeWeek(key) {
 function changeDay(day) {
   currentDay = day;
   openIndex = null;
-  focusDrawerOpen = false;
+  focusSheetOpen = false;
   volExpanded = false;
   render();
 }
@@ -1927,6 +1928,7 @@ function wireAppEventListeners() {
     b.addEventListener("click", () => changeDay(b.dataset.day));
   }
   document.getElementById("focusBack").addEventListener("click", () => closeFocus());
+  document.getElementById("focusScrim").addEventListener("click", closeFocusSheet);
   document.getElementById("chartBtn").addEventListener("click", () => {
     if (openIndex === null) return;
     const ex = dayPlan().exercises[openIndex];

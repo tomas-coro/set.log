@@ -8,7 +8,6 @@ const ASSETS = [
   "./index.html",
   "./style.css",
   "./app.js",
-  "./focus-ui.js",
   "./editor.js",
   "./catalog.js",
   "./body.js",

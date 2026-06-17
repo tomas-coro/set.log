@@ -674,33 +674,8 @@ body.timer-on .wrap{padding-bottom:calc(var(--bottom-pad,140px) + 16px);}
 .focus-body .trend{margin-top:0;}
 .focus-body .track-h{margin-bottom:6px;}
 
-/* ---- Layout "una pagina": body a colonna, azioni ancorate in fondo ---- */
+/* ---- Body del focus: colonna scrollabile (lista serie + pannello HUD + trend) ---- */
 .focus-body{display:flex;flex-direction:column;}
-.focus-actions{margin-top:auto;display:flex;flex-direction:column;gap:9px;padding-top:10px;}
-
-/* Cassetto collassabile con i blocchi secondari (recupero/nota/volume/add) */
-.focus-actions .focus-drawer{display:none;flex-direction:column;gap:10px;
-  border:1px solid var(--ctc);border-radius:9px;padding:10px;background:var(--surf2);}
-.focus-actions .focus-drawer.open{display:flex;}
-.focus-actions .focus-drawer .addrow{display:flex;gap:8px;}
-.focus-actions .focus-drawer .addrow .addset{flex:1;margin-left:0;text-align:center;padding:8px;}
-/* "Salta esercizio": azione di navigazione in fondo al cassetto, tono sobrio. */
-.focus-actions .focus-drawer .drawer-skip{width:100%;padding:11px;border-radius:9px;
-  background:transparent;border:1px solid var(--line);color:var(--dim);cursor:pointer;
-  font-family:"JetBrains Mono",monospace;font-size:13px;letter-spacing:.04em;
-  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
-.focus-actions .focus-drawer .drawer-skip:active{border-color:var(--down);color:var(--down);}
-
-/* Barra azioni: 2–4 pulsanti uguali, sempre visibile in fondo */
-.actbar{display:flex;gap:7px;align-items:stretch;}
-.actbtn{flex:1;min-height:46px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
-  background:var(--surf2);border:1px solid var(--line);border-radius:9px;color:var(--ink);
-  font-family:var(--mono);font-size:15px;cursor:pointer;}
-.actbtn .lbl{font-size:8.5px;color:var(--dim);letter-spacing:.05em;text-transform:uppercase;}
-.actbtn:active{background:var(--acc);color:var(--acc-ink);}
-.actbtn.fail .ab-g{color:var(--down);}
-.actbtn.more.open{background:var(--acc);color:var(--acc-ink);border-color:var(--acc);}
-.actbtn.more.open .lbl{color:var(--acc-ink);}
 
 /* Link "serie non riuscita" nell'editor della serie corrente */
 .fail-link{background:transparent;border:none;color:var(--faint);font-family:"JetBrains Mono",monospace;font-size:11px;
@@ -1636,3 +1611,28 @@ body.scroll-lock{overflow:hidden;}
 /* chip "↶ Wxx" (ripeti volta scorsa) come riferimento verde coerente */
 .focus-body .panel .repeats .rchip.scorsa{border:1px dashed var(--line-acc);background:rgba(127,208,138,.04);}
 .focus-body .panel .repeats .rchip.scorsa .rv{color:var(--ok);font-weight:700;}
+
+/* ===== Focus redesign Task 3 — pop-up "Altro": sheet dal basso, sfondo bloccato =====
+   scrim+sheet sono figli assoluti di #focusOverlay (position:fixed). */
+.focus-scrim{position:absolute;inset:0;background:rgba(0,0,0,.6);z-index:20;}
+.focus-scrim.hidden{display:none;}
+.focus-sheet{position:absolute;left:0;right:0;bottom:0;z-index:21;background:var(--surf);
+  border-top:1px solid var(--line);border-radius:18px 18px 0 0;
+  padding:8px 16px calc(18px + env(safe-area-inset-bottom,0px));max-height:80%;overflow-y:auto;
+  display:flex;flex-direction:column;gap:13px;}
+.focus-sheet.hidden{display:none;}
+.focus-sheet .sheet-grab{width:38px;height:4px;border-radius:3px;background:var(--line);margin:6px auto 4px;flex:0 0 auto;}
+/* le righe dello sheet (recupero/nota/volume/add/azioni/skip) vivono qui dentro */
+#focusSheetBody{display:flex;flex-direction:column;gap:13px;}
+.focus-sheet .sheet-actions{display:flex;gap:9px;}
+.focus-sheet .sheet-act{flex:1;padding:12px;border:1px solid var(--line);border-radius:10px;
+  background:transparent;color:var(--ink);font:inherit;font-size:13px;font-weight:600;min-height:44px;cursor:pointer;}
+.focus-sheet .sheet-act.fail{color:var(--down);}
+.focus-sheet .drawer-skip{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);
+  background:transparent;color:var(--dim);font:inherit;font-weight:600;min-height:44px;cursor:pointer;
+  user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
+.focus-sheet .drawer-skip:active{border-color:var(--down);color:var(--down);}
+
+@media (prefers-reduced-motion: no-preference){
+  .focus-sheet{transition:transform .26s cubic-bezier(.2,.8,.2,1);}
+}
