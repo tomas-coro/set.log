@@ -1514,6 +1514,17 @@ function buildActionBar({ allDone, restValue, handlers }) {
   return bar;
 }
 
+// "Salta esercizio": va al prossimo (o chiude se è l'ultimo) senza registrare le
+// serie non fatte. Un superset/circuito è UN esercizio → lo salta tutto in blocco.
+function buildSkipExercise() {
+  const b = document.createElement("button");
+  b.type = "button";
+  b.className = "drawer-skip";
+  b.textContent = "Salta esercizio →";
+  b.addEventListener("click", () => { focusDrawerOpen = false; advanceAfterExercise(openIndex); });
+  return b;
+}
+
 // Gruppo ancorato in fondo: cassetto (chiuso di default) + barra azioni.
 function buildFocusActions(drawerChildren, barOpts) {
   const group = document.createElement("div");
@@ -1521,6 +1532,7 @@ function buildFocusActions(drawerChildren, barOpts) {
   const drawer = document.createElement("div");
   drawer.className = "focus-drawer" + (focusDrawerOpen ? " open" : "");
   drawerChildren.filter(Boolean).forEach((c) => drawer.appendChild(c));
+  drawer.appendChild(buildSkipExercise()); // ultima voce del cassetto "⋯ Altro"
   group.append(drawer, buildActionBar(barOpts));
   return group;
 }

@@ -147,7 +147,7 @@ export function startRest(seconds, label, go = null) {
 export function wireTimerControls() {
   document.getElementById("tMinus").addEventListener("click", () => timer.addSeconds(-10));
   document.getElementById("tPlus").addEventListener("click", () => timer.addSeconds(10));
-  document.getElementById("tStop").addEventListener("click", collapseRest);
+  document.getElementById("tStop").addEventListener("click", discardRest); // × = ferma e chiudi il recupero (scelta utente)
   document.getElementById("resumeOpen").addEventListener("click", expandRest);
   document.getElementById("resumeDiscard").addEventListener("click", discardRest);
   document.getElementById("timerGo").addEventListener("click", dismissTimerGo);
