@@ -490,9 +490,22 @@ dialog#settingsDialog.settings-v2-host::backdrop{
 .focus-id .fn{font-size:17px;font-weight:800;line-height:1.15;}
 .focus-id .fs{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--acc);margin-top:3px;}
 .focus-body{flex:1;min-height:0;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px;}
-.focus-foot{flex:0 0 auto;padding:11px 16px calc(env(safe-area-inset-bottom,0px) + 12px);
-  border-top:1px solid var(--line);background:var(--surf);}
+/* Blocco basso sempre visibile: prossimo + riga recupero + CTA */
+.focus-foot{flex:0 0 auto;display:flex;flex-direction:column;gap:9px;
+  padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 12px);
+  border-top:1px solid var(--line);background:var(--bg);}
 .focus-foot .cta{margin-top:0;}
+
+/* Riga recupero read-only + "⋯ Altro" */
+.restline{display:flex;align-items:center;gap:10px;font-family:"JetBrains Mono",monospace;font-size:13px;}
+.restline .rl-rec{display:flex;align-items:center;gap:2px;color:var(--dim);}
+.restline .rl-ic{color:var(--ac2);}
+.restline .rl-rec b{color:var(--ink);font-weight:700;font-variant-numeric:tabular-nums;margin-left:2px;}
+.restline .rl-more{margin-left:auto;display:flex;align-items:center;gap:6px;background:var(--surf);
+  border:1px solid var(--line);border-radius:9px;color:var(--ink);padding:9px 14px;font:inherit;
+  font-size:13px;font-weight:600;min-height:44px;cursor:pointer;}
+.restline .rl-more:active{background:var(--surf2);}
+.restline .rl-more .rl-d{color:var(--acc);}
 
 /* editor recupero sempre visibile in cima al focus */
 .restedit{display:flex;align-items:center;gap:9px;background:var(--surf2);border:1px solid var(--line);
@@ -533,13 +546,13 @@ dialog#settingsDialog.settings-v2-host::backdrop{
 .qc-opt.on{border-color:var(--acc);background:var(--acc-soft);color:var(--acc);font-weight:700;}
 .qc-opt.write{color:var(--acc);border-style:dashed;}
 
-/* striscia prossimo esercizio nell'overlay */
-.nextstrip{display:flex;align-items:center;gap:8px;padding:8px 2px 12px;
-  border-top:1px solid var(--line);margin-bottom:10px;}
+/* striscia prossimo esercizio nell'overlay — box tratteggiato in cima al footer */
+.nextstrip{display:flex;align-items:center;gap:9px;font-size:12px;color:var(--dim);
+  border:1px dashed var(--line);border-radius:9px;padding:8px 11px;}
 .nextstrip .nx-tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--faint);font-weight:700;}
-.nextstrip .nx-arrow{color:var(--faint);}
-.nextstrip .nx-name{font-size:14px;font-weight:600;color:var(--dim);
+.nextstrip .nx-arrow{color:var(--acc);}
+.nextstrip .nx-name{flex:1;min-width:0;font-size:13px;font-weight:600;color:var(--ink);
   white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 .nextstrip .nx-target{margin-left:auto;font-size:12px;color:var(--dim);
   font-family:"JetBrains Mono",monospace;opacity:.85;white-space:nowrap;}

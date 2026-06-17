@@ -1107,6 +1107,10 @@ function renderFocusNormal(ex, idx, container, footer) {
   }
   container.appendChild(dots);
 
+  // Footer: riga recupero read-only + "⋯ Altro" (lo sheet arriva in Task 3),
+  // poi la CTA grande sotto.
+  footer.appendChild(buildRestLine(`${getRest(currentDay, exId, ex.restSeconds)}″`, openFocusSheet));
+
   if (!allDone) {
     const cta = document.createElement("button");
     cta.className = "cta"; cta.textContent = "Serie fatta · avvia recupero ▸";
@@ -1179,14 +1183,11 @@ function renderFocusNormal(ex, idx, container, footer) {
     });
   };
 
-  container.appendChild(buildFocusActions(
-    [restEditor, noteField, volLine, addRow],
-    {
-      allDone,
-      restValue: `${getRest(currentDay, exId, ex.restSeconds)}″`,
-      handlers: { rest: openFocusDrawer, comment: onComment, fail: onFail, more: toggleFocusDrawer },
-    }
-  ));
+  // NB (Task 1): la barra azioni/cassetto è stata tolta dal body. I blocchi
+  // secondari (restEditor/noteField/volLine/addRow) + fail/commenti + "Salta"
+  // verranno ricollegati dentro lo sheet "⋯ Altro" in Task 3. Per ora restano
+  // costruiti ma non montati nel DOM.
+  void [restEditor, noteField, volLine, addRow, onComment, onFail];
 }
 
 // Bozze separate per traccia (A/B/C) della serie corrente del superset.
@@ -1491,6 +1492,30 @@ function renderList() {
 function toggleFocusDrawer() { focusDrawerOpen = !focusDrawerOpen; render(); }
 function openFocusDrawer() { focusDrawerOpen = true; render(); }
 
+// Stub temporaneo: lo sheet "⋯ Altro" arriva in Task 3. Per ora il bottone Altro
+// della riga recupero non apre nulla.
+function openFocusSheet() {} // TODO Task 3: sheet a sfondo bloccato
+
+// Riga recupero read-only in fondo al focus: mostra il tempo impostato (il
+// countdown vero vive nella barra recupero) + bottone "⋯ Altro" per lo sheet.
+function buildRestLine(restValue, onMore) {
+  const row = document.createElement("div");
+  row.className = "restline";
+  const rec = document.createElement("span");
+  rec.className = "rl-rec";
+  const ic = document.createElement("span"); ic.className = "rl-ic"; ic.textContent = "⏱";
+  const lab = document.createElement("span"); lab.textContent = " recupero ";
+  const val = document.createElement("b"); val.textContent = restValue;
+  rec.append(ic, lab, val);
+  const more = document.createElement("button");
+  more.type = "button"; more.className = "rl-more";
+  const d = document.createElement("span"); d.className = "rl-d"; d.textContent = "⋯";
+  more.append(d, document.createTextNode(" Altro"));
+  more.addEventListener("click", onMore);
+  row.append(rec, more);
+  return row;
+}
+
 // Barra azioni in fondo al focus. `handlers` mappa key→funzione (rest/comment/
 // fail/more); comment e fail possono mancare (esercizio completato). `restValue`
 // è l'etichetta del pulsante recupero (es. "90s").
@@ -1625,6 +1650,8 @@ function renderFocusOverlay() {
   document.getElementById("focusName").textContent = ex.name;
   body.textContent = "";
   foot.textContent = "";
+  // Il footer parte da buildNextStrip; renderFocusNormal/Superset vi aggiungono
+  // la riga recupero read-only e poi la CTA grande (ordine: prossimo · recupero · CTA).
   foot.appendChild(buildNextStrip(dayPlan().exercises, openIndex));
   if (ex.superset) renderFocusSuperset(ex, openIndex, body, foot);
   else renderFocusNormal(ex, openIndex, body, foot);
