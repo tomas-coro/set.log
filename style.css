@@ -1645,3 +1645,19 @@ body.scroll-lock{overflow:hidden;}
 @media (prefers-reduced-motion: no-preference){
   .focus-sheet{transition:transform .26s cubic-bezier(.2,.8,.2,1);}
 }
+
+/* ===== Focus altezza fissa — superset "SS-2": traccia ridotta tappabile ===== */
+.focus-body .trackmini{display:flex;align-items:center;gap:11px;margin-top:9px;
+  border:1px solid var(--line);border-radius:11px;background:var(--surf);
+  padding:11px 14px;min-height:44px;cursor:pointer;}
+.focus-body .trackmini:active{background:var(--surf2);}
+.focus-body .trackmini:focus-visible{outline:2px solid var(--acc);outline-offset:2px;}
+.trackmini .tm-dot{width:8px;height:8px;border-radius:50%;background:var(--faint);flex:0 0 auto;}
+.trackmini.done .tm-dot{background:var(--ok);}
+.trackmini .tm-mid{flex:1;min-width:0;}
+.trackmini .tm-nm{font-size:13px;color:var(--ink);font-weight:600;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.trackmini .tm-meta{font-family:"JetBrains Mono",monospace;font-size:11px;color:var(--dim);margin-top:2px;}
+.trackmini .tm-meta .g{color:var(--ok);}
+.trackmini .tm-arrow{font-size:11px;color:var(--acc);flex:0 0 auto;}
+.trackmini.done .tm-arrow{color:var(--ok);}

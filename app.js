@@ -18,7 +18,7 @@ import {
   parseTarget, activeSetIndex, isEntryComplete, bestKg, isWeekRecord, isSetRecord, progressionDelta,
   historyIsBodyweight, bestReps,
   withSet, withoutSet, withSupersetSet, withoutSupersetSet, withNote, previousNote,
-  previousSetInSession,
+  previousSetInSession, pickActiveTrack,
   sessionVolume, volumeByMuscle, exerciseTrend, nextExercisePreview,
   topSetSeries, chartGeometry,
   sessionDates, monthGrid, sessionHasDoneSet,
@@ -1327,6 +1327,46 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
   return { wrap, curIdx, allDone, onAddSet, onComment, onFail };
 }
 
+// Riga ridotta di una traccia NON attiva del superset (stile "SS-2"). Tappabile:
+// onTap la rende attiva (focusActiveTrack). Mostra prossima rip + scorsa (o "✓ fatta").
+function buildTrackMini(trackKey, trackName, trackEntry, tgtTrack, prevSets, allDone, draftState, meta, onTap) {
+  const isSec = meta.unit === "sec";
+  const row = document.createElement("div");
+  row.className = allDone ? "trackmini done" : "trackmini";
+  row.setAttribute("role", "button");
+  row.tabIndex = 0;
+
+  const dot = document.createElement("span"); dot.className = "tm-dot";
+  const mid = document.createElement("div"); mid.className = "tm-mid";
+  const nm = document.createElement("div"); nm.className = "tm-nm";
+  nm.textContent = `${trackKey.toUpperCase()} · ${trackName}`;
+  mid.appendChild(nm);
+
+  const metaEl = document.createElement("div"); metaEl.className = "tm-meta";
+  const curIdx = activeSetIndex(trackEntry.sets);
+  const prevSet = prevSets[curIdx] || prevSets[prevSets.length - 1] || null;
+  const nextReps = (draftState && draftState.reps !== "" && draftState.reps != null)
+    ? draftState.reps : repsLow(tgtTrack.reps);
+  metaEl.append(document.createTextNode(`prossima ${nextReps} ${isSec ? "sec" : "rip"}`));
+  if (prevSet && (prevSet.reps || prevSet.kg)) {
+    metaEl.append(document.createTextNode(" · scorsa "));
+    const g = document.createElement("span"); g.className = "g";
+    g.textContent = isSec ? `${prevSet.reps || "—"} sec` : `${prevSet.reps || "—"}×${prevSet.kg || "—"}`;
+    metaEl.appendChild(g);
+  }
+  mid.appendChild(metaEl);
+
+  const arrow = document.createElement("span"); arrow.className = "tm-arrow";
+  arrow.textContent = allDone ? "✓ fatta" : "compila ›";
+
+  row.append(dot, mid, arrow);
+  row.addEventListener("click", onTap);
+  row.addEventListener("keydown", (e) => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onTap(); }
+  });
+  return row;
+}
+
 function renderFocusSuperset(ex, idx, container, footer) {
   const exId = exIdAt(idx);
   const v = getEntry(data, currentWeek, currentDay, exId);
@@ -1343,10 +1383,19 @@ function renderFocusSuperset(ex, idx, container, footer) {
   // Tracce impilate (blocchi interi, niente sotto-tab): ognuna tiene stepper, dischi e storico.
   const blocks = keys.map((k, i) =>
     trackBlock(k, trackName(ex, k), e[k], tgt[k], prev[k] ?? [], draftTracks[k], idx, ssBar, metas[i], platesOn(ex, k)));
-  blocks.forEach((b) => container.appendChild(b.wrap));
-
-  // "Traccia attiva" = prima non completa (o la prima): guida header serie, drawer, +serie.
-  const ai = Math.max(0, blocks.findIndex((b) => !b.allDone));
+  // SS-2: una sola traccia attiva (blocco intero), le altre come riga ridotta tappabile.
+  const doneFlags = blocks.map((b) => b.allDone);
+  const ai = pickActiveTrack(keys, doneFlags, focusActiveTrack);
+  keys.forEach((k, i) => {
+    if (i === ai) {
+      container.appendChild(blocks[i].wrap);
+    } else {
+      container.appendChild(buildTrackMini(
+        k, trackName(ex, k), e[k], tgt[k], prev[k] ?? [], blocks[i].allDone, draftTracks[k], metas[i],
+        () => { focusActiveTrack = k; render(); }
+      ));
+    }
+  });
   const active = blocks[ai];
   const activeKey = keys[ai];
   const tgtT = tgt[activeKey];
