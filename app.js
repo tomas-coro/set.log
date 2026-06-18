@@ -477,12 +477,6 @@ function buildEditBlock(label, state, prev, bar = getBar(), unit = "reps", showP
     renderKg();
     bindHold(minus, () => stepKg(-0.5));
     bindHold(plus, () => stepKg(0.5));
-
-    if (prev && (prev.kg || prev.reps)) {
-      const pf = document.createElement("div");
-      pf.className = "prefill"; pf.textContent = "↳ precompilato dalla volta scorsa · aggiusta col +/−";
-      block.appendChild(pf);
-    }
   }
 
   const reprow = document.createElement("div");
@@ -528,6 +522,25 @@ function buildEditBlock(label, state, prev, bar = getBar(), unit = "reps", showP
   const cl = document.createElement("div"); cl.className = "l"; cl.textContent = "la volta scorsa";
   chip.append(cv, cl);
   reprow.appendChild(chip);
+  // Il box "la volta scorsa" è anche un copia-rapido: al tap riapplica reps (+kg
+  // se non a tempo) al draft e ridisegna. Sostituisce la chip "↶ Wxx" (tolta nel
+  // riordino della riga .repeats). renderKg è no-op quando isSec.
+  if (prev && (prev.reps || prev.kg)) {
+    chip.classList.add("tap");
+    chip.setAttribute("role", "button");
+    chip.tabIndex = 0;
+    chip.setAttribute("aria-label", "Riusa i valori della volta scorsa");
+    const applyPrev = () => {
+      if (prev.reps != null && prev.reps !== "") state.reps = String(prev.reps);
+      if (!isSec && prev.kg != null && prev.kg !== "") state.kg = String(prev.kg);
+      renderReps();
+      renderKg();
+    };
+    chip.addEventListener("click", applyPrev);
+    chip.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); applyPrev(); }
+    });
+  }
   block.appendChild(reprow);
 
   return { block, refresh: () => { renderKg(); renderReps(); } };
