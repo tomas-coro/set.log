@@ -133,6 +133,38 @@ function closeFocus() {
   else { openIndex = null; render(); }
 }
 
+// Blocco scroll dello sfondo a focus aperto. Su iOS `body{overflow:hidden}` non
+// basta: lo scroll vive sul documento, così il dito "sfugge" alla videata fissa
+// e fa slittare la home dietro l'overlay. Fissiamo il body (position:fixed) e
+// ripristiniamo la posizione alla chiusura. Idempotente: la posizione si salva
+// solo alla prima apertura, perché renderFocusOverlay rigira a ogni render.
+let _bgScrollY = 0;
+let _bgLocked = false;
+function lockBg() {
+  if (_bgLocked) return;
+  _bgLocked = true;
+  _bgScrollY = window.scrollY || document.documentElement.scrollTop || 0;
+  const b = document.body;
+  b.style.position = "fixed";
+  b.style.top = `-${_bgScrollY}px`;
+  b.style.left = "0";
+  b.style.right = "0";
+  b.style.width = "100%";
+  b.style.overflow = "hidden";
+}
+function unlockBg() {
+  if (!_bgLocked) return;
+  _bgLocked = false;
+  const b = document.body;
+  b.style.position = "";
+  b.style.top = "";
+  b.style.left = "";
+  b.style.right = "";
+  b.style.width = "";
+  b.style.overflow = "";
+  window.scrollTo(0, _bgScrollY);
+}
+
 // ---- Calendario allenamenti: overlay estratto in calendar.js ----
 
 // ---- Menu drawer in fondo: overlay estratto in drawer.js ----
@@ -1690,7 +1722,7 @@ function renderFocusOverlay() {
   if (openIndex === null) {
     ov.classList.add("hidden");
     ov.setAttribute("aria-hidden", "true");
-    document.body.style.overflow = "";
+    unlockBg();
     clearTimeout(showRecordToast._t);
     document.getElementById("recToast")?.remove();
     return;
@@ -1727,7 +1759,7 @@ function renderFocusOverlay() {
   body.style.touchAction = focusSheetOpen ? "none" : "";
   ov.classList.remove("hidden");
   ov.setAttribute("aria-hidden", "false");
-  document.body.style.overflow = "hidden";
+  lockBg();
 }
 
 function renderVolRow() {

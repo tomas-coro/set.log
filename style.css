@@ -658,6 +658,13 @@ body.timer-on .focus-ov,
 body.feel-on .focus-ov{padding-bottom:calc(var(--bottom-pad,170px) + 12px);}
 /* anche la LISTA esercizi (home) non deve finire sotto la barra (bug overlap) */
 body.timer-on .wrap{padding-bottom:calc(var(--bottom-pad,140px) + 16px);}
+/* Recupero attivo: la barra in basso prende il comando, quindi liberiamo la
+   videata nascondendo il pannello HUD pieno e il footer del focus (CTA/prossimo/
+   recupero). Niente più scroll quando il timer ruba ~150px in basso. Legato a
+   .timer-on: alla fine del recupero la classe sparisce e tornano visibili da
+   soli, senza re-render. */
+body.timer-on .focus-body .panel,
+body.timer-on #focusFoot{display:none;}
 
 /* ---- Lotto 2 Task 4: serie non riuscita ---- */
 /* Badge rosso "✗ non riuscita" nella riga serie */
@@ -1612,7 +1619,11 @@ body.scroll-lock{overflow:hidden;}
    (1278-1289) a pari specificità. Riferimento: mockups/focus-redesign-rev1.html */
 .focus-body .panel{border:1px solid var(--line-acc);border-radius:12px;
   background:linear-gradient(180deg,rgba(240,167,60,.05),rgba(240,167,60,.015));
-  padding:8px 12px;margin-top:6px;}
+  padding:8px 12px;margin-top:6px;
+  /* "Respira": il pannello è la UNA cosa memorabile → si espande per riempire lo
+     spazio libero (niente vuoto su iPhone alti) e centra il suo contenuto. Quando
+     lo spazio scarseggia resta al min-content e il corpo scrolla (fallback). */
+  flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;}
 /* editblock trasparente: il riquadro ambra è il pannello stesso */
 .focus-body .panel .editblock{margin:0;padding:0;border:none;background:transparent;}
 .focus-body .panel .editlabel{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
