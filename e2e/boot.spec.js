@@ -115,3 +115,61 @@ test("focus: apre l'esercizio, sheet Altro sale e blocca lo sfondo", async ({ pa
   await expect(page.locator("#focusSheet")).toBeHidden();
   expect(errors, "nessun errore nel focus").toEqual([]);
 });
+
+test("focus normale: il corpo non scrolla (4 serie da compilare, viewport iPhone)", async ({ page }) => {
+  const errors = [];
+  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
+  // Il prompt "nuova settimana" si accetta col valore di default (settimana vuota).
+  page.on("dialog", (d) => d.accept());
+
+  // Il fit "una videata" si misura sul telefono, non sul desktop 1280x720 di default.
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByText(/prova la demo/).click();
+  await expect(page.locator("#app")).toBeVisible();
+  // Settimana nuova vuota → caso peggiore: pannello + 4 serie da compilare (il seed è già loggato).
+  await page.locator("#newWeekBtn").click();
+
+  // Primo esercizio (Panca piana, 4 × 6 → 4 serie target).
+  await page.locator("#list .row").first().click();
+  await expect(page.locator("#focusOverlay")).toBeVisible();
+  // Il corpo deve stare nel viewport: scrollHeight ~ clientHeight (tolleranza 4px).
+  const overflow = await page.locator("#focusOverlay .focus-body").evaluate(
+    (el) => el.scrollHeight - el.clientHeight
+  );
+  expect(overflow, "il corpo focus non deve scrollare").toBeLessThanOrEqual(4);
+  expect(errors, "nessun errore").toEqual([]);
+});
+
+test("focus superset: tap su traccia ridotta la rende attiva (viewport iPhone)", async ({ page }) => {
+  const errors = [];
+  page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
+  page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
+  page.on("dialog", (d) => d.accept());
+
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.getByText(/prova la demo/).click();
+  await expect(page.locator("#app")).toBeVisible();
+  await page.locator("#newWeekBtn").click(); // settimana vuota → tracce da compilare
+
+  // Riga del superset (badge "superset"): Day A, "Alzate laterali + Pushdown".
+  await page.locator("#list .row", { has: page.locator(".ssbadge") }).first().click();
+  await expect(page.locator("#focusOverlay")).toBeVisible();
+
+  // Traccia attiva = A (blocco intero); l'altra è una .trackmini.
+  await expect(page.locator("#focusOverlay .track .tA")).toHaveText("A");
+  const mini = page.locator("#focusOverlay .trackmini");
+  await expect(mini).toHaveCount(1);
+  // Il corpo del superset (1 blocco + 1 mini) non scrolla.
+  const overflow = await page.locator("#focusOverlay .focus-body").evaluate(
+    (el) => el.scrollHeight - el.clientHeight
+  );
+  expect(overflow, "il corpo superset non deve scrollare").toBeLessThanOrEqual(4);
+
+  // Tap sulla riga ridotta → la traccia B diventa attiva.
+  await mini.click();
+  await expect(page.locator("#focusOverlay .track .tA")).toHaveText("B");
+  expect(errors, "nessun errore").toEqual([]);
+});

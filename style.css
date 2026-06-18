@@ -678,13 +678,17 @@ body.timer-on .wrap{padding-bottom:calc(var(--bottom-pad,140px) + 16px);}
 .failnote.hidden{display:none;}
 
 /* ---- Fase 7 Task 5: compattazione dentro l'overlay (fit senza scroll) ---- */
-.focus-body .sets{margin-top:8px;}
 .focus-body .editblock{margin-top:10px;padding:11px;}
 .focus-body .rpebar{margin:9px 0 2px;}
 .focus-body .qc-btn{margin-top:9px;}
-.focus-body .dots{margin-top:11px;}
-.focus-body .trend{margin-top:0;}
 .focus-body .track-h{margin-bottom:6px;}
+/* Densità compatta "videata fissa": il caso peggiore (normale 4 serie) entra senza
+   scroll su iPhone. Scoped a .focus-body per non toccare .trend/.srow/.dots usate
+   nei pop-up calendario/sessione. */
+.focus-body .sets{margin-top:5px;}
+.focus-body .sets .srow{padding-top:6px;padding-bottom:6px;}
+.focus-body .dots{margin-top:6px;margin-bottom:6px;}
+.focus-body .trend{margin-top:0;margin-bottom:4px;}
 
 /* ---- Body del focus: colonna scrollabile (lista serie + pannello HUD + trend) ---- */
 .focus-body{display:flex;flex-direction:column;}
@@ -1608,7 +1612,7 @@ body.scroll-lock{overflow:hidden;}
    (1278-1289) a pari specificità. Riferimento: mockups/focus-redesign-rev1.html */
 .focus-body .panel{border:1px solid var(--line-acc);border-radius:12px;
   background:linear-gradient(180deg,rgba(240,167,60,.05),rgba(240,167,60,.015));
-  padding:11px 12px;margin-top:10px;}
+  padding:8px 12px;margin-top:6px;}
 /* editblock trasparente: il riquadro ambra è il pannello stesso */
 .focus-body .panel .editblock{margin:0;padding:0;border:none;background:transparent;}
 .focus-body .panel .editlabel{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
