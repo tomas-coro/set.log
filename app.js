@@ -18,7 +18,7 @@ import {
   parseTarget, activeSetIndex, isEntryComplete, bestKg, isWeekRecord, isSetRecord, progressionDelta,
   historyIsBodyweight, bestReps,
   withSet, withoutSet, withSupersetSet, withoutSupersetSet, withNote, previousNote,
-  previousSetInSession, previousWeekSet,
+  previousSetInSession,
   sessionVolume, volumeByMuscle, exerciseTrend, nextExercisePreview,
   topSetSeries, chartGeometry,
   sessionDates, monthGrid, sessionHasDoneSet,
@@ -316,27 +316,21 @@ function openQcDialog(selected, onChange) {
   if (!dlg.open) dlg.showModal();
 }
 
-// Fino a due chip: "↑ serie sopra" (stessa sessione) e "↶ scorsa Wxx" (settimana precedente).
-// inSession/prevWeek = {reps,kg[,week]} o null. onPick({reps,kg}) precompila lo stepper.
-function buildRepeatChips(inSession, prevWeek, onPick) {
-  if (!inSession && !prevWeek) return null;
+// Una sola chip: "↑ serie sopra" (stessa sessione). inSession = {reps,kg} o null.
+// onPick({reps,kg}) precompila lo stepper. La "volta scorsa" è coperta dal box
+// verde tappabile in buildEditBlock (niente più chip "↶ Wxx" ridondante).
+function buildRepeatChips(inSession, onPick) {
+  if (!inSession) return null;
   const row = document.createElement("div");
   row.className = "repeats";
-  const make = (cls, label, val) => {
-    const c = document.createElement("div");
-    c.className = cls ? `rchip ${cls}` : "rchip";
-    const l = document.createElement("div"); l.className = "rl"; l.textContent = label;
-    const rv = document.createElement("div"); rv.className = "rv";
-    rv.textContent = `${val.reps || "—"} × ${val.kg || "—"}`;
-    c.append(l, rv);
-    c.addEventListener("click", () => onPick({ reps: val.reps, kg: val.kg }));
-    row.appendChild(c);
-  };
-  if (inSession) make("", "↑ serie sopra", inSession);
-  if (prevWeek) {
-    const wk = prevWeek.week ? prevWeek.week.split("-").pop() : "scorsa";
-    make("scorsa", `↶ ${wk}`, prevWeek);
-  }
+  const c = document.createElement("div");
+  c.className = "rchip";
+  const l = document.createElement("div"); l.className = "rl"; l.textContent = "↑ serie sopra";
+  const rv = document.createElement("div"); rv.className = "rv";
+  rv.textContent = `${inSession.reps || "—"} × ${inSession.kg || "—"}`;
+  c.append(l, rv);
+  c.addEventListener("click", () => onPick({ reps: inSession.reps, kg: inSession.kg }));
+  row.appendChild(c);
   return row;
 }
 
@@ -1102,8 +1096,7 @@ function renderFocusNormal(ex, idx, container, footer) {
     panel.appendChild(edit.block);
 
     const repInSession = previousSetInSession(v, curIdx);
-    const repPrevWeek = previousWeekSet(data, currentDay, exId, currentWeek, curIdx);
-    const repChips = buildRepeatChips(repInSession, repPrevWeek, ({ reps, kg }) => {
+    const repChips = buildRepeatChips(repInSession, ({ reps, kg }) => {
       draft.reps = reps; draft.kg = kg; edit.refresh();
     });
     if (repChips) panel.appendChild(repChips);
@@ -1299,8 +1292,7 @@ function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, 
     panel.appendChild(edit.block);
 
     const inSess = previousSetInSession(trackEntry, curIdx);
-    const prevWk = previousWeekSet(data, currentDay, exId, currentWeek, curIdx, trackKey);
-    const chips = buildRepeatChips(inSess, prevWk, ({ reps, kg }) => { state.reps = reps; state.kg = kg; edit.refresh(); });
+    const chips = buildRepeatChips(inSess, ({ reps, kg }) => { state.reps = reps; state.kg = kg; edit.refresh(); });
     if (chips) panel.appendChild(chips);
     wrap.appendChild(panel);
   }

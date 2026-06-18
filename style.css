@@ -458,7 +458,6 @@ dialog#settingsDialog.settings-v2-host::backdrop{
 .repeats .rchip .rl{font-family:"JetBrains Mono",monospace;font-size:9px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--dim);}
 .repeats .rchip .rv{font-family:"JetBrains Mono",monospace;font-size:14px;font-weight:700;color:var(--ink);margin-top:3px;}
-.repeats .rchip.scorsa .rv{color:var(--acc);}
 
 /* Volume di sessione + mini-trend */
 .volcard{display:flex;justify-content:space-between;align-items:flex-start;background:var(--surf2);
@@ -1621,9 +1620,6 @@ body.scroll-lock{overflow:hidden;}
 /* "la volta scorsa" (dentro editblock) come box di riferimento verde, non editabile */
 .focus-body .panel .reprow .chip.prevbest{border:1px dashed var(--line-acc);background:rgba(127,208,138,.05);}
 .focus-body .panel .reprow .chip.prevbest .rv{color:var(--ok);font-weight:700;}
-/* chip "↶ Wxx" (ripeti volta scorsa) come riferimento verde coerente */
-.focus-body .panel .repeats .rchip.scorsa{border:1px dashed var(--line-acc);background:rgba(127,208,138,.04);}
-.focus-body .panel .repeats .rchip.scorsa .rv{color:var(--ok);font-weight:700;}
 
 /* ===== Focus redesign Task 3 — pop-up "Altro": sheet dal basso, sfondo bloccato =====
    scrim+sheet sono figli assoluti di #focusOverlay (position:fixed). */
