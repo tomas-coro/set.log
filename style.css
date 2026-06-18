@@ -658,13 +658,19 @@ body.timer-on .focus-ov,
 body.feel-on .focus-ov{padding-bottom:calc(var(--bottom-pad,170px) + 12px);}
 /* anche la LISTA esercizi (home) non deve finire sotto la barra (bug overlap) */
 body.timer-on .wrap{padding-bottom:calc(var(--bottom-pad,140px) + 16px);}
-/* Recupero attivo: la barra in basso prende il comando, quindi liberiamo la
-   videata nascondendo il pannello HUD pieno e il footer del focus (CTA/prossimo/
-   recupero). Niente più scroll quando il timer ruba ~150px in basso. Legato a
-   .timer-on: alla fine del recupero la classe sparisce e tornano visibili da
-   soli, senza re-render. */
-body.timer-on .focus-body .panel,
+/* Recupero attivo: la barra in basso prende il comando. Nascondiamo SOLO il footer
+   del focus (CTA/prossimo/riga-recupero, ridondante col timer in basso) e teniamo
+   il PANNELLO, che al re-render mostra già la serie successiva pronta ("si apre
+   quella dopo"). Per stare nel viewport con la barra recupero attiva, pannello e
+   controlli vanno al floor compatto (niente crescita elastica). Legato a .timer-on:
+   a fine recupero la classe sparisce e tutto torna com'era, senza re-render. */
 body.timer-on #focusFoot{display:none;}
+/* Durante il recupero la lista serie è ridondante (i dots in fondo riassumono già il
+   progresso) e la barra recupero in basso ruba molta altezza: nascondendo la lista
+   liberiamo lo spazio perché il pannello della SERIE SUCCESSIVA entri tutto anche
+   sui 4-serie, senza scroll. Il pannello resta elastico e riempie lo spazio liberato.
+   A fine recupero la classe sparisce e la lista ritorna, senza re-render. */
+body.timer-on .focus-body .sets{display:none;}
 
 /* ---- Lotto 2 Task 4: serie non riuscita ---- */
 /* Badge rosso "✗ non riuscita" nella riga serie */
@@ -1620,10 +1626,10 @@ body.scroll-lock{overflow:hidden;}
 .focus-body .panel{border:1px solid var(--line-acc);border-radius:12px;
   background:linear-gradient(180deg,rgba(240,167,60,.05),rgba(240,167,60,.015));
   padding:8px 12px;margin-top:6px;
-  /* "Respira": il pannello è la UNA cosa memorabile → si espande per riempire lo
-     spazio libero (niente vuoto su iPhone alti) e centra il suo contenuto. Quando
-     lo spazio scarseggia resta al min-content e il corpo scrolla (fallback). */
-  flex:1 1 auto;display:flex;flex-direction:column;justify-content:center;}
+  /* "Tap grande" (2026-06-18): il pannello è la UNA cosa memorabile → riempie lo
+     spazio libero, ma facendo crescere i CONTROLLI interni (vedi blocco elastico in
+     fondo), non centrando il contenuto e lasciando un vuoto-filler. */
+  flex:1 1 auto;display:flex;flex-direction:column;justify-content:flex-start;}
 /* editblock trasparente: il riquadro ambra è il pannello stesso */
 .focus-body .panel .editblock{margin:0;padding:0;border:none;background:transparent;}
 .focus-body .panel .editlabel{font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
@@ -1635,6 +1641,25 @@ body.scroll-lock{overflow:hidden;}
 /* "la volta scorsa" (dentro editblock) come box di riferimento verde, non editabile */
 .focus-body .panel .reprow .chip.prevbest{border:1px dashed var(--line-acc);background:rgba(127,208,138,.05);}
 .focus-body .panel .reprow .chip.prevbest .rv{color:var(--ok);font-weight:700;}
+
+/* ===== Focus "spazio vuoto" (2026-06-18) — A "Tap grande" elastico + decimali =====
+   D2 — decimali: l'input peso non ha più larghezza fissa (era 64px → tagliava
+   "15.5" sotto "kg"); larghezza per reggere "15.5"/"120.5" centrati. */
+.focus-body .panel .stepper .val .num{width:5.5ch;}
+/* D3 — i controlli crescono nello spazio libero (tap target grandi, ergonomia in
+   palestra) e si stringono al floor compatto (≥44px) nei casi peggiori (4 serie /
+   superset 3 tracce) → niente vuoto-filler, niente scroll. L'editblock è la colonna
+   che riempie il pannello; stepper e reprow sono i due blocchi elastici (flex tra
+   min e max). Le spaziature passano a `gap`: azzero i margin legacy per non sommarli. */
+.focus-body .panel .editblock{flex:1 1 auto;display:flex;flex-direction:column;gap:6px;justify-content:space-between;}
+.focus-body .panel .editblock .editlabel{margin-bottom:0;}
+.focus-body .panel .editblock .stepper{margin-top:0;flex:1 1 0;min-height:44px;max-height:84px;align-items:stretch;}
+.focus-body .panel .editblock .stepper .mb{height:auto;min-height:44px;}
+.focus-body .panel .editblock .stepper .val{height:auto;min-height:44px;}
+.focus-body .panel .editblock .plates{margin-top:0;}
+.focus-body .panel .editblock .reprow{margin-top:0;flex:1 1 0;min-height:54px;max-height:100px;align-items:stretch;}
+/* floor del repstep: padding ridotto così il pulsante reps resta ≥44px anche al floor */
+.focus-body .panel .editblock .reprow .repstep{padding-top:5px;padding-bottom:5px;}
 
 /* ===== Focus redesign Task 3 — pop-up "Altro": sheet dal basso, sfondo bloccato =====
    scrim+sheet sono figli assoluti di #focusOverlay (position:fixed). */

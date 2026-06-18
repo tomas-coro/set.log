@@ -171,7 +171,7 @@ test("focus: lo sfondo (home) resta fermo con il focus aperto", async ({ page })
   expect(errors, "nessun errore").toEqual([]);
 });
 
-test("focus: durante il recupero pannello e footer si nascondono e il corpo non scrolla", async ({ page }) => {
+test("focus: in recupero il footer si nasconde, il pannello resta sulla serie successiva e il corpo non scrolla", async ({ page }) => {
   const errors = [];
   page.on("console", (m) => { if (m.type() === "error") errors.push(m.text()); });
   page.on("pageerror", (e) => errors.push("pageerror: " + e.message));
@@ -185,17 +185,23 @@ test("focus: durante il recupero pannello e footer si nascondono e il corpo non 
 
   await page.locator("#list .row").first().click();
   await expect(page.locator("#focusOverlay")).toBeVisible();
-  // Prima del recupero: il pannello HUD pieno è visibile.
+  // Prima del recupero: serie 1 attiva, pannello visibile.
   await expect(page.locator("#focusOverlay .focus-body .panel")).toBeVisible();
+  await expect(page.locator("#focusSet")).toHaveText(/serie 1 \/ 4/);
 
   // Avvia il recupero (registra la 1ª serie).
   await page.locator("#focusFoot .cta").click();
   await expect(page.locator("#timerBar")).toBeVisible();
 
-  // Durante il recupero: pannello e footer del focus nascosti (la barra recupero li sostituisce).
-  await expect(page.locator("#focusOverlay .focus-body .panel")).toBeHidden();
+  // Durante il recupero: il footer del focus è nascosto (la barra recupero fa da timer)...
   await expect(page.locator("#focusFoot")).toBeHidden();
-  // E il corpo non sfora (è il caso che prima scrollava).
+  // ...ma il pannello RESTA visibile e mostra già la serie successiva pronta ("si apre quella dopo").
+  await expect(page.locator("#focusOverlay .focus-body .panel")).toBeVisible();
+  await expect(page.locator("#focusSet")).toHaveText(/serie 2 \/ 4/);
+  // La lista serie si nasconde in recupero (i dots riassumono): libera spazio così il
+  // pannello entra anche sui 4-serie con la barra recupero attiva (caso che sforava).
+  await expect(page.locator("#focusOverlay .focus-body .sets")).toBeHidden();
+  // E il corpo non sfora (col pannello al floor compatto deve entrare anche con la barra recupero).
   const overflow = await page.locator("#focusOverlay .focus-body").evaluate(
     (el) => el.scrollHeight - el.clientHeight
   );
