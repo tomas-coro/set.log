@@ -590,3 +590,16 @@ export function nextExercisePreview(exercises, idx) {
   if (!next) return { last: true };
   return { last: false, name: next.name, target: next.setsReps };
 }
+
+// Indice della traccia "attiva" di un superset. Default: prima non completa
+// (come Math.max(0, findIndex(!allDone))). `override` = traccia forzata a mano
+// dall'utente: vince solo se esiste ed è ancora incompleta; altrimenti si ricade
+// sull'auto. Pura: niente accesso a `data`, solo flag già calcolati dal chiamante.
+export function pickActiveTrack(keys, doneFlags, override) {
+  const auto = Math.max(0, doneFlags.findIndex((d) => !d));
+  if (override) {
+    const oi = keys.indexOf(override);
+    if (oi >= 0 && !doneFlags[oi]) return oi;
+  }
+  return auto;
+}

@@ -6,7 +6,7 @@ import { bestKg, bestKgBefore, isWeekRecord, isSetRecord, progressionDelta, with
 import { historyIsBodyweight, bestReps, bestRepsBefore } from "../session.js";
 import { sessionDates, monthGrid, sessionHasDoneSet } from "../session.js";
 import { muscleContributions, lastTrainedByGroup } from "../session.js";
-import { isDumbbell, volumeMeta, exerciseVolume, setVolume, platesOn, supersetTrackKeys, trackMuscle, trackName } from "../session.js";
+import { isDumbbell, volumeMeta, exerciseVolume, setVolume, platesOn, supersetTrackKeys, trackMuscle, trackName, pickActiveTrack } from "../session.js";
 import { emptyData, setEntry, getEntry } from "../store.js";
 
 test("sessionDates: estrae le date da weeks[].dates, ordinate per data", () => {
@@ -949,6 +949,28 @@ test("historyIsBodyweight: ignora warmup e failed con kg", () => {
     { reps: "8", kg: "", done: true },
   ] });
   assert.equal(historyIsBodyweight(d, "A", "dips1"), true);
+});
+
+test("pickActiveTrack: senza override → prima traccia non completa", () => {
+  assert.equal(pickActiveTrack(["a", "b"], [true, false], null), 1);
+  assert.equal(pickActiveTrack(["a", "b", "c"], [false, false, false], null), 0);
+});
+
+test("pickActiveTrack: override valido (traccia non completa) vince", () => {
+  assert.equal(pickActiveTrack(["a", "b", "c"], [false, false, false], "c"), 2);
+  assert.equal(pickActiveTrack(["a", "b"], [false, true], "a"), 0);
+});
+
+test("pickActiveTrack: override su traccia completa → ricade sull'auto", () => {
+  // b è completa: l'override "b" si ignora, torna la prima incompleta (a)
+  assert.equal(pickActiveTrack(["a", "b", "c"], [false, true, false], "b"), 0);
+  // a è completa, override "a" ignorato → prima incompleta = b
+  assert.equal(pickActiveTrack(["a", "b"], [true, false], "a"), 1);
+});
+
+test("pickActiveTrack: override inesistente o tutte complete → auto (0)", () => {
+  assert.equal(pickActiveTrack(["a", "b"], [false, false], "z"), 0);
+  assert.equal(pickActiveTrack(["a", "b"], [true, true], null), 0);
 });
 
 test("bestReps / bestRepsBefore: max reps come bestKg ma su reps", () => {
