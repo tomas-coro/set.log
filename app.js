@@ -122,6 +122,7 @@ Object.defineProperty(ctx, "swReg", {
 function openFocus(i) {
   openIndex = i;
   focusSheetOpen = false;
+  focusActiveTrack = null;
   history.pushState({ gymFocus: true }, "");
   render();
 }
@@ -1208,6 +1209,10 @@ function renderFocusNormal(ex, idx, container, footer) {
 // Bozze separate per traccia (A/B/C) della serie corrente del superset.
 let draftTracks = { a: { kg: "", reps: "", comments: [] }, b: { kg: "", reps: "", comments: [] }, c: { kg: "", reps: "", comments: [] } };
 
+// Traccia del superset scelta a mano dall'utente (tap su riga ridotta). null = auto
+// (prima incompleta). Resettata su openFocus/changeWeek/changeDay come draft/supersetTab.
+let focusActiveTrack = null;
+
 function trackBlock(trackKey, trackName, trackEntry, tgtTrack, prevSets, state, idx, bar = getBar(), meta = { factor: 1, unit: "reps" }, showPlates = true) {
   const exId = exIdAt(idx);
   const wrap = document.createElement("div");
@@ -1708,6 +1713,7 @@ function changeWeek(key) {
   data = ensureWeek(data, currentWeek, data.weeks[currentWeek]?.label);
   openIndex = null;
   focusSheetOpen = false;
+  focusActiveTrack = null;
   volExpanded = false;
   renderWeekSelect();
   render();
@@ -1716,6 +1722,7 @@ function changeDay(day) {
   currentDay = day;
   openIndex = null;
   focusSheetOpen = false;
+  focusActiveTrack = null;
   volExpanded = false;
   render();
 }
