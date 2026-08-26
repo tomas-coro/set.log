@@ -436,8 +436,6 @@ function defaultSchema(){
         ex("Alzate laterali manubri",3,12,15,"0-1",60),
         ex("Pushdown ai cavi (corda)",3,10,12,"0-1",0,{ss:"t1",failLast:true}),
         ex("French press EZ (o manubrio)",3,10,12,"0-1",75,{ss:"t1",failLast:true}),
-        ex("Polpacci in piedi",4,12,15,"1",0,{ss:"c1",hint:"propedeutico corsa"}),
-        ex("Tibiale (tibialis raise)",3,15,20,"1",60,{ss:"c1",hint:"anti-shin splint"}),
       ]},
       { id:uid(), name:"Tirata A", focus:"Schiena + bicipiti", exercises:[
         ex("Lat machine presa larga",4,6,8,"1-2",150,{hint:"tirare verso lo sterno, gomiti in basso"}),
@@ -446,28 +444,27 @@ function defaultSchema(){
         ex("Curl bilanciere EZ",3,8,12,"0-1",0,{ss:"b1",failLast:true}),
         ex("Curl martello manubri",3,8,12,"0-1",75,{ss:"b1",failLast:true}),
         ex("Curl ai cavi (o panca Scott)",2,12,15,"0",60,{hint:"picco bicipite",failLast:true}),
-        ex("Leg curl sdraiato",3,12,15,"1",0,{ss:"l2",hint:"propedeutico corsa"}),
-        ex("Hip thrust bilanciere",3,10,12,"1",90,{ss:"l2",hint:"femorali/glutei anti-strappo"}),
       ]},
-      { id:uid(), name:"Spinta B", focus:"Spalle", exercises:[
-        ex("Lento avanti bilanciere",4,6,8,"1-2",150),
+      { id:uid(), name:"Spinta B", focus:"Spalle + braccia", exercises:[
+        ex("Lento avanti manubri",4,6,8,"1-2",150,{hint:"variante manubri, piu' gentile sulle spalle della bilanciere"}),
         ex("Alzate laterali manubri",4,12,15,"0",60,{hint:"priorita': spalle larghe",failLast:true}),
-        ex("Panca inclinata manubri (30°)",3,8,10,"2",120,{hint:"petto in appoggio"}),
         ex("Alzate posteriori (rear delt)",3,15,15,"0-1",0,{ss:"s3",failLast:true}),
         ex("Alzate laterali ai cavi",3,15,15,"0",75,{ss:"s3",failLast:true}),
-        ex("Estensioni tricipiti overhead (cavi)",3,10,12,"0-1",75,{failLast:true}),
-        ex("Affondi in camminata manubri",3,10,12,"2",90,{hint:"per gamba - stabilita' ginocchio, propedeutico corsa"}),
+        ex("Curl manubri alternato",3,10,12,"0-1",0,{ss:"arm1",failLast:true}),
+        ex("Pushdown corda ai cavi",3,10,12,"0",75,{ss:"arm1",failLast:true}),
+        ex("Curl concentrato",2,10,12,"0",0,{ss:"arm2",failLast:true}),
+        ex("Kickback ai cavi",2,12,15,"0",60,{ss:"arm2",failLast:true}),
       ]},
-      { id:uid(), name:"Tirata B", focus:"Braccia", exercises:[
-        ex("Lat machine presa inversa",3,8,10,"1-2",120,{hint:"presa supina: dorso + bicipiti"}),
-        ex("Rematore manubrio unilaterale",3,10,12,"1",90,{hint:"per lato"}),
-        ex("Curl manubri alternato",3,10,12,"0-1",0,{ss:"b4",failLast:true}),
-        ex("Curl concentrato",3,10,12,"0",75,{ss:"b4",failLast:true}),
-        ex("Dips alle parallele",3,8,12,"0-1",0,{ss:"t4",hint:"libere, zavorra se troppo facili",failLast:true}),
-        ex("Pushdown corda ai cavi",3,10,12,"0",75,{ss:"t4",failLast:true}),
-        ex("Curl martello manubri",2,12,15,"0",0,{ss:"f4",failLast:true}),
-        ex("Kickback ai cavi",2,12,15,"0",60,{ss:"f4",failLast:true}),
-        ex("Leg extension",3,12,15,"0-1",75,{hint:"quadricipiti - definizione, propedeutico corsa"}),
+      { id:uid(), name:"Gambe", focus:"Gambe + upper", exercises:[
+        ex("Pressa",4,8,10,"1-2",120,{hint:"quadricipiti + glutei, il main lift della giornata"}),
+        ex("Hack squat",3,8,10,"1-2",120,{hint:"quadricipiti, enfasi separazione"}),
+        ex("Leg extension",3,12,15,"0-1",75,{hint:"quadricipiti - definizione",failLast:true}),
+        ex("Leg curl sdraiato",3,12,15,"0-1",75,{hint:"femorali, bilancia il lavoro quad",failLast:true}),
+        ex("Hip thrust bilanciere",3,10,12,"1",90,{hint:"glutei/femorali anti-strappo"}),
+        ex("Polpacci in piedi",4,12,15,"1",0,{ss:"leg1",hint:"propedeutico corsa"}),
+        ex("Tibiale (tibialis raise)",3,15,20,"1",60,{ss:"leg1",hint:"anti-shin splint"}),
+        ex("Chest press (macchina)",3,10,12,"1",90,{hint:"secondo tocco settimanale per il petto, angolo diverso dalla panca"}),
+        ex("Rematore al cavo",3,10,12,"1",90,{hint:"secondo tocco settimanale per la schiena"}),
       ]},
     ]
   };
@@ -545,6 +542,61 @@ function migrateChestDipsAndLegs(){
   DB.migrations.chestDipsLegs = true;
   save();
   return n;
+}
+
+// Migrazione una-volta-sola: ristruttura la scheda da 4 giorni push/pull con
+// gambe in coda a 3 giorni upper puri + 1 giorno gambe dedicato (macchine,
+// piu' due esercizi upper per non perdere frequenza su petto/schiena). Sostituisce
+// solo la scheda (DB.schema.days): storico sessioni e sessione attiva non si toccano.
+function migrateUpperLegsSplit(){
+  DB.migrations = DB.migrations || {};
+  if(DB.migrations.upperLegsSplitV3) return 0;
+  const E = (name, sets, rl, rh, rir, rest, o={}) => ({
+    id:uid(), name, note:o.hint||"", sets, repsLow:rl, repsHigh:rh, rir, restSec:rest,
+    failLast:!!o.failLast, ss:o.ss||null
+  });
+  DB.schema.days = [
+    { id:uid(), name:"Spinta A", focus:"Petto", exercises:[
+      E("Panca piana bilanciere",4,6,8,"1-2",150,{hint:"presa poco piu' larga delle spalle"}),
+      E("Panca inclinata manubri (30°)",3,8,10,"1-2",120),
+      E("Dips alle parallele (petto)",3,8,12,"0-1",90,{hint:"busto inclinato avanti, gomiti larghi, scendi fino a stretch - fermati se senti la spalla",failLast:true}),
+      E("Alzate laterali manubri",3,12,15,"0-1",60),
+      E("Pushdown ai cavi (corda)",3,10,12,"0-1",0,{ss:"t1",failLast:true}),
+      E("French press EZ (o manubrio)",3,10,12,"0-1",75,{ss:"t1",failLast:true}),
+    ]},
+    { id:uid(), name:"Tirata A", focus:"Schiena + bicipiti", exercises:[
+      E("Lat machine presa larga",4,6,8,"1-2",150,{hint:"tirare verso lo sterno, gomiti in basso"}),
+      E("Rematore bilanciere",3,8,10,"2",120),
+      E("Pulley basso presa stretta",3,10,12,"1",90),
+      E("Curl bilanciere EZ",3,8,12,"0-1",0,{ss:"b1",failLast:true}),
+      E("Curl martello manubri",3,8,12,"0-1",75,{ss:"b1",failLast:true}),
+      E("Curl ai cavi (o panca Scott)",2,12,15,"0",60,{hint:"picco bicipite",failLast:true}),
+    ]},
+    { id:uid(), name:"Spinta B", focus:"Spalle + braccia", exercises:[
+      E("Lento avanti manubri",4,6,8,"1-2",150,{hint:"variante manubri, piu' gentile sulle spalle della bilanciere"}),
+      E("Alzate laterali manubri",4,12,15,"0",60,{hint:"priorita': spalle larghe",failLast:true}),
+      E("Alzate posteriori (rear delt)",3,15,15,"0-1",0,{ss:"s3",failLast:true}),
+      E("Alzate laterali ai cavi",3,15,15,"0",75,{ss:"s3",failLast:true}),
+      E("Curl manubri alternato",3,10,12,"0-1",0,{ss:"arm1",failLast:true}),
+      E("Pushdown corda ai cavi",3,10,12,"0",75,{ss:"arm1",failLast:true}),
+      E("Curl concentrato",2,10,12,"0",0,{ss:"arm2",failLast:true}),
+      E("Kickback ai cavi",2,12,15,"0",60,{ss:"arm2",failLast:true}),
+    ]},
+    { id:uid(), name:"Gambe", focus:"Gambe + upper", exercises:[
+      E("Pressa",4,8,10,"1-2",120,{hint:"quadricipiti + glutei, il main lift della giornata"}),
+      E("Hack squat",3,8,10,"1-2",120,{hint:"quadricipiti, enfasi separazione"}),
+      E("Leg extension",3,12,15,"0-1",75,{hint:"quadricipiti - definizione",failLast:true}),
+      E("Leg curl sdraiato",3,12,15,"0-1",75,{hint:"femorali, bilancia il lavoro quad",failLast:true}),
+      E("Hip thrust bilanciere",3,10,12,"1",90,{hint:"glutei/femorali anti-strappo"}),
+      E("Polpacci in piedi",4,12,15,"1",0,{ss:"leg1",hint:"propedeutico corsa"}),
+      E("Tibiale (tibialis raise)",3,15,20,"1",60,{ss:"leg1",hint:"anti-shin splint"}),
+      E("Chest press (macchina)",3,10,12,"1",90,{hint:"secondo tocco settimanale per il petto, angolo diverso dalla panca"}),
+      E("Rematore al cavo",3,10,12,"1",90,{hint:"secondo tocco settimanale per la schiena"}),
+    ]},
+  ];
+  DB.migrations.upperLegsSplitV3 = true;
+  save();
+  return 1;
 }
 
 /* ============ HELPERS ============ */
@@ -762,7 +814,7 @@ const SEED_EXERCISES = [
   "Lento avanti bilanciere","Lento avanti manubri","Alzate laterali","Alzate posteriori","Face pull","Arnold press","Tirate al mento","Scrollate",
   "Curl bilanciere","Curl manubri","Curl alla Scott","Curl concentrato","Hammer curl","Curl ai cavi","Curl EZ",
   "Pushdown ai cavi","French press","Skullcrusher","Pushdown corda","Estensioni sopra la testa","Kickback","Dips alle parallele",
-  "Squat bilanciere","Pressa","Leg extension","Leg curl","Affondi manubri","Hack squat","Bulgarian split squat","Goblet squat","Stacco sumo","Adductor machine",
+  "Squat bilanciere","Pressa","Leg extension","Leg curl","Affondi manubri","Hack squat","Bulgarian split squat","Goblet squat","Stacco sumo","Adductor machine","Hip thrust bilanciere",
   "Calf in piedi","Calf da seduto","Calf alla pressa","Donkey calf",
   "Crunch a terra","Plank","Russian twist","Leg raise","Crunch inverso","Plank laterale","Ab wheel","Hanging leg raise","Mountain climber",
 ].sort((a,b)=>a.localeCompare(b,"it",{sensitivity:"base"}));
@@ -1678,11 +1730,18 @@ async function checkForUpdates(){
 ensureSeedList();
 const migrated = migrateNoPullups();
 const migratedExercises = migrateChestDipsAndLegs();
+const migratedSplit = migrateUpperLegsSplit();
 if(DB.active) wake.enable();   // sessione ripresa dopo reload → riattiva lo schermo acceso
 resumeRestIfAny();             // idem per il recupero tra le serie, se era a meta'
 render();
-if(migrated) toast(migrated===1 ? "Trazioni sostituite con lat machine" : `${migrated} voci “trazioni” sostituite con lat machine`);
-if(migratedExercises) toast("Scheda aggiornata: dip petto e leg extension");
+{
+  // un solo toast: chiamate multiple in fila si sovrascrivono a vicenda prima del render
+  const notes = [];
+  if(migrated) notes.push(migrated===1 ? "trazioni sostituite con lat machine" : `${migrated} voci “trazioni” sostituite con lat machine`);
+  if(migratedExercises) notes.push("dip petto e leg extension aggiornati");
+  if(migratedSplit) notes.push("scheda ristrutturata: 3 giorni upper + 1 gambe dedicato");
+  if(notes.length) toast("Scheda aggiornata: " + notes.join("; "));
+}
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
 window.go=go; window.goBack=goBack; window.goTab=goTab; window.startSession=startSession; window.setVal=setVal; window.toggleSet=toggleSet;
 window.addSet=addSet; window.delSet=delSet; window.exNote=exNote; window.exMenu=exMenu;
