@@ -404,7 +404,7 @@ function defaultSchema(){
       { id:uid(), name:"Spinta A", focus:"Petto", exercises:[
         ex("Panca piana bilanciere",4,6,8,"1-2",150,{hint:"presa poco piu' larga delle spalle"}),
         ex("Panca inclinata manubri (30°)",3,8,10,"1-2",120),
-        ex("Croci ai cavi altezza media",3,12,15,"0-1",75,{hint:"cavi all'altezza spalle, traiettoria orizzontale",failLast:true}),
+        ex("Dips alle parallele (petto)",3,8,12,"0-1",90,{hint:"busto inclinato avanti, gomiti larghi, scendi fino a stretch - fermati se senti la spalla",failLast:true}),
         ex("Alzate laterali manubri",3,12,15,"0-1",60),
         ex("Pushdown ai cavi (corda)",3,10,12,"0-1",0,{ss:"t1",failLast:true}),
         ex("French press EZ (o manubrio)",3,10,12,"0-1",75,{ss:"t1",failLast:true}),
@@ -439,6 +439,7 @@ function defaultSchema(){
         ex("Pushdown corda ai cavi",3,10,12,"0",75,{ss:"t4",failLast:true}),
         ex("Curl martello manubri",2,12,15,"0",0,{ss:"f4",failLast:true}),
         ex("Kickback ai cavi",2,12,15,"0",60,{ss:"f4",failLast:true}),
+        ex("Leg extension",3,12,15,"0-1",75,{hint:"quadricipiti - definizione, propedeutico corsa"}),
       ]},
     ]
   };
