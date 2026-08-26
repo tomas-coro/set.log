@@ -1,5 +1,5 @@
 // Service worker: cache l'app shell cosi' funziona offline (palestra con poca rete).
-const CACHE = "palestra-v1";
+const CACHE = "palestra-v2";
 const ASSETS = [
   "./",
   "./index.html",
@@ -27,7 +27,7 @@ self.addEventListener("fetch", e => {
   // I font di Google li lasciamo alla rete; se offline, l'app usa i font di sistema di fallback.
   if (new URL(req.url).origin !== self.location.origin) return;
   e.respondWith(
-    fetch(req)
+    fetch(req, { cache: "no-store" })
       .then(res => {
         const copy = res.clone();
         caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});

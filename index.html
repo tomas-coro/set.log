@@ -984,6 +984,7 @@ function viewHome(){
       <button class="btn ghost grow sm" onclick="exportData()">⤓  Esporta backup</button>
       <button class="btn ghost grow sm" onclick="importData()">⤒  Importa backup</button>
     </div>
+    <button class="btn ghost block sm" style="margin-top:8px" onclick="checkForUpdates()">⟳  Controlla aggiornamenti</button>
   </div>`;
 }
 
@@ -1541,6 +1542,24 @@ function importData(){
   inp.click();
 }
 
+/* ============ AGGIORNAMENTO APP ============ */
+// forza un refresh pulito: disinstalla il service worker, svuota la cache
+// e ricarica con un parametro anti-cache. I dati in localStorage non vengono toccati.
+async function checkForUpdates(){
+  toast("Controllo aggiornamenti...");
+  try{
+    if("serviceWorker" in navigator){
+      const regs = await navigator.serviceWorker.getRegistrations();
+      await Promise.all(regs.map(r=>r.unregister()));
+    }
+    if("caches" in window){
+      const keys = await caches.keys();
+      await Promise.all(keys.map(k=>caches.delete(k)));
+    }
+  }catch(e){ console.error("Aggiornamento: errore pulizia cache/service worker", e); }
+  location.href = location.pathname + "?v=" + Date.now();
+}
+
 /* ============ AVVIO ============ */
 ensureSeedList();
 const migrated = migrateNoPullups();
@@ -1555,7 +1574,7 @@ window.confirmFinish=confirmFinish; window.confirmCancel=confirmCancel; window.s
 window.stopRest=stopRest; window.adjRest=adjRest; window.moveDay=moveDay; window.addDay=addDay;
 window.moveEx=moveEx; window.delEx=delEx; window.editEx=editEx; window.renameDay=renameDay;
 window.addWeight=addWeight; window.exportData=exportData; window.importData=importData; window.finishSession=finishSession;
-window.openPlateCalc=openPlateCalc;
+window.openPlateCalc=openPlateCalc; window.checkForUpdates=checkForUpdates;
 </script>
 </body>
 </html>
