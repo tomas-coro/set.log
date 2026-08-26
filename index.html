@@ -35,10 +35,12 @@
     --safe-b:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  /* dvh = viewport REALE (non quella calcolata all'apertura): senza, quando la
-     barra indirizzi del browser si nasconde scrollando, il tabbar resta ancorato
-     al vecchio bordo e lascia uno spazio vuoto sotto, verso il nuovo bordo reale. */
-  html,body{height:100%;height:100dvh}
+  /* altezza reale del viewport: dvh da solo non basta su Safari iOS quando
+     l'elemento e' position:fixed (bug WebKit noto - il fixed segue il visual
+     viewport ma il CSS non sempre si riallinea da solo). --vvh e' impostata
+     via JS da window.visualViewport e vince su top/bottom perche' un height
+     esplicito ha priorita' sul "bottom" in un fixed over-constrained. */
+  html,body{height:100%;height:100dvh;height:var(--vvh,100dvh)}
   html{background:var(--bg)}
   /* body bloccato a schermo: lo scroll vive dentro #app. Cosi' la barra indirizzo
      del browser mobile non si nasconde/riappare e il tabbar non "salta" piu'. */
@@ -56,7 +58,7 @@
   input::placeholder{color:var(--ink-faint)}
 
   /* layout: shell in colonna, contenuto scrollabile + tabbar fisso nel flusso */
-  #shell{position:relative;height:100%;height:100dvh;max-width:560px;margin:0 auto}
+  #shell{position:relative;height:100%;height:100dvh;height:var(--vvh,100dvh);max-width:560px;margin:0 auto}
   /* il contenuto scorre DIETRO il tabbar: e' cio' che il vetro sfoca */
   #app{height:100%;overflow-y:auto;overflow-x:hidden;
        -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
@@ -395,6 +397,23 @@
 
 <script>
 "use strict";
+
+/* ============ VIEWPORT REALE (fix "blocco nero" sotto il tabbar su Safari iOS) ============ */
+// bug WebKit noto: un elemento position:fixed segue il visual viewport, ma quando
+// la barra indirizzi di Safari si nasconde/mostra scrollando il CSS puro (dvh
+// incluso) a volte non si riallinea da solo. Si traccia il viewport reale a mano
+// e si scrive in --vvh, che vince su bottom:0 nelle regole di over-constraint.
+function syncViewportHeight(){
+  const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+  document.documentElement.style.setProperty("--vvh", h+"px");
+}
+if(window.visualViewport){
+  visualViewport.addEventListener("resize", syncViewportHeight);
+  visualViewport.addEventListener("scroll", syncViewportHeight);
+}
+window.addEventListener("resize", syncViewportHeight);
+window.addEventListener("orientationchange", syncViewportHeight);
+syncViewportHeight();
 
 /* ============ STORAGE ============ */
 const KEY = "gymapp:v2";
