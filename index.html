@@ -35,7 +35,11 @@
     --safe-b:env(safe-area-inset-bottom,0px);
   }
   *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-  html,body{height:100%}
+  /* dvh = viewport REALE (non quella calcolata all'apertura): senza, quando la
+     barra indirizzi del browser si nasconde scrollando, il tabbar resta ancorato
+     al vecchio bordo e lascia uno spazio vuoto sotto, verso il nuovo bordo reale. */
+  html,body{height:100%;height:100dvh}
+  html{background:var(--bg)}
   /* body bloccato a schermo: lo scroll vive dentro #app. Cosi' la barra indirizzo
      del browser mobile non si nasconde/riappare e il tabbar non "salta" piu'. */
   body{position:fixed;inset:0;overflow:hidden}
@@ -52,7 +56,7 @@
   input::placeholder{color:var(--ink-faint)}
 
   /* layout: shell in colonna, contenuto scrollabile + tabbar fisso nel flusso */
-  #shell{position:relative;height:100%;max-width:560px;margin:0 auto}
+  #shell{position:relative;height:100%;height:100dvh;max-width:560px;margin:0 auto}
   /* il contenuto scorre DIETRO il tabbar: e' cio' che il vetro sfoca */
   #app{height:100%;overflow-y:auto;overflow-x:hidden;
        -webkit-overflow-scrolling:touch;overscroll-behavior-y:contain;
@@ -178,10 +182,15 @@
     width:44px;height:44px;margin-left:-12px;flex:none;align-self:center;
     display:flex;align-items:center;justify-content:center}
   .sess-bar .clock{font-family:var(--mono);font-weight:700;font-size:26px;letter-spacing:.02em}
+  .sess-bar .clock.paused{color:var(--ink-faint)}
   .sess-bar .clock small{font-size:12px;color:var(--ink-faint)}
   .sess-bar .t{flex:1}
   .sess-bar .t .name{font-family:var(--display);font-weight:700;font-size:22px;text-transform:uppercase;line-height:1}
   .sess-bar .t .prog{font-size:11px;color:var(--ink-faint);font-family:var(--mono)}
+  .sess-bar .sess-pause,.sess-bar .sess-cancel{font-size:17px;line-height:1;color:var(--ink-faint);
+    width:34px;height:34px;flex:none;align-self:center;border-radius:10px;background:var(--panel-2);
+    display:flex;align-items:center;justify-content:center}
+  .sess-bar .sess-cancel{color:var(--red)}
 
   .ex-card{background:var(--panel);border:1px solid var(--line);border-radius:14px;margin-bottom:12px;overflow:hidden}
   .ex-card.done{border-color:#2f4a34}
@@ -485,6 +494,40 @@ function migrateNoPullups(){
   return n;
 }
 
+// Migrazione una-volta-sola: sostituisce le croci ai cavi con i dip petto in
+// "Spinta A" (piu' efficaci sul pettorale, per chi ha gia' salvato la scheda sul
+// telefono) e aggiunge Leg extension in "Tirata B" (lavoro quadricipiti). Lo storico non si tocca.
+function migrateChestDipsAndLegs(){
+  DB.migrations = DB.migrations || {};
+  if(DB.migrations.chestDipsLegs) return 0;
+  let n=0;
+  DB.schema.days.forEach(d=>{
+    d.exercises.forEach(e=>{
+      if(/croci ai cavi altezza media/i.test(e.name)){
+        e.name="Dips alle parallele (petto)";
+        e.note="busto inclinato avanti, gomiti larghi, scendi fino a stretch - fermati se senti la spalla";
+        e.rir="0-1"; e.restSec=90; e.repsLow=8; e.repsHigh=12; e.failLast=true;
+        n++;
+      }
+    });
+    if(d.name==="Tirata B" && !d.exercises.some(e=>/leg extension/i.test(e.name))){
+      d.exercises.push({ id:uid(), name:"Leg extension", note:"quadricipiti - definizione, propedeutico corsa",
+        sets:3, repsLow:12, repsHigh:15, rir:"0-1", restSec:75, failLast:false, ss:null });
+      n++;
+    }
+  });
+  if(DB.active) DB.active.entries.forEach(e=>{
+    if(/croci ai cavi altezza media/i.test(e.name)){
+      e.name="Dips alle parallele (petto)";
+      e.hint="busto inclinato avanti, gomiti larghi, scendi fino a stretch - fermati se senti la spalla";
+      n++;
+    }
+  });
+  DB.migrations.chestDipsLegs = true;
+  save();
+  return n;
+}
+
 /* ============ HELPERS ============ */
 const $ = (s,r=document)=>r.querySelector(s);
 const app = $("#app");
@@ -558,7 +601,9 @@ function beep(times=1){
 document.addEventListener("touchstart", function unlock(){ try{ AC=AC||new(window.AudioContext||window.webkitAudioContext)(); AC.resume(); }catch(e){} document.removeEventListener("touchstart",unlock); }, {once:true});
 
 /* ============ STATE / ROUTER ============ */
-let view = "home";
+// se c'era una sessione in corso (chiusura per sbaglio, ricarica, riavvio della PWA)
+// si riapre direttamente li': mai piu' home come schermata di partenza in quel caso.
+let view = DB.active ? "session" : "home";
 let viewArg = null;
 let chartExId = null;
 let chartMetric = "top";   // 'top' = carico max · 'e1rm' = 1RM stimato
@@ -567,7 +612,7 @@ let chartMetric = "top";   // 'top' = carico max · 'e1rm' = 1RM stimato
 const TABS = ["home","history","charts","weight"];
 // cronologia interna: ogni voce e' una schermata. L'indice viene messo anche in
 // history.state, cosi' il tasto indietro del telefono torna dentro l'app.
-let navStack = [{view:"home", arg:null}];
+let navStack = [{view, arg:null}];
 
 // dir: undefined = entrata a cascata · "fwd" = entra da destra · "back" = entra da sinistra
 function applyState(st, dir){
@@ -715,9 +760,19 @@ function nextDayIndex(){ return DB.schema.rotationIndex % DB.schema.days.length;
 function startSession(dayId){
   const day = DB.schema.days.find(d=>d.id===dayId);
   if(!day) return;
+  // una sessione e' gia' aperta: toccare un giorno per errore non deve cancellarla in silenzio
+  if(DB.active){
+    confirmSheet("Hai gia' una sessione in corso",
+      `Stai facendo "${esc(DB.active.dayName)}". Iniziare "${esc(day.name)}" cancella il progresso non salvato di quella sessione.`,
+      {okLabel:"Sostituisci sessione", danger:true, onOk:()=>reallyStartSession(day)});
+    return;
+  }
+  reallyStartSession(day);
+}
+function reallyStartSession(day){
   DB.active = {
     id:uid(), dayId:day.id, dayName:day.name, focus:day.focus,
-    startTs: Date.now(),
+    startTs: Date.now(), pausedTotal:0, pausedAt:null,
     entries: day.exercises.map(e=>({
       exId:e.id, name:e.name, hint:e.note||"", note:"", skipped:false,
       targetSets:e.sets, repsTarget:repsTarget(e), rir:e.rir, restSec:e.restSec,
@@ -729,7 +784,7 @@ function startSession(dayId){
 }
 function finishSession(){
   const a=DB.active; if(!a) return;
-  const dur = Math.round((Date.now()-a.startTs)/1000);
+  const dur = sessionElapsed();
   const sess = { id:a.id, dayId:a.dayId, dayName:a.dayName, date:new Date().toISOString(), durationSec:dur,
     entries:a.entries.map(e=>({exId:e.exId,name:e.name,skipped:e.skipped,note:e.note,
       sets:e.sets.map(s=>({kg:s.kg,reps:s.reps,note:s.note||""}))})) };
@@ -757,11 +812,14 @@ function cancelSession(){
 
 // timer ancorato a un timestamp reale (endTs): a schermo bloccato non deriva,
 // al ritorno ricalcola il tempo vero e suona anche se l'intervallo era sospeso.
+// endTs/total sono duplicati anche su DB.active cosi' un reload (chiusura per
+// sbaglio, PWA riavviata dal telefono) non fa sparire il recupero in corso.
 function restRemain(){ return rest.active ? Math.max(0,(rest.endTs-Date.now())/1000) : 0; }
 function startRest(sec){
   stopRest();
   if(!sec || sec<=0){ return; }   // superset: nessuna pausa, si passa subito al prossimo
   rest={active:true, endTs:Date.now()+sec*1000, total:sec, warned:false};
+  if(DB.active){ DB.active.restEndTs=rest.endTs; DB.active.restTotal=rest.total; save(); }
   renderRest();
   restTimer=setInterval(tickRest,250);
 }
@@ -772,7 +830,20 @@ function tickRest(){
   if(remain<=0){ beep(2); stopRest(); return; }
   renderRest();
 }
-function stopRest(){ if(restTimer){clearInterval(restTimer);restTimer=null;} rest.active=false; renderRest(); }
+function stopRest(){
+  if(restTimer){clearInterval(restTimer);restTimer=null;}
+  rest.active=false;
+  if(DB.active && DB.active.restEndTs){ DB.active.restEndTs=null; DB.active.restTotal=null; save(); }
+  renderRest();
+}
+// dopo un reload a meta' recupero: se DB.active ha ancora un endTs nel futuro, riparte da li'
+function resumeRestIfAny(){
+  const a=DB.active;
+  if(!a || !a.restEndTs || a.restEndTs<=Date.now()) return;
+  rest={active:true, endTs:a.restEndTs, total:a.restTotal||Math.round((a.restEndTs-Date.now())/1000), warned:false};
+  renderRest();
+  restTimer=setInterval(tickRest,250);
+}
 function renderRest(){
   let el=$("#rest");
   if(!el){ el=document.createElement("div"); el.id="rest"; el.className="rest"; document.body.appendChild(el); }
@@ -800,10 +871,31 @@ function adjRest(d){
   const newTotal=Math.round((rest.endTs-Date.now())/1000);
   if(newTotal>rest.total) rest.total=newTotal;   // barra non superi il 100%
   if(d>0) rest.warned=false;                      // se allunghi, riabilita l'avviso dei 3s
+  if(DB.active){ DB.active.restEndTs=rest.endTs; DB.active.restTotal=rest.total; save(); }
   renderRest();
 }
 // al ritorno in primo piano ricalcola subito (schermo sbloccato / tab riattivata)
 document.addEventListener("visibilitychange", ()=>{ if(!document.hidden){ if(rest.active) tickRest(); wake.onVisible(); } });
+
+/* ============ PAUSA CRONOMETRO SESSIONE ============ */
+// il tempo passato in pausa non deve contare nella durata dell'allenamento
+function sessionElapsed(){
+  const a=DB.active; if(!a) return 0;
+  const end = a.pausedAt || Date.now();
+  return Math.max(0, Math.round((end-a.startTs-(a.pausedTotal||0))/1000));
+}
+function togglePauseSession(){
+  const a=DB.active; if(!a) return;
+  if(a.pausedAt){
+    a.pausedTotal=(a.pausedTotal||0)+(Date.now()-a.pausedAt);
+    a.pausedAt=null;
+    ensureSessTimer();
+  } else {
+    a.pausedAt=Date.now();
+    stopSessTimer();
+  }
+  save(); render();
+}
 
 /* ============ RENDER ROOT ============ */
 function render(){
@@ -818,7 +910,7 @@ function render(){
   else if(view==="weight") html=viewWeight();
   app.innerHTML = html;
   syncNav();
-  if(view==="session"){ tickSession(); ensureSessTimer(); }
+  if(view==="session"){ tickSession(); if(!(DB.active&&DB.active.pausedAt)) ensureSessTimer(); }
   else stopSessTimer();
   renderRest();
 }
@@ -826,7 +918,7 @@ function ensureSessTimer(){ if(!sessTimer) sessTimer=setInterval(tickSession,100
 function stopSessTimer(){ if(sessTimer){clearInterval(sessTimer);sessTimer=null;} }
 function tickSession(){
   if(!DB.active){ return; }
-  const c=$("#sessClock"); if(c) c.firstChild.textContent = fmtDur(Math.round((Date.now()-DB.active.startTs)/1000));
+  const c=$("#sessClock"); if(c) c.firstChild.textContent = fmtDur(sessionElapsed());
 }
 
 /* ============ TABBAR ============ */
@@ -1048,8 +1140,10 @@ function viewSession(){
   return `<div class="screen" style="padding-bottom:120px">
     <div class="sess-bar">
       <button class="sess-back" onclick="goBack()" aria-label="Torna indietro (la sessione resta aperta)">‹</button>
-      <div class="clock" id="sessClock">00:00<small></small></div>
+      <div class="clock ${a.pausedAt?'paused':''}" id="sessClock">${fmtDur(sessionElapsed())}<small></small></div>
       <div class="t"><div class="name">${esc(a.dayName)}</div><div class="prog">${doneCount}/${a.entries.length} esercizi</div></div>
+      <button class="sess-pause" onclick="togglePauseSession()" aria-label="${a.pausedAt?'Riprendi cronometro':'Pausa cronometro'}">${a.pausedAt?'▶':'⏸'}</button>
+      <button class="sess-cancel" onclick="confirmCancel()" aria-label="Annulla sessione">✕</button>
       <div class="sess-prog"><i style="width:${Math.round(doneCount/a.entries.length*100)}%"></i></div>
     </div>
     ${cards}
@@ -1534,6 +1628,7 @@ function importData(){
           DB={ schema:data.schema, sessions:data.sessions||[], bodyweight:data.bodyweight||[], active:data.active||null,
                migrations:data.migrations||{} };
           migrateNoPullups();          // un backup vecchio puo' riportare le trazioni
+          migrateChestDipsAndLegs();   // idem per croci ai cavi / leg extension
           save(); render(); toast("Backup importato ✓");
         }});
     };
@@ -1563,9 +1658,12 @@ async function checkForUpdates(){
 /* ============ AVVIO ============ */
 ensureSeedList();
 const migrated = migrateNoPullups();
+const migratedExercises = migrateChestDipsAndLegs();
 if(DB.active) wake.enable();   // sessione ripresa dopo reload → riattiva lo schermo acceso
+resumeRestIfAny();             // idem per il recupero tra le serie, se era a meta'
 render();
 if(migrated) toast(migrated===1 ? "Trazioni sostituite con lat machine" : `${migrated} voci “trazioni” sostituite con lat machine`);
+if(migratedExercises) toast("Scheda aggiornata: dip petto e leg extension");
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
 window.go=go; window.goBack=goBack; window.goTab=goTab; window.startSession=startSession; window.setVal=setVal; window.toggleSet=toggleSet;
 window.addSet=addSet; window.delSet=delSet; window.exNote=exNote; window.exMenu=exMenu;
@@ -1574,7 +1672,7 @@ window.confirmFinish=confirmFinish; window.confirmCancel=confirmCancel; window.s
 window.stopRest=stopRest; window.adjRest=adjRest; window.moveDay=moveDay; window.addDay=addDay;
 window.moveEx=moveEx; window.delEx=delEx; window.editEx=editEx; window.renameDay=renameDay;
 window.addWeight=addWeight; window.exportData=exportData; window.importData=importData; window.finishSession=finishSession;
-window.openPlateCalc=openPlateCalc; window.checkForUpdates=checkForUpdates;
+window.openPlateCalc=openPlateCalc; window.checkForUpdates=checkForUpdates; window.togglePauseSession=togglePauseSession;
 </script>
 </body>
 </html>
