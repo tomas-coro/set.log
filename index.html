@@ -421,19 +421,21 @@ const uid = () => (crypto.randomUUID ? crypto.randomUUID() : "id"+Date.now()+Mat
 
 function defaultSchema(){
   // ex(nome, serie, repMin, repMax, rir, recuperoSec, opzioni)
-  // opzioni: {hint, failLast, ss} - ss = id gruppo superset (esercizi consecutivi con lo stesso ss)
+  // opzioni: {hint, failLast, ss, bilateral} - ss = id gruppo superset (esercizi consecutivi con lo stesso ss)
+  // bilateral: true = esercizio con 2 manubri contemporaneamente, il kg inserito e' di UN manubrio
+  // e il volume (kg*reps) va raddoppiato. NON tocca il carico mostrato in PR/grafici, solo il volume totale.
   const ex = (name, sets, rl, rh, rir, rest, o={}) => ({
     id:uid(), name, note:o.hint||"", sets, repsLow:rl, repsHigh:rh, rir, restSec:rest,
-    failLast:!!o.failLast, ss:o.ss||null
+    failLast:!!o.failLast, ss:o.ss||null, bilateral:!!o.bilateral
   });
   return {
     rotationIndex: 0,
     days: [
       { id:uid(), name:"Spinta A", focus:"Petto", exercises:[
         ex("Panca piana bilanciere",4,6,8,"1-2",150,{hint:"presa poco piu' larga delle spalle"}),
-        ex("Panca inclinata manubri (30°)",3,8,10,"1-2",120),
-        ex("Dips alle parallele (petto)",3,8,12,"0-1",90,{hint:"busto inclinato avanti, gomiti larghi, scendi fino a stretch - fermati se senti la spalla",failLast:true}),
-        ex("Alzate laterali manubri",3,12,15,"0-1",60),
+        ex("Panca inclinata manubri (30°)",3,8,10,"1-2",120,{bilateral:true}),
+        ex("Croci ai cavi in piedi",3,8,12,"0-1",90,{hint:"gomiti morbidi, arco ampio e controllato, zero stress sulla spalla in fondo",failLast:true}),
+        ex("Alzate laterali manubri",3,12,15,"0-1",60,{bilateral:true}),
         ex("Pushdown ai cavi (corda)",3,10,12,"0-1",0,{ss:"t1",failLast:true}),
         ex("French press EZ (o manubrio)",3,10,12,"0-1",75,{ss:"t1",failLast:true}),
       ]},
@@ -442,15 +444,15 @@ function defaultSchema(){
         ex("Rematore bilanciere",3,8,10,"2",120),
         ex("Pulley basso presa stretta",3,10,12,"1",90),
         ex("Curl bilanciere EZ",3,8,12,"0-1",0,{ss:"b1",failLast:true}),
-        ex("Curl martello manubri",3,8,12,"0-1",75,{ss:"b1",failLast:true}),
+        ex("Curl martello manubri",3,8,12,"0-1",75,{ss:"b1",failLast:true,bilateral:true}),
         ex("Curl ai cavi (o panca Scott)",2,12,15,"0",60,{hint:"picco bicipite",failLast:true}),
       ]},
       { id:uid(), name:"Spinta B", focus:"Spalle + braccia", exercises:[
-        ex("Lento avanti manubri",4,6,8,"1-2",150,{hint:"variante manubri, piu' gentile sulle spalle della bilanciere"}),
-        ex("Alzate laterali manubri",4,12,15,"0",60,{hint:"priorita': spalle larghe",failLast:true}),
+        ex("Lento avanti manubri",4,6,8,"1-2",150,{hint:"variante manubri, piu' gentile sulle spalle della bilanciere",bilateral:true}),
+        ex("Alzate laterali manubri",4,12,15,"0",60,{hint:"priorita': spalle larghe",failLast:true,bilateral:true}),
         ex("Alzate posteriori (rear delt)",3,15,15,"0-1",0,{ss:"s3",failLast:true}),
         ex("Alzate laterali ai cavi",3,15,15,"0",75,{ss:"s3",failLast:true}),
-        ex("Curl manubri alternato",3,10,12,"0-1",0,{ss:"arm1",failLast:true}),
+        ex("Curl manubri alternato",3,10,12,"0-1",0,{ss:"arm1",failLast:true,bilateral:true}),
         ex("Pushdown corda ai cavi",3,10,12,"0",75,{ss:"arm1",failLast:true}),
         ex("Curl concentrato",2,10,12,"0",0,{ss:"arm2",failLast:true}),
         ex("Kickback ai cavi",2,12,15,"0",60,{ss:"arm2",failLast:true}),
@@ -553,14 +555,14 @@ function migrateUpperLegsSplit(){
   if(DB.migrations.upperLegsSplitV3) return 0;
   const E = (name, sets, rl, rh, rir, rest, o={}) => ({
     id:uid(), name, note:o.hint||"", sets, repsLow:rl, repsHigh:rh, rir, restSec:rest,
-    failLast:!!o.failLast, ss:o.ss||null
+    failLast:!!o.failLast, ss:o.ss||null, bilateral:!!o.bilateral
   });
   DB.schema.days = [
     { id:uid(), name:"Spinta A", focus:"Petto", exercises:[
       E("Panca piana bilanciere",4,6,8,"1-2",150,{hint:"presa poco piu' larga delle spalle"}),
-      E("Panca inclinata manubri (30°)",3,8,10,"1-2",120),
-      E("Dips alle parallele (petto)",3,8,12,"0-1",90,{hint:"busto inclinato avanti, gomiti larghi, scendi fino a stretch - fermati se senti la spalla",failLast:true}),
-      E("Alzate laterali manubri",3,12,15,"0-1",60),
+      E("Panca inclinata manubri (30°)",3,8,10,"1-2",120,{bilateral:true}),
+      E("Croci ai cavi in piedi",3,8,12,"0-1",90,{hint:"gomiti morbidi, arco ampio e controllato, zero stress sulla spalla in fondo",failLast:true}),
+      E("Alzate laterali manubri",3,12,15,"0-1",60,{bilateral:true}),
       E("Pushdown ai cavi (corda)",3,10,12,"0-1",0,{ss:"t1",failLast:true}),
       E("French press EZ (o manubrio)",3,10,12,"0-1",75,{ss:"t1",failLast:true}),
     ]},
@@ -569,15 +571,15 @@ function migrateUpperLegsSplit(){
       E("Rematore bilanciere",3,8,10,"2",120),
       E("Pulley basso presa stretta",3,10,12,"1",90),
       E("Curl bilanciere EZ",3,8,12,"0-1",0,{ss:"b1",failLast:true}),
-      E("Curl martello manubri",3,8,12,"0-1",75,{ss:"b1",failLast:true}),
+      E("Curl martello manubri",3,8,12,"0-1",75,{ss:"b1",failLast:true,bilateral:true}),
       E("Curl ai cavi (o panca Scott)",2,12,15,"0",60,{hint:"picco bicipite",failLast:true}),
     ]},
     { id:uid(), name:"Spinta B", focus:"Spalle + braccia", exercises:[
-      E("Lento avanti manubri",4,6,8,"1-2",150,{hint:"variante manubri, piu' gentile sulle spalle della bilanciere"}),
-      E("Alzate laterali manubri",4,12,15,"0",60,{hint:"priorita': spalle larghe",failLast:true}),
+      E("Lento avanti manubri",4,6,8,"1-2",150,{hint:"variante manubri, piu' gentile sulle spalle della bilanciere",bilateral:true}),
+      E("Alzate laterali manubri",4,12,15,"0",60,{hint:"priorita': spalle larghe",failLast:true,bilateral:true}),
       E("Alzate posteriori (rear delt)",3,15,15,"0-1",0,{ss:"s3",failLast:true}),
       E("Alzate laterali ai cavi",3,15,15,"0",75,{ss:"s3",failLast:true}),
-      E("Curl manubri alternato",3,10,12,"0-1",0,{ss:"arm1",failLast:true}),
+      E("Curl manubri alternato",3,10,12,"0-1",0,{ss:"arm1",failLast:true,bilateral:true}),
       E("Pushdown corda ai cavi",3,10,12,"0",75,{ss:"arm1",failLast:true}),
       E("Curl concentrato",2,10,12,"0",0,{ss:"arm2",failLast:true}),
       E("Kickback ai cavi",2,12,15,"0",60,{ss:"arm2",failLast:true}),
@@ -599,6 +601,38 @@ function migrateUpperLegsSplit(){
   return 1;
 }
 
+// Migrazione una-volta-sola: (1) segna "bilateral" sugli esercizi con 2 manubri
+// contemporaneamente, cosi' il volume (kg*reps) li conta doppi - il carico
+// mostrato in PR/grafici resta quello di un manubrio, invariato; (2) sostituisce
+// i Dip petto in Spinta A con Croci ai cavi in piedi (zero stress sulla spalla
+// in fondo al movimento). Lo storico non si tocca.
+function migrateBilateralAndChestSwap(){
+  DB.migrations = DB.migrations || {};
+  if(DB.migrations.bilateralChestSwap) return 0;
+  let n=0;
+  const BILATERAL_NAMES = new Set([
+    "Panca inclinata manubri (30°)", "Alzate laterali manubri",
+    "Curl martello manubri", "Lento avanti manubri", "Curl manubri alternato",
+  ]);
+  DB.schema.days.forEach(d=>{
+    d.exercises.forEach(e=>{
+      if(BILATERAL_NAMES.has(e.name) && !e.bilateral){ e.bilateral=true; n++; }
+      if(/^dips alle parallele \(petto\)$/i.test(e.name)){
+        e.name="Croci ai cavi in piedi";
+        e.note="gomiti morbidi, arco ampio e controllato, zero stress sulla spalla in fondo";
+        n++;
+      }
+    });
+  });
+  if(DB.active) DB.active.entries.forEach(e=>{
+    if(BILATERAL_NAMES.has(e.name) && !e.bilateral){ e.bilateral=true; n++; }
+    if(/^dips alle parallele \(petto\)$/i.test(e.name)){ e.name="Croci ai cavi in piedi"; n++; }
+  });
+  DB.migrations.bilateralChestSwap = true;
+  save();
+  return n;
+}
+
 /* ============ HELPERS ============ */
 const $ = (s,r=document)=>r.querySelector(s);
 const app = $("#app");
@@ -617,12 +651,15 @@ function dayLabel(iso){
 }
 function repsTarget(e){ return e.repsLow===e.repsHigh ? e.repsLow : e.repsLow+"-"+e.repsHigh; }
 
-// trova l'ultima performance registrata di un esercizio (per exId), esclusi skip
-function lastPerf(exId, beforeSessionId){
+// trova l'ultima performance registrata di un esercizio (per exId, con fallback sul nome
+// se l'id non combacia piu' - es. dopo una ristrutturazione della scheda che rigenera gli id),
+// esclusi skip
+function lastPerf(exId, beforeSessionId, exName){
   for(let i=DB.sessions.length-1;i>=0;i--){
     const s=DB.sessions[i];
     if(beforeSessionId && s.id===beforeSessionId) continue;
-    const en=s.entries.find(x=>x.exId===exId && !x.skipped && x.sets.some(st=>st.kg||st.reps));
+    let en=s.entries.find(x=>x.exId===exId && !x.skipped && x.sets.some(st=>st.kg||st.reps));
+    if(!en && exName) en=s.entries.find(x=>x.name===exName && !x.skipped && x.sets.some(st=>st.kg||st.reps));
     if(en) return {date:s.date, sets:en.sets.filter(st=>st.kg||st.reps)};
   }
   return null;
@@ -646,9 +683,14 @@ function bestWeight(exId, excludeSessionId){
 // massimo peso "buono" (kg con reps) in un elenco di serie dell'entry corrente
 function entryTopWeight(entry){
   let cur=0;
-  for(const s of entry.sets){ const kg=parseFloat(s.kg), r=parseInt(s.reps,10); if(kg>0&&r>0&&kg>cur)cur=kg; }
+  for(const s of entry.sets){
+    if(!setCounted(s)) continue;   // una serie precompilata ma mai toccata non vale
+    const kg=parseFloat(s.kg), r=parseInt(s.reps,10); if(kg>0&&r>0&&kg>cur)cur=kg;
+  }
   return cur;
 }
+// volume (kg*reps) di una serie, raddoppiato se l'esercizio e' bilateral (2 manubri contemporaneamente)
+function setVolume(s, bilateral){ return (+s.kg||0)*(+s.reps||0)*(bilateral?2:1); }
 
 /* ============ AUDIO / VIBRAZIONE ============ */
 let AC=null;
@@ -844,12 +886,22 @@ function reallyStartSession(day){
   DB.active = {
     id:uid(), dayId:day.id, dayName:day.name, focus:day.focus,
     startTs: Date.now(), pausedTotal:0, pausedAt:null,
-    entries: day.exercises.map(e=>({
-      exId:e.id, name:e.name, hint:e.note||"", note:"", skipped:false,
-      targetSets:e.sets, repsTarget:repsTarget(e), rir:e.rir, restSec:e.restSec,
-      failLast:!!e.failLast, ss:e.ss||null,
-      sets: Array.from({length:e.sets},()=>({kg:"",reps:"",done:false,note:""}))
-    }))
+    entries: day.exercises.map(e=>{
+      const lp=lastPerf(e.id, null, e.name);
+      return {
+        exId:e.id, name:e.name, hint:e.note||"", note:"", skipped:false,
+        targetSets:e.sets, repsTarget:repsTarget(e), rir:e.rir, restSec:e.restSec,
+        failLast:!!e.failLast, ss:e.ss||null, bilateral:!!e.bilateral,
+        // precompila peso/reps con la sessione precedente: valore vero e modificabile.
+        // "prefilled" resta true finche' non tocchi il campo o spunti la serie - vedi setVal/finishSession:
+        // una serie prefillata mai toccata NON conta come fatta, una digitata a mano si' (anche senza spunta)
+        sets: Array.from({length:e.sets},(_,si)=>({
+          kg: (lp&&lp.sets[si]) ? String(lp.sets[si].kg||"") : "",
+          reps: (lp&&lp.sets[si]) ? String(lp.sets[si].reps||"") : "",
+          done:false, note:"", prefilled: !!(lp&&lp.sets[si])
+        }))
+      };
+    })
   };
   save(); wake.enable(); go("session");
 }
@@ -857,8 +909,10 @@ function finishSession(){
   const a=DB.active; if(!a) return;
   const dur = sessionElapsed();
   const sess = { id:a.id, dayId:a.dayId, dayName:a.dayName, date:new Date().toISOString(), durationSec:dur,
-    entries:a.entries.map(e=>({exId:e.exId,name:e.name,skipped:e.skipped,note:e.note,
-      sets:e.sets.map(s=>({kg:s.kg,reps:s.reps,note:s.note||""}))})) };
+    entries:a.entries.map(e=>({exId:e.exId,name:e.name,skipped:e.skipped,note:e.note,bilateral:!!e.bilateral,
+      // solo le serie "contate" finiscono nello storico: una serie precompilata dalla volta
+      // scorsa ma mai toccata non conta come fatta, una digitata a mano si' (anche senza spunta)
+      sets:e.sets.map(s=>({kg:setCounted(s)?s.kg:"",reps:setCounted(s)?s.reps:"",note:s.note||""}))})) };
   // rileva i record PRIMA di salvare la sessione (le sessioni attuali sono le "precedenti")
   const prs=[];
   a.entries.forEach(e=>{
@@ -889,15 +943,20 @@ function restRemain(){ return rest.active ? Math.max(0,(rest.endTs-Date.now())/1
 function startRest(sec){
   stopRest();
   if(!sec || sec<=0){ return; }   // superset: nessuna pausa, si passa subito al prossimo
-  rest={active:true, endTs:Date.now()+sec*1000, total:sec, warned:false};
+  rest={active:true, endTs:Date.now()+sec*1000, total:sec, warned10:false, warned3:false, warned2:false, warned1:false};
   if(DB.active){ DB.active.restEndTs=rest.endTs; DB.active.restTotal=rest.total; save(); }
   renderRest();
   restTimer=setInterval(tickRest,250);
 }
+// avviso a -10s, poi countdown 3-2-1 con un beep a testa, poi doppio beep al "via".
+// ogni soglia suona una volta sola (flag dedicato) anche se il tick e' ogni 250ms.
 function tickRest(){
   if(!rest.active){ return; }
-  const remain=restRemain();
-  if(remain>0 && remain<=3 && !rest.warned){ rest.warned=true; beep(1); }
+  const remain=restRemain(), s=Math.ceil(remain);
+  if(!rest.warned10 && remain<=10 && remain>3){ rest.warned10=true; beep(1); }
+  if(!rest.warned3 && s===3){ rest.warned3=true; beep(1); }
+  if(!rest.warned2 && s===2){ rest.warned2=true; beep(1); }
+  if(!rest.warned1 && s===1){ rest.warned1=true; beep(1); }
   if(remain<=0){ beep(2); stopRest(); return; }
   renderRest();
 }
@@ -911,7 +970,10 @@ function stopRest(){
 function resumeRestIfAny(){
   const a=DB.active;
   if(!a || !a.restEndTs || a.restEndTs<=Date.now()) return;
-  rest={active:true, endTs:a.restEndTs, total:a.restTotal||Math.round((a.restEndTs-Date.now())/1000), warned:false};
+  const remain=(a.restEndTs-Date.now())/1000;
+  // le soglie gia' superate al momento del reload non risuonano in ritardo, solo quelle future
+  rest={active:true, endTs:a.restEndTs, total:a.restTotal||Math.round(remain),
+    warned10:remain>10, warned3:remain>3, warned2:remain>2, warned1:remain>1};
   renderRest();
   restTimer=setInterval(tickRest,250);
 }
@@ -941,7 +1003,11 @@ function adjRest(d){
   if(rest.endTs<minEnd) rest.endTs=minEnd;
   const newTotal=Math.round((rest.endTs-Date.now())/1000);
   if(newTotal>rest.total) rest.total=newTotal;   // barra non superi il 100%
-  if(d>0) rest.warned=false;                      // se allunghi, riabilita l'avviso dei 3s
+  // se allunghi, ricalcola quali soglie sono ancora nel futuro (riabilita i beep passati oltre)
+  if(d>0){
+    const remain=(rest.endTs-Date.now())/1000;
+    rest.warned10=remain<=10; rest.warned3=remain<=3; rest.warned2=remain<=2; rest.warned1=remain<=1;
+  }
   if(DB.active){ DB.active.restEndTs=rest.endTs; DB.active.restTotal=rest.total; save(); }
   renderRest();
 }
@@ -1158,12 +1224,12 @@ function exCard(e,ei,a){
       <div class="ex-head"><div class="nm"><div class="name">${esc(e.name)}</div><div class="tgt">Saltato</div></div>
       <button class="ex-menu-btn" onclick="exMenu(${ei})">⋯</button></div>
     </div>`;
-  const lp=lastPerf(e.exId, a.id);
+  const lp=lastPerf(e.exId, a.id, e.name);
   const histBest=bestWeight(e.exId);   // record storico (kg) prima di oggi
   const rows=e.sets.map((s,si)=>{
     const last = lp&&lp.sets[si] ? `${lp.sets[si].kg||"-"}kg × ${lp.sets[si].reps||"-"}` : "";
     const open = s._noteOpen || (s.note && s.note.length);
-    const isPR = histBest>0 && parseFloat(s.kg)>histBest && parseInt(s.reps,10)>0;
+    const isPR = setCounted(s) && histBest>0 && parseFloat(s.kg)>histBest && parseInt(s.reps,10)>0;
     return `<div class="set-row ${s.done?'done':''}">
       <span class="si">${si+1}</span>
       <div class="fld"><input inputmode="decimal" value="${esc(s.kg)}" placeholder="${lp&&lp.sets[si]?esc(lp.sets[si].kg):'-'}" oninput="setVal(${ei},${si},'kg',this.value)"><span class="unit">kg</span>${isPR?'<span class="pr-flag">PR</span>':''}</div>
@@ -1224,7 +1290,10 @@ function viewSession(){
     </div>
   </div>`;
 }
-function setVal(ei,si,k,v){ DB.active.entries[ei].sets[si][k]=v; save(); }
+// una serie e' "contata" se e' stata spuntata, oppure se e' stata digitata a mano
+// (anche senza spunta) - solo il prefill mai toccato resta escluso
+function setCounted(s){ return s.done || !s.prefilled; }
+function setVal(ei,si,k,v){ const s=DB.active.entries[ei].sets[si]; s[k]=v; s.prefilled=false; save(); }
 function toggleSet(ei,si){
   const s=DB.active.entries[ei].sets[si]; s.done=!s.done; save();
   if(s.done){ const rs=DB.active.entries[ei].restSec; if(rs>0) startRest(rs); }
@@ -1424,7 +1493,7 @@ function delEx(dayId,exId){
 // form modifica/creazione esercizio in una sheet
 function editEx(dayId,exId){
   const d=DB.schema.days.find(x=>x.id===dayId);
-  const e = exId ? d.exercises.find(x=>x.id===exId) : {name:"",sets:3,repsLow:8,repsHigh:12,rir:"1-2",restSec:90,note:""};
+  const e = exId ? d.exercises.find(x=>x.id===exId) : {name:"",sets:3,repsLow:8,repsHigh:12,rir:"1-2",restSec:90,note:"",bilateral:false};
   let bg=$("#sheetBg");
   if(!bg){ bg=document.createElement("div"); bg.id="sheetBg"; bg.className="sheet-bg"; bg.onclick=ev=>{if(ev.target===bg)closeSheet();};
     const sh=document.createElement("div"); sh.id="sheet"; sh.className="sheet"; bg.appendChild(sh); document.body.appendChild(bg); }
@@ -1440,6 +1509,10 @@ function editEx(dayId,exId){
       <div><label>Recupero (sec)</label><input id="f_rest" inputmode="numeric" value="${e.restSec}" placeholder="90"></div>
     </div></div>
     <div class="field"><label>Nota</label><input id="f_note" value="${esc(e.note||'')}" placeholder="opzionale"></div>
+    <label class="field row" style="align-items:center;gap:8px;cursor:pointer">
+      <input type="checkbox" id="f_bilateral" ${e.bilateral?'checked':''} style="width:auto">
+      <span>2 manubri insieme (raddoppia il volume: il kg che inserisci resta di UN manubrio)</span>
+    </label>
     <button class="btn accent block" id="f_save">${exId?'Salva':'Aggiungi'}</button>`;
   $("#f_save").onclick=()=>{
     const name=$("#f_name").value.trim(); if(!name){toast("Serve un nome");return;}
@@ -1449,7 +1522,8 @@ function editEx(dayId,exId){
       repsHigh:parseInt($("#f_rh").value,10)||parseInt($("#f_rl").value,10)||12,
       rir:$("#f_rir").value.trim()||"-",
       restSec:Math.max(0,parseInt($("#f_rest").value,10)||90),
-      note:$("#f_note").value.trim()};
+      note:$("#f_note").value.trim(),
+      bilateral:$("#f_bilateral").checked};
     if(exId){ Object.assign(e,obj); }
     else { d.exercises.push({id:uid(),...obj}); }
     save(); closeSheet(); render();
@@ -1483,7 +1557,7 @@ function viewHistory(){
     const prc=prMap[s.id]||0;
     const cid=String(s.id).slice(-6);
     const sets=s.entries.reduce((n,e)=>n+(e.skipped?0:e.sets.filter(x=>x.kg||x.reps).length),0);
-    const vol=s.entries.reduce((v,e)=>v+(e.skipped?0:e.sets.reduce((a,x)=>a+((+x.kg||0)*(+x.reps||0)),0)),0);
+    const vol=s.entries.reduce((v,e)=>v+(e.skipped?0:e.sets.reduce((a,x)=>a+setVolume(x,e.bilateral),0)),0);
     const det=s.entries.map(e=>{
       if(e.skipped) return `<div class="de"><span>${esc(e.name)}</span><b class="faint">saltato</b></div>`;
       const done=e.sets.filter(x=>x.kg||x.reps).map(x=>`${x.kg||"-"}×${x.reps||"-"}`).join("  ");
@@ -1561,7 +1635,7 @@ function volumeByWeek(){
   DB.sessions.forEach(s=>{
     const d=new Date(s.date); const day=(d.getDay()+6)%7; const mon=new Date(d); mon.setDate(d.getDate()-day); mon.setHours(0,0,0,0);
     const key=mon.getTime();
-    let v=0; s.entries.forEach(e=>{ if(e.skipped)return; e.sets.forEach(x=>v+=((+x.kg||0)*(+x.reps||0))); });
+    let v=0; s.entries.forEach(e=>{ if(e.skipped)return; e.sets.forEach(x=>v+=setVolume(x,e.bilateral)); });
     wk.set(key,(wk.get(key)||0)+v);
   });
   return [...wk.entries()].sort((a,b)=>a[0]-b[0]).map(([x,y])=>({x,y}));
@@ -1700,6 +1774,7 @@ function importData(){
                migrations:data.migrations||{} };
           migrateNoPullups();          // un backup vecchio puo' riportare le trazioni
           migrateChestDipsAndLegs();   // idem per croci ai cavi / leg extension
+          migrateBilateralAndChestSwap();  // rinomina/flag: surgical, non sovrascrive la scheda
           save(); render(); toast("Backup importato ✓");
         }});
     };
@@ -1731,6 +1806,7 @@ ensureSeedList();
 const migrated = migrateNoPullups();
 const migratedExercises = migrateChestDipsAndLegs();
 const migratedSplit = migrateUpperLegsSplit();
+const migratedBilateral = migrateBilateralAndChestSwap();
 if(DB.active) wake.enable();   // sessione ripresa dopo reload → riattiva lo schermo acceso
 resumeRestIfAny();             // idem per il recupero tra le serie, se era a meta'
 render();
@@ -1740,6 +1816,7 @@ render();
   if(migrated) notes.push(migrated===1 ? "trazioni sostituite con lat machine" : `${migrated} voci “trazioni” sostituite con lat machine`);
   if(migratedExercises) notes.push("dip petto e leg extension aggiornati");
   if(migratedSplit) notes.push("scheda ristrutturata: 3 giorni upper + 1 gambe dedicato");
+  if(migratedBilateral) notes.push("dip sostituiti con croci ai cavi, volume manubri corretto");
   if(notes.length) toast("Scheda aggiornata: " + notes.join("; "));
 }
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
