@@ -808,6 +808,59 @@ function migrateWorkoutV6(){
   return 1;
 }
 
+// Migrazione una-volta-sola: applica la scheda definitiva V7 sostituendo solo
+// i giorni. Storico, peso, rotationIndex e sessione attiva restano invariati.
+function migrateWorkoutV7(){
+  DB.migrations = DB.migrations || {};
+  if(DB.migrations.workoutV7) return 0;
+  const E = (name, sets, rl, rh, rir, rest, o={}) => ({
+    id:uid(), name, note:o.hint||"", sets, repsLow:rl, repsHigh:rh, rir, restSec:rest,
+    failLast:!!o.failLast, ss:o.ss||null, bilateral:!!o.bilateral
+  });
+  DB.schema.days = [
+    { id:uid(), name:"A - Petto + spalle", focus:"Petto + spalle + braccia", exercises:[
+      E("Panca inclinata manubri (20-30°)",3,6,10,"2",150,{hint:"scapole stabili, discesa controllata; focus petto alto",bilateral:true}),
+      E("Chest press convergente",3,8,12,"1-2",120,{hint:"spingi mantenendo il petto alto e senza perdere assetto"}),
+      E("Shoulder press macchina",3,8,12,"1-2",120,{hint:"schiena aderente allo schienale, traiettoria controllata"}),
+      E("Croci ai cavi",2,12,15,"1",75,{hint:"gomiti morbidi, arco controllato e stretch senza forzare la spalla"}),
+      E("Alzate laterali ai cavi",3,12,20,"1",75,{hint:"guida il movimento col gomito, niente slancio"}),
+      E("Curl bilanciere EZ",3,8,12,"1-2",0,{hint:"gomiti fermi e ROM completo",ss:"armA"}),
+      E("Pushdown ai cavi (corda)",3,10,15,"1-2",90,{hint:"gomiti fermi, estensione completa",ss:"armA"}),
+    ]},
+    { id:uid(), name:"B - Schiena", focus:"Schiena + deltoide posteriore + bicipiti", exercises:[
+      E("Lat machine presa neutra",3,6,10,"2",150,{hint:"petto alto, gomiti verso il basso"}),
+      E("Rematore chest-supported",3,8,12,"1-2",120,{hint:"petto appoggiato, tira i gomiti indietro senza slancio"}),
+      E("Rematore unilaterale al cavo",3,8,12,"1-2",90,{hint:"controlla la scapola e mantieni il busto stabile"}),
+      E("Pullover machine / straight-arm pulldown",2,10,15,"1",0,{hint:"braccia quasi tese, movimento dalla spalla; focus gran dorsale",ss:"backB"}),
+      E("Reverse pec deck",3,12,20,"1",90,{hint:"deltoide posteriore, movimento controllato senza inarcare",ss:"backB"}),
+      E("Curl manubri su panca inclinata",3,8,12,"1-2",90,{hint:"spalla ferma, allungamento completo",bilateral:true}),
+      E("Curl martello manubri",2,10,15,"1-2",75,{hint:"presa neutra, gomiti vicini al busto",bilateral:true}),
+    ]},
+    { id:uid(), name:"C - Gambe + upper", focus:"Gambe complete + richiamo upper", exercises:[
+      E("Hack squat",3,6,10,"2",150,{hint:"ROM controllato, ginocchia in linea coi piedi"}),
+      E("Romanian deadlift",3,8,10,"2",120,{hint:"anca indietro, schiena neutra, tensione sui femorali"}),
+      E("Leg curl seduto",3,10,15,"1-2",0,{hint:"controlla bene eccentrica e chiusura",ss:"legsC"}),
+      E("Calf raise",3,10,15,"1-2",90,{hint:"pausa in alto e stretch controllato in basso",ss:"legsC"}),
+      E("Chest press macchina",3,8,12,"2",120,{hint:"richiamo petto senza arrivare al cedimento"}),
+      E("High row / lat machine",3,8,12,"2",120,{hint:"richiamo schiena, tecnica pulita e volume moderato"}),
+      E("Leg extension",2,12,15,"1",75,{hint:"opzionale: eseguila se recuperi bene e la corsa della settimana non ha già affaticato molto le gambe"}),
+    ]},
+    { id:uid(), name:"D - Upper", focus:"Focus petto + spalle + braccia", exercises:[
+      E("Chest press plate-loaded / panca piana",3,6,10,"2",150,{hint:"scegli la variante più stabile e progressiva senza fastidi"}),
+      E("Shoulder press plate-loaded",3,6,10,"1-2",150,{hint:"movimento controllato, schiena stabile e progressione graduale dei carichi"}),
+      E("Lat machine presa media/larga",3,8,12,"1-2",120,{hint:"petto alto e gomiti verso il basso"}),
+      E("Alzate laterali manubri",3,12,20,"1",75,{hint:"niente slancio, guida col gomito",bilateral:true}),
+      E("Pec deck",2,10,15,"1",75,{hint:"chiusura controllata, tensione continua sul petto"}),
+      E("Face pull",2,12,20,"1-2",75,{hint:"tira verso il viso con gomiti alti ma comodi"}),
+      E("Curl al cavo",3,10,15,"1-2",0,{hint:"tensione continua e gomiti fermi",ss:"armD"}),
+      E("Estensioni tricipiti overhead al cavo",3,10,15,"1-2",90,{hint:"gomiti stretti, allungamento del capo lungo",ss:"armD"}),
+    ]},
+  ];
+  DB.migrations.workoutV7 = true;
+  save();
+  return 1;
+}
+
 /* ============ HELPERS ============ */
 const $ = (s,r=document)=>r.querySelector(s);
 const app = $("#app");
@@ -1953,6 +2006,7 @@ function importData(){
           migrateAddVolumeV4();            // idem, aggiunge esercizi se il backup e' vecchio
           migrateReorderV5();              // idem, sistema l'ordine se il backup e' vecchio
           migrateWorkoutV6();              // applica la nuova scheda una sola volta
+          migrateWorkoutV7();              // applica la scheda definitiva una sola volta
           save(); render(); toast("Backup importato ✓");
         }});
     };
@@ -1988,6 +2042,7 @@ const migratedBilateral = migrateBilateralAndChestSwap();
 const migratedVolume = migrateAddVolumeV4();
 const migratedReorder = migrateReorderV5();
 const migratedWorkout = migrateWorkoutV6();
+const migratedWorkoutV7 = migrateWorkoutV7();
 if(DB.active) wake.enable();   // sessione ripresa dopo reload → riattiva lo schermo acceso
 resumeRestIfAny();             // idem per il recupero tra le serie, se era a meta'
 render();
@@ -2001,6 +2056,7 @@ render();
   if(migratedVolume) notes.push("tutte le giornate allungate a ~34 serie (75-90 min) con esercizi mirati");
   if(migratedReorder) notes.push("ordine esercizi sistemato (compound prima, isolamento dopo)");
   if(migratedWorkout) notes.push("nuova scheda V6 a 4 giorni applicata");
+  if(migratedWorkoutV7) notes.push("scheda definitiva V7 a 4 giorni applicata");
   if(notes.length) toast("Scheda aggiornata: " + notes.join("; "));
 }
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
