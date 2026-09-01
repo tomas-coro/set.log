@@ -722,6 +722,39 @@ function migrateAddVolumeV4(){
   return n;
 }
 
+// Migrazione una-volta-sola: la V4 aggiungeva i nuovi esercizi in coda con .push(),
+// senza pensare all'ordine di esecuzione - i compound pesanti finivano dopo le
+// isolazioni. Qui si riordina ogni giornata: compound piu' pesanti prima, poi
+// compound piu' leggeri/a macchina, poi isolazioni, poi eventuali braccia/accessori
+// in fondo. Le coppie in superserie (stesso campo ss) restano adiacenti per forza -
+// il raggruppamento visivo in sessione dipende dall'adiacenza nell'array, non dal
+// campo ss da solo. Gira ANCHE se un dispositivo ha gia' applicato la V4 in un
+// ordine sbagliato (idempotente: si limita a riordinare per nome).
+function migrateReorderV5(){
+  DB.migrations = DB.migrations || {};
+  if(DB.migrations.reorderV5) return 0;
+  const orderByDay = {
+    "Spinta A": ["Panca piana bilanciere","Panca declinata (bilanciere o Smith)","Panca inclinata manubri (30°)","Chest press a convergenza (macchina)","Croci ai cavi in piedi","Croci manubri su panca inclinata (30°)","Pec deck (croci a macchina)","Push-up a zavorra (o su parallele con disco)","Alzate laterali manubri","Pushdown ai cavi (corda)","French press EZ (o manubrio)"],
+    "Tirata A": ["Lat machine presa larga","Rematore bilanciere","Rematore manubrio unilaterale","Lat machine presa neutra","Pulley basso presa stretta","Pull-over ai cavi","Scrollate (shrugs) con bilanciere","Curl bilanciere EZ","Curl martello manubri","Curl ai cavi (o panca Scott)","Curl inverso bilanciere EZ"],
+    "Spinta B": ["Lento avanti manubri","Alzate frontali con disco","Alzate laterali manubri","Alzate posteriori (rear delt)","Alzate laterali ai cavi","Curl manubri alternato","Tricipiti al cavo con barra a V","Curl martello ai cavi (corda)","Estensioni tricipiti sdraiato (skull crusher) manubri","Curl concentrato","Kickback ai cavi"],
+    "Gambe": ["Pressa","Hack squat","Leg extension","Leg curl sdraiato","Leg curl seduto","Hip thrust bilanciere","Adduttore/Abduttore macchina","Polpacci in piedi","Tibiale (tibialis raise)","Chest press (macchina)","Rematore al cavo"],
+  };
+  let n=0;
+  DB.schema.days.forEach(d=>{
+    const order = orderByDay[d.name];
+    if(!order) return;
+    const before = d.exercises.map(e=>e.name).join("|");
+    d.exercises.sort((a,b)=>{
+      const ia=order.indexOf(a.name), ib=order.indexOf(b.name);
+      return (ia<0?999:ia)-(ib<0?999:ib);
+    });
+    if(d.exercises.map(e=>e.name).join("|")!==before) n++;
+  });
+  DB.migrations.reorderV5 = true;
+  save();
+  return n;
+}
+
 /* ============ HELPERS ============ */
 const $ = (s,r=document)=>r.querySelector(s);
 const app = $("#app");
@@ -1865,6 +1898,7 @@ function importData(){
           migrateChestDipsAndLegs();   // idem per croci ai cavi / leg extension
           migrateBilateralAndChestSwap();  // rinomina/flag: surgical, non sovrascrive la scheda
           migrateAddVolumeV4();            // idem, aggiunge esercizi se il backup e' vecchio
+          migrateReorderV5();               // idem, sistema l'ordine se il backup e' vecchio
           save(); render(); toast("Backup importato ✓");
         }});
     };
@@ -1898,6 +1932,7 @@ const migratedExercises = migrateChestDipsAndLegs();
 const migratedSplit = migrateUpperLegsSplit();
 const migratedBilateral = migrateBilateralAndChestSwap();
 const migratedVolume = migrateAddVolumeV4();
+const migratedReorder = migrateReorderV5();
 if(DB.active) wake.enable();   // sessione ripresa dopo reload → riattiva lo schermo acceso
 resumeRestIfAny();             // idem per il recupero tra le serie, se era a meta'
 render();
@@ -1909,6 +1944,7 @@ render();
   if(migratedSplit) notes.push("scheda ristrutturata: 3 giorni upper + 1 gambe dedicato");
   if(migratedBilateral) notes.push("dip sostituiti con croci ai cavi, volume manubri corretto");
   if(migratedVolume) notes.push("tutte le giornate allungate a ~34 serie (75-90 min) con esercizi mirati");
+  if(migratedReorder) notes.push("ordine esercizi sistemato (compound prima, isolamento dopo)");
   if(notes.length) toast("Scheda aggiornata: " + notes.join("; "));
 }
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
