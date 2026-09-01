@@ -633,6 +633,95 @@ function migrateBilateralAndChestSwap(){
   return n;
 }
 
+// Migrazione una-volta-sola: 45 min reali con 19 serie = ~2.4 min/serie (rest+esecuzione).
+// Per arrivare davvero a 75-90 min servono ~32-38 serie a giornata: tutte e 4 le giornate
+// erano sotto quella soglia (19/18/24/29 serie), non solo le due piu' corte. Aggiunge
+// esercizi mirati su angoli/muscoli non ancora coperti in ciascuna giornata - portando
+// tutte e 4 a ~34 serie (~80 min) - evitando doppioni tra Spinta A e Spinta B.
+// Usa l'indice del giorno (creato in ordine fisso da migrateUpperLegsSplit), non il nome:
+// un rinomina dalla UI non deve impedire alla migrazione di applicarsi.
+function migrateAddVolumeV4(){
+  DB.migrations = DB.migrations || {};
+  if(DB.migrations.addVolumeV4) return 0;
+  const E = (name, sets, rl, rh, rir, rest, o={}) => ({
+    id:uid(), name, note:o.hint||"", sets, repsLow:rl, repsHigh:rh, rir, restSec:rest,
+    failLast:!!o.failLast, ss:o.ss||null, bilateral:!!o.bilateral
+  });
+  const days = DB.schema.days;
+  if(days.length<4) return 0;
+  let n=0;
+  const [spintaA, tirataA, spintaB, gambe] = days;
+
+  // Spinta A (petto): niente terze/quarte varianti di panca piana (dip, manubri,
+  // presa stretta erano tutte la stessa spinta orizzontale gia' coperta dal bilanciere -
+  // volume senza stimolo nuovo). Al loro posto: due macchine (chest press a convergenza,
+  // pec deck) per allenare a cedimento in sicurezza senza stabilizzatori extra, un angolo
+  // in declino - l'unico mancante tra piatta/inclinata/declinata - una fly inclinata che
+  // isola il petto alto (la panca inclinata gia' presente e' un compound, non un'isolazione),
+  // e un push-up a zavorra come variante compound a corpo libero di chiusura. Niente
+  // alzate/spalle: restano su Spinta B per non duplicare lavoro nella stessa settimana.
+  if(!spintaA.exercises.some(e=>e.name==="Chest press a convergenza (macchina)")){
+    spintaA.exercises.push(
+      E("Chest press a convergenza (macchina)",3,8,10,"1-2",100,{hint:"spinta orizzontale a macchina, stabilita' garantita: si spinge a cedimento senza rischio"}),
+      E("Pec deck (croci a macchina)",3,10,12,"0-1",75,{hint:"isolamento petto con curva di resistenza a camma, diversa dai cavi",failLast:true}),
+      E("Panca declinata (bilanciere o Smith)",3,8,10,"1-2",120,{hint:"petto basso, unico angolo in declino della giornata"}),
+      E("Croci manubri su panca inclinata (30°)",3,10,12,"0-1",90,{hint:"petto alto in isolamento - completa la panca inclinata, che e' un compound",bilateral:true,failLast:true}),
+      E("Push-up a zavorra (o su parallele con disco)",3,10,15,"1",90,{hint:"compound a corpo libero di chiusura, stabilita' extra rispetto alle macchine"}),
+    );
+    n+=5;
+  }
+
+  // Tirata A (schiena+bicipiti): rematore unilaterale per lo spessore, lat machine
+  // neutra per un angolo di presa diverso, pullover per il piano verticale (unico
+  // tra le tirate), scrollate per i trapezi (zero lavoro diretto finora), curl
+  // inverso per gli avambracci (idem).
+  if(!tirataA.exercises.some(e=>e.name==="Rematore manubrio unilaterale")){
+    tirataA.exercises.push(
+      E("Rematore manubrio unilaterale",4,8,10,"1-2",90,{hint:"spessore schiena, lavoro unilaterale con supporto su panca"}),
+      E("Lat machine presa neutra",3,8,10,"1-2",90,{hint:"larghezza dorsale, angolo di presa diverso dalla presa larga"}),
+      E("Pull-over ai cavi",3,10,12,"0-1",75,{hint:"unico tirata sul piano verticale, stretch del gran dorsale",failLast:true}),
+      E("Scrollate (shrugs) con bilanciere",3,10,12,"0-1",60,{hint:"trapezio, nessun lavoro diretto finora"}),
+      E("Curl inverso bilanciere EZ",3,10,12,"0-1",60,{hint:"avambracci/brachioradiale, nessun lavoro diretto finora",failLast:true}),
+    );
+    n+=5;
+  }
+
+  // Spinta B (spalle+braccia): alzate frontali per il delt anteriore isolato (finora
+  // solo indiretto dal lento avanti), curl martello ai cavi per un angolo diverso dal
+  // curl manubri, skull crusher per un'estensione tricipiti sdraiata (finora solo cavi).
+  // Rinomina anche "Pushdown corda ai cavi": era identico, stesso nome e stessa presa,
+  // all'esercizio gia' presente su Spinta A - qui passa alla barra V per un'impugnatura
+  // diversa (piu' supinata, coinvolge diversamente il capo laterale), non piu' un doppione.
+  spintaB.exercises.forEach(e=>{
+    if(e.name==="Pushdown corda ai cavi"){
+      e.name="Tricipiti al cavo con barra a V";
+      e.note="presa piu' stretta e supinata della corda: stessa serie di Spinta A ma stimolo diverso";
+    }
+  });
+  if(!spintaB.exercises.some(e=>e.name==="Alzate frontali con disco")){
+    spintaB.exercises.push(
+      E("Alzate frontali con disco",4,12,15,"0-1",60,{hint:"delt anteriore isolato, prima solo indiretto dal lento avanti",failLast:true}),
+      E("Curl martello ai cavi (corda)",3,10,12,"0-1",60,{hint:"brachiale, angolo diverso dal curl manubri",failLast:true}),
+      E("Estensioni tricipiti sdraiato (skull crusher) manubri",3,10,12,"0-1",75,{hint:"tricipiti sdraiato, prima solo lavoro ai cavi",failLast:true}),
+    );
+    n+=3;
+  }
+
+  // Gambe: leg curl seduto per un angolo diverso dal femorale sdraiato gia' presente,
+  // adduttore/abduttore per gli stabilizzatori dell'anca, zero lavoro diretto finora.
+  if(!gambe.exercises.some(e=>e.name==="Leg curl seduto")){
+    gambe.exercises.push(
+      E("Leg curl seduto",3,12,15,"0-1",75,{hint:"femorale, angolo diverso dal leg curl sdraiato",failLast:true}),
+      E("Adduttore/Abduttore macchina",2,15,15,"0",60,{hint:"stabilizzatori dell'anca, nessun lavoro diretto finora",failLast:true}),
+    );
+    n+=2;
+  }
+
+  DB.migrations.addVolumeV4 = true;
+  save();
+  return n;
+}
+
 /* ============ HELPERS ============ */
 const $ = (s,r=document)=>r.querySelector(s);
 const app = $("#app");
@@ -1775,6 +1864,7 @@ function importData(){
           migrateNoPullups();          // un backup vecchio puo' riportare le trazioni
           migrateChestDipsAndLegs();   // idem per croci ai cavi / leg extension
           migrateBilateralAndChestSwap();  // rinomina/flag: surgical, non sovrascrive la scheda
+          migrateAddVolumeV4();            // idem, aggiunge esercizi se il backup e' vecchio
           save(); render(); toast("Backup importato ✓");
         }});
     };
@@ -1807,6 +1897,7 @@ const migrated = migrateNoPullups();
 const migratedExercises = migrateChestDipsAndLegs();
 const migratedSplit = migrateUpperLegsSplit();
 const migratedBilateral = migrateBilateralAndChestSwap();
+const migratedVolume = migrateAddVolumeV4();
 if(DB.active) wake.enable();   // sessione ripresa dopo reload → riattiva lo schermo acceso
 resumeRestIfAny();             // idem per il recupero tra le serie, se era a meta'
 render();
@@ -1817,6 +1908,7 @@ render();
   if(migratedExercises) notes.push("dip petto e leg extension aggiornati");
   if(migratedSplit) notes.push("scheda ristrutturata: 3 giorni upper + 1 gambe dedicato");
   if(migratedBilateral) notes.push("dip sostituiti con croci ai cavi, volume manubri corretto");
+  if(migratedVolume) notes.push("tutte le giornate allungate a ~34 serie (75-90 min) con esercizi mirati");
   if(notes.length) toast("Scheda aggiornata: " + notes.join("; "));
 }
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
