@@ -204,14 +204,21 @@
   .ex-head .nm .tgt span{color:var(--ink-faint)}
   .ex-menu-btn{color:var(--ink-faint);font-size:22px;padding:2px 8px;line-height:1}
 
-  .set-row{display:grid;grid-template-columns:22px 1fr 1fr 44px 30px;gap:7px;align-items:center;
-    padding:8px 14px;border-top:1px solid var(--line-soft)}
+  .set-row{display:grid;grid-template-columns:20px minmax(0,1fr) minmax(0,1fr) 44px 30px 30px;gap:6px;align-items:center;
+    padding:8px 10px;border-top:1px solid var(--line-soft)}
+  .set-row.set-row-head{padding:6px 10px 4px;border-top:none}
   .set-row .si{font-family:var(--mono);font-size:13px;color:var(--ink-faint);text-align:center}
-  .set-row .fld{position:relative}
-  .set-row input{width:100%;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
-    padding:11px 8px 11px 10px;font-size:16px;font-weight:600;text-align:center}
+  .set-row .colh{font-family:var(--mono);font-size:10px;letter-spacing:.08em;color:var(--ink-faint);text-align:center}
+  .set-row .fld{position:relative;display:flex;align-items:center;gap:3px}
+  .set-row .fld input{flex:1;min-width:0;width:auto;background:var(--panel-2);border:1px solid var(--line);border-radius:9px;
+    padding:11px 4px;font-size:15px;font-weight:600;text-align:center}
   .set-row input:focus{outline:none;border-color:var(--accent)}
-  .set-row .unit{position:absolute;right:8px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--ink-faint);font-family:var(--mono);pointer-events:none}
+  .set-row .stepbtn{flex:none;width:24px;height:38px;border-radius:8px;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--ink-dim);font-size:15px;line-height:1;
+    display:flex;align-items:center;justify-content:center}
+  .set-row .stepbtn:active{background:var(--panel-3)}
+  .set-row .copyprev-btn{width:30px;height:44px;border-radius:9px;border:1px solid var(--line);background:var(--panel-2);
+    color:var(--ink-faint);font-size:14px;display:flex;align-items:center;justify-content:center}
   .set-row .last{grid-column:2/4;font-family:var(--mono);font-size:10px;color:var(--ink-faint);padding-left:2px;margin-top:-2px}
   .pr-flag{position:absolute;top:-7px;right:-5px;z-index:2;font-family:var(--mono);font-weight:700;
     font-size:9px;letter-spacing:.05em;color:#1a0d03;background:var(--accent);border-radius:5px;
@@ -257,6 +264,8 @@
     border-radius:9px;padding:9px 10px;font-size:13px;width:100%}
   .setnote:focus{outline:none;border-color:var(--accent)}
   .ex-head .nm .hint{font-size:12px;color:var(--ink-faint);margin-top:4px;font-style:italic;line-height:1.3}
+  .ex-head .nm .vol-live{font-family:var(--mono);font-size:11px;color:var(--ink-faint);margin-top:3px}
+  .ex-head .nm .vol-live b{color:var(--accent-soft)}
   .tag-fail{display:inline-block;font-family:var(--mono);font-size:9px;letter-spacing:.06em;text-transform:uppercase;
     color:var(--red);border:1px solid #4a2a27;border-radius:99px;padding:2px 7px;vertical-align:middle;white-space:nowrap}
   .ss-group{border:1px dashed var(--accent-dim);border-radius:16px;padding:10px 10px 2px;margin-bottom:12px;
@@ -265,19 +274,34 @@
     color:var(--accent-soft);padding:2px 4px 9px}
   .ss-group .ex-card{margin-bottom:8px;background:var(--panel-2)}
 
-  /* rest timer overlay */
-  .rest{position:fixed;left:0;right:0;bottom:0;z-index:40;
-    padding:16px 16px calc(16px + var(--safe-b));background:linear-gradient(0deg,var(--panel-3),var(--panel));
-    border-top:1px solid var(--accent-dim);box-shadow:0 -10px 30px rgba(0,0,0,.4);
-    transform:translateY(120%);transition:transform .3s cubic-bezier(.2,.8,.2,1)}
-  .rest.show{transform:none}
-  .rest .top{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+  /* rest timer: overlay a schermo intero di default, comprimibile a barra in basso (.mini) */
+  .rest{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;
+    background:rgba(10,8,6,.92);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+    opacity:0;pointer-events:none;transition:opacity .25s var(--ease)}
+  .rest.show{opacity:1;pointer-events:auto}
+  .rest.mini{background:transparent;backdrop-filter:none;-webkit-backdrop-filter:none;
+    align-items:flex-end;justify-content:stretch}
+  .rest-box{position:relative;width:min(340px,86%);text-align:center;padding:30px 22px 26px;
+    background:var(--panel-2);border:1px solid var(--line);border-radius:20px;box-shadow:0 20px 60px rgba(0,0,0,.5)}
+  .rest.mini .rest-box{width:100%;max-width:560px;margin:0 auto;text-align:left;border-radius:20px 20px 0 0;
+    border-width:1px 0 0;border-color:var(--accent-dim);box-shadow:0 -10px 30px rgba(0,0,0,.4);
+    padding:16px 16px calc(16px + var(--safe-b))}
   .rest .lbl{font-family:var(--mono);font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--accent-soft)}
-  .rest .time{font-family:var(--mono);font-weight:700;font-size:42px;letter-spacing:.02em;font-variant-numeric:tabular-nums}
-  .rest .time.warn{color:var(--accent);text-shadow:0 0 22px rgba(255,106,26,.5);animation:pulse 1s var(--ease) infinite}
-  .rest .bar{height:6px;background:var(--panel-2);border-radius:99px;overflow:hidden;margin-bottom:12px}
+  .rest .time{font-family:var(--mono);font-weight:700;letter-spacing:.02em;font-variant-numeric:tabular-nums;
+    font-size:76px;line-height:1;margin:10px 0}
+  .rest.mini .time{font-size:42px;margin:4px 0}
+  .rest .time.warn{color:var(--accent);text-shadow:0 0 26px rgba(255,106,26,.5);animation:pulse 1s var(--ease) infinite}
+  .rest .next{font-size:14px;color:var(--ink-dim);margin-bottom:14px}
+  .rest.mini .next{display:none}
+  .rest .next b{color:var(--ink)}
+  .rest .bar{height:6px;background:var(--panel-3);border-radius:99px;overflow:hidden;margin-bottom:14px}
+  .rest.mini .bar{background:var(--panel-2)}
   .rest .bar i{display:block;height:100%;background:var(--accent);border-radius:99px;transition:width 1s linear}
   .rest .ctr{display:flex;gap:8px}
+  .rest .minbtn{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:10px;
+    background:var(--panel-3);border:1px solid var(--line);color:var(--ink-dim);font-size:16px;
+    display:flex;align-items:center;justify-content:center}
+  .rest.mini .minbtn{top:14px;right:14px}
 
   /* modal / sheet */
   .sheet-bg{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.55);opacity:0;pointer-events:none;transition:opacity .2s}
@@ -813,6 +837,9 @@ function entryTopWeight(entry){
 }
 // volume (kg*reps) di una serie, raddoppiato se l'esercizio e' bilateral (2 manubri contemporaneamente)
 function setVolume(s, bilateral){ return (+s.kg||0)*(+s.reps||0)*(bilateral?2:1); }
+// volume totale finora sull'esercizio, solo serie "contate" (fatte davvero, vedi setCounted)
+function exVolumeLive(e){ let v=0; for(const s of e.sets){ if(setCounted(s)) v+=setVolume(s,e.bilateral); } return v; }
+function fmtInt(n){ return n.toLocaleString("it-IT",{maximumFractionDigits:1}); }
 
 /* ============ AUDIO / VIBRAZIONE ============ */
 let AC=null;
@@ -855,7 +882,8 @@ function applyState(st, dir){
   if(st.view==="session" && !DB.active) st={view:"home", arg:null};
   view=st.view; viewArg=st.arg??null;
   render();
-  app.scrollTop=0;
+  if(view==="session"){ app.scrollTop=0; requestAnimationFrame(scrollToCurrentSet); }
+  else app.scrollTop=0;
   app.classList.remove("nav","slide-fwd","slide-back");
   void app.offsetWidth;                       // riavvia l'animazione anche a classe uguale
   app.classList.add(dir==="fwd"?"slide-fwd":dir==="back"?"slide-back":"nav");
@@ -1065,7 +1093,7 @@ function restRemain(){ return rest.active ? Math.max(0,(rest.endTs-Date.now())/1
 function startRest(sec){
   stopRest();
   if(!sec || sec<=0){ return; }   // superset: nessuna pausa, si passa subito al prossimo
-  rest={active:true, endTs:Date.now()+sec*1000, total:sec, warned10:false, warned3:false, warned2:false, warned1:false};
+  rest={active:true, endTs:Date.now()+sec*1000, total:sec, minimized:false, warned10:false, warned3:false, warned2:false, warned1:false};
   if(DB.active){ DB.active.restEndTs=rest.endTs; DB.active.restTotal=rest.total; save(); }
   renderRest();
   restTimer=setInterval(tickRest,250);
@@ -1094,29 +1122,60 @@ function resumeRestIfAny(){
   if(!a || !a.restEndTs || a.restEndTs<=Date.now()) return;
   const remain=(a.restEndTs-Date.now())/1000;
   // le soglie gia' superate al momento del reload non risuonano in ritardo, solo quelle future
-  rest={active:true, endTs:a.restEndTs, total:a.restTotal||Math.round(remain),
+  rest={active:true, endTs:a.restEndTs, total:a.restTotal||Math.round(remain), minimized:false,
     warned10:remain>10, warned3:remain>3, warned2:remain>2, warned1:remain>1};
   renderRest();
   restTimer=setInterval(tickRest,250);
 }
+// prossima serie non ancora fatta nell'ordine della sessione, mostrata nell'overlay
+// di pausa cosi' sai gia' cosa ti aspetta prima di finire il recupero
+function nextSetInfo(){
+  const a=DB.active; if(!a) return null;
+  for(const e of a.entries){
+    if(e.skipped) continue;
+    const idx=e.sets.findIndex(s=>!s.done);
+    if(idx>=0) return {name:e.name, num:idx+1};
+  }
+  return null;
+}
+// alla ripresa di una sessione interrotta, scrolla alla prima serie non ancora fatta
+// invece di lasciare la vista in cima con tutte le serie gia' completate fuori schermo
+function scrollToCurrentSet(){
+  const a=DB.active; if(!a) return;
+  for(let ei=0; ei<a.entries.length; ei++){
+    const e=a.entries[ei];
+    if(e.skipped) continue;
+    const idx=e.sets.findIndex(s=>!s.done);
+    if(idx>=0){
+      const input=$(`input[data-foc="${ei}-${idx}-kg"]`);
+      const row=input&&input.closest(".set-row");
+      if(row) row.scrollIntoView({block:"center"});
+      return;
+    }
+  }
+}
+function toggleRestMini(){ rest.minimized=!rest.minimized; renderRest(); }
 function renderRest(){
   let el=$("#rest");
   if(!el){ el=document.createElement("div"); el.id="rest"; el.className="rest"; document.body.appendChild(el); }
-  if(!rest.active){ el.classList.remove("show"); return; }
+  if(!rest.active){ el.className="rest"; return; }
   const remain=Math.round(restRemain());
   const pct = Math.max(0, remain/rest.total*100);
+  const next = nextSetInfo();
+  el.className = "rest show"+(rest.minimized?" mini":"");
   el.innerHTML = `
-    <div class="top">
+    <div class="rest-box">
+      <button class="minbtn" onclick="toggleRestMini()" aria-label="${rest.minimized?'Espandi':'Comprimi'}">${rest.minimized?'⤢':'⌄'}</button>
       <span class="lbl">Recupero</span>
-      <span class="time ${remain<=10?'warn':''}">${fmtDur(remain)}</span>
-    </div>
-    <div class="bar"><i style="width:${pct}%"></i></div>
-    <div class="ctr">
-      <button class="btn grow" onclick="adjRest(-15)">-15s</button>
-      <button class="btn grow" onclick="adjRest(15)">+15s</button>
-      <button class="btn accent grow" onclick="stopRest()">Salta</button>
+      <div class="time ${remain<=10?'warn':''}">${fmtDur(remain)}</div>
+      ${next?`<div class="next">Prossimo: <b>${esc(next.name)}</b> · Serie ${next.num}</div>`:''}
+      <div class="bar"><i style="width:${pct}%"></i></div>
+      <div class="ctr">
+        <button class="btn grow" onclick="adjRest(-15)">-15s</button>
+        <button class="btn grow" onclick="adjRest(15)">+15s</button>
+        <button class="btn accent grow" onclick="stopRest()">Salta</button>
+      </div>
     </div>`;
-  el.classList.add("show");
 }
 function adjRest(d){
   if(!rest.active) return;
@@ -1354,22 +1413,35 @@ function exCard(e,ei,a){
     const isPR = setCounted(s) && histBest>0 && parseFloat(s.kg)>histBest && parseInt(s.reps,10)>0;
     return `<div class="set-row ${s.done?'done':''}">
       <span class="si">${si+1}</span>
-      <div class="fld"><input inputmode="decimal" value="${esc(s.kg)}" placeholder="${lp&&lp.sets[si]?esc(lp.sets[si].kg):'-'}" oninput="setVal(${ei},${si},'kg',this.value)"><span class="unit">kg</span>${isPR?'<span class="pr-flag">PR</span>':''}</div>
-      <div class="fld"><input inputmode="numeric" value="${esc(s.reps)}" placeholder="${lp&&lp.sets[si]?esc(lp.sets[si].reps):'-'}" oninput="setVal(${ei},${si},'reps',this.value)"><span class="unit">rep</span></div>
+      <div class="fld">
+        <button class="stepbtn" onclick="stepVal(${ei},${si},'kg',-2.5)" aria-label="-2.5 kg">−</button>
+        <input inputmode="decimal" data-foc="${ei}-${si}-kg" value="${esc(s.kg)}" placeholder="${lp&&lp.sets[si]?esc(lp.sets[si].kg):'-'}" oninput="setVal(${ei},${si},'kg',this.value,this)">
+        <button class="stepbtn" onclick="stepVal(${ei},${si},'kg',2.5)" aria-label="+2.5 kg">+</button>
+        ${isPR?'<span class="pr-flag">PR</span>':''}
+      </div>
+      <div class="fld">
+        <button class="stepbtn" onclick="stepVal(${ei},${si},'reps',-1)" aria-label="-1 rep">−</button>
+        <input inputmode="numeric" data-foc="${ei}-${si}-reps" value="${esc(s.reps)}" placeholder="${lp&&lp.sets[si]?esc(lp.sets[si].reps):'-'}" oninput="setVal(${ei},${si},'reps',this.value)">
+        <button class="stepbtn" onclick="stepVal(${ei},${si},'reps',1)" aria-label="+1 rep">+</button>
+      </div>
       <button class="chk ${s.done?'on':''}" onclick="toggleSet(${ei},${si})">${s.done?'✓':''}</button>
       <button class="setnote-btn ${s.note?'has':''}" onclick="toggleSetNote(${ei},${si})" aria-label="Nota serie">✎</button>
+      ${si>0?`<button class="copyprev-btn" onclick="copyPrevSet(${ei},${si})" aria-label="Copia serie sopra">⧉</button>`:`<span></span>`}
       ${si===0&&last?`<div class="last">scorsa volta: ${esc(last)}</div>`:''}
       ${open?`<input class="setnote" placeholder="Nota serie ${si+1}..." value="${esc(s.note||'')}" oninput="setNote(${ei},${si},this.value)">`:''}
     </div>`;
   }).join("");
   const badge = e.failLast?`<span class="tag-fail">ultima a cedimento</span>`:"";
+  const vol = exVolumeLive(e);
   return `<div class="ex-card ${e.sets.every(s=>s.done)?'done':''}">
     <div class="ex-head">
       <div class="nm"><div class="name">${esc(e.name)}</div>
         <div class="tgt">${e.targetSets}×${esc(e.repsTarget)} <span>· RIR ${esc(e.rir)}${e.restSec>0?` · rec ${e.restSec}s`:''}</span> ${badge}</div>
+        ${vol>0?`<div class="vol-live">Volume: <b>${fmtInt(vol)} kg</b></div>`:''}
         ${e.hint?`<div class="hint">${esc(e.hint)}</div>`:''}</div>
       <button class="ex-menu-btn" onclick="exMenu(${ei})">⋯</button>
     </div>
+    <div class="set-row set-row-head"><span class="si"></span><span class="colh">KG</span><span class="colh">REP</span><span></span><span></span><span></span></div>
     ${rows}
     <div class="set-actions">
       <button class="btn sm ghost" onclick="addSet(${ei})">+ serie</button>
@@ -1415,16 +1487,59 @@ function viewSession(){
 // una serie e' "contata" se e' stata spuntata, oppure se e' stata digitata a mano
 // (anche senza spunta) - solo il prefill mai toccato resta escluso
 function setCounted(s){ return s.done || !s.prefilled; }
-function setVal(ei,si,k,v){ const s=DB.active.entries[ei].sets[si]; s[k]=v; s.prefilled=false; save(); }
+// il kg accetta la virgola come l'utente la digita, ma si normalizza subito a punto:
+// senza questo "80,5" passava intatto in setVolume (+s.kg -> NaN -> ||0), azzerando
+// in silenzio il volume di quella serie in tutte le statistiche
+function setVal(ei,si,k,v,el){
+  const s=DB.active.entries[ei].sets[si];
+  if(k==="kg"){
+    const norm=String(v).replace(",",".");
+    s.kg=norm;
+    if(el && el.value!==norm){ const pos=el.selectionStart; el.value=norm; if(pos!=null) el.setSelectionRange(pos,pos); }
+  } else {
+    s[k]=v;
+  }
+  s.prefilled=false; save();
+}
+// +2.5kg / +1 rep: incremento veloce senza dover riscrivere il numero a mano
+function stepVal(ei,si,k,delta){
+  const s=DB.active.entries[ei].sets[si];
+  const cur=parseFloat(String(s[k]).replace(",","."))||0;
+  let next=cur+delta; if(next<0) next=0;
+  next = k==="kg" ? Math.round(next*100)/100 : Math.round(next);
+  s[k]=String(next); s.prefilled=false;
+  save(); renderPreserveFocus();
+}
+// copia kg/reps dalla riga immediatamente sopra nella stessa card
+function copyPrevSet(ei,si){
+  const sets=DB.active.entries[ei].sets;
+  if(si<=0||si>=sets.length) return;
+  const prev=sets[si-1], cur=sets[si];
+  cur.kg=prev.kg; cur.reps=prev.reps; cur.prefilled=false;
+  save(); renderPreserveFocus();
+}
+// render() ricrea tutti gli input da zero (innerHTML): se un altro campo aveva il
+// focus mentre scrivevi, un render() nel mezzo te lo chiudeva (tastiera che sparisce
+// su mobile). Qui si salva quale input aveva il focus (via data-foc) e lo si ripristina.
+function renderPreserveFocus(){
+  const act=document.activeElement;
+  let key=null, pos=null;
+  if(act && act.matches && act.matches("input[data-foc]")){ key=act.dataset.foc; pos=act.selectionStart; }
+  render();
+  if(key){
+    const el=$(`input[data-foc="${key}"]`);
+    if(el){ el.focus(); if(pos!=null && el.setSelectionRange) el.setSelectionRange(pos,pos); }
+  }
+}
 function toggleSet(ei,si){
   const s=DB.active.entries[ei].sets[si]; s.done=!s.done; save();
   if(s.done){ const rs=DB.active.entries[ei].restSec; if(rs>0) startRest(rs); }
-  render();
+  renderPreserveFocus();
 }
-function addSet(ei){ DB.active.entries[ei].sets.push({kg:"",reps:"",done:false}); save(); render(); }
-function delSet(ei){ const s=DB.active.entries[ei].sets; if(s.length>1){s.pop();save();render();} }
+function addSet(ei){ DB.active.entries[ei].sets.push({kg:"",reps:"",done:false}); save(); renderPreserveFocus(); }
+function delSet(ei){ const s=DB.active.entries[ei].sets; if(s.length>1){s.pop();save();renderPreserveFocus();} }
 function exNote(ei,v){ DB.active.entries[ei].note=v; save(); }
-function toggleSetNote(ei,si){ const s=DB.active.entries[ei].sets[si]; s._noteOpen=!s._noteOpen; save(); render(); }
+function toggleSetNote(ei,si){ const s=DB.active.entries[ei].sets[si]; s._noteOpen=!s._noteOpen; save(); renderPreserveFocus(); }
 function setNote(ei,si,v){ DB.active.entries[ei].sets[si].note=v; save(); }
 function confirmFinish(){
   const done=DB.active.entries.some(e=>e.sets.some(s=>s.done));
@@ -1456,7 +1571,35 @@ function exMenu(ei){
       openForm("Tempo di recupero", [{id:"rest",label:"Secondi di recupero",value:e.restSec,placeholder:"90",inputmode:"numeric"}],
         {onOk:v=>{ const s=parseInt(v.rest,10); if(!(s>=0)){toast("Valore non valido");return;} e.restSec=s; save(); closeSheet(); render(); }});
     }},
+    {ic:"🗑", label:"Elimina esercizio", danger:true, fn:()=>{ closeSheet(); confirmDeleteExercise(ei); }},
   ]);
+}
+// elimina un esercizio dall'allenamento in corso: chiede sempre se togliere solo
+// oggi o anche dalla scheda per sempre - un'azione sulla scheda non deve mai
+// scattare per errore da un tap solo
+function confirmDeleteExercise(ei){
+  const e=DB.active.entries[ei];
+  const sh=ensureSheet();
+  sh.innerHTML = `<div class="grab"></div><h3>Eliminare "${esc(e.name)}"?</h3>
+    <p class="sheet-msg">Solo da questo allenamento, o anche dalla scheda per sempre?</p>
+    <button class="sheet-item" data-today><span class="ic">📅</span>Rimuovi solo da oggi</button>
+    <button class="sheet-item danger" data-forever><span class="ic">🗑</span>Rimuovi anche dalla scheda</button>
+    <button class="btn ghost block" style="margin-top:10px" data-x>Annulla</button>`;
+  sh.querySelector("[data-x]").onclick=closeSheet;
+  sh.querySelector("[data-today]").onclick=()=>{ closeSheet(); removeExerciseFromSession(ei); };
+  sh.querySelector("[data-forever]").onclick=()=>{ closeSheet(); removeExerciseFromSessionAndSchema(ei); };
+  showSheet();
+}
+function removeExerciseFromSession(ei){
+  DB.active.entries.splice(ei,1); save(); render();
+  toast("Esercizio rimosso da oggi");
+}
+function removeExerciseFromSessionAndSchema(ei){
+  const e=DB.active.entries[ei];
+  const day=DB.schema.days.find(d=>d.id===DB.active.dayId);
+  if(day) day.exercises=day.exercises.filter(x=>x.id!==e.exId);
+  DB.active.entries.splice(ei,1); save(); render();
+  toast("Esercizio rimosso dalla scheda");
 }
 
 /* ============ CALCOLO DISCHI ============ */
@@ -1936,6 +2079,7 @@ const migratedReorder = migrateReorderV5();
 if(DB.active) wake.enable();   // sessione ripresa dopo reload → riattiva lo schermo acceso
 resumeRestIfAny();             // idem per il recupero tra le serie, se era a meta'
 render();
+if(view==="session") requestAnimationFrame(scrollToCurrentSet);
 {
   // un solo toast: chiamate multiple in fila si sovrascrivono a vicenda prima del render
   const notes = [];
