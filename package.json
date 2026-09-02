@@ -1,0 +1,34 @@
+{
+  "name": "gym-app",
+  "version": "1.0.0",
+  "description": "App per loggare gli allenamenti in palestra: serie, timer di recupero, storico, record e grafici. Single-file, offline-first, dati in `localStorage`. Nessun account, nessun server.",
+  "main": "sw.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "node scripts/build.js",
+    "cap:sync": "npm run build && npx cap sync",
+    "cap:ios": "npm run cap:sync && npx cap open ios",
+    "cap:android": "npm run cap:sync && npx cap open android"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tomas-coro/set.log.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/tomas-coro/set.log/issues"
+  },
+  "homepage": "https://github.com/tomas-coro/set.log#readme",
+  "dependencies": {
+    "@capacitor/android": "^8.5.1",
+    "@capacitor/cli": "^8.5.1",
+    "@capacitor/core": "^8.5.1",
+    "@capacitor/ios": "^8.5.1"
+  }
+}

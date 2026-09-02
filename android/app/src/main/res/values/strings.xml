@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Set.Log</string>
+    <string name="title_activity_main">Set.Log</string>
+    <string name="package_name">it.setlog.app</string>
+    <string name="custom_url_scheme">it.setlog.app</string>
+</resources>
