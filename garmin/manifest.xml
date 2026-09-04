@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq">
+  <iq:application
+    id="B4F06FCBB1D94A7C8B3ED409CF62B143"
+    type="watch-app"
+    name="@Strings.AppName"
+    entry="SetLogApp"
+    launcherIcon="@Drawables.LauncherIcon"
+    minSdkVersion="4.0.0">
+    <iq:products>
+      <iq:product id="vivoactive5"/>
+    </iq:products>
+    <iq:permissions/>
+    <iq:languages>
+      <iq:language>ita</iq:language>
+      <iq:language>eng</iq:language>
+    </iq:languages>
+    <iq:barrels/>
+  </iq:application>
+</iq:manifest>
