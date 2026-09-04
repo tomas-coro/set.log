@@ -1,0 +1,137 @@
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc"; @line = 1; @symbol_classdef = [WorkoutStore,1,6,18]; ]
+class WorkoutStore {
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc"; @line = 1; ]
+    <init> {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc"; @line = 1; ]
+    static
+    <init> {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc"; @line = 2; @symbol_functiondef = [initialize,2,13,23]; ]
+    function initialize() as Void {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc"; @line = 4; @symbol_functiondef = [demoWorkout,4,13,24]; ]
+    function demoWorkout() {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutStore_mc_4_27_40_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc" 5 8 ]
+        %tmp.1 = newd 2;
+        %tmp.2 = "name";
+        %tmp.3 = "D - Upper";
+        %tmp.4 = dup %tmp.1;
+        %tmp.5 = aputv %tmp.4 %tmp.2 %tmp.3;
+        %tmp.6 = "exercises";
+        %tmp.7 = newa 3;
+        %tmp.8 = newd 8;
+        %tmp.9 = "name";
+        %tmp.10 = "Chest press";
+        %tmp.11 = dup %tmp.8;
+        %tmp.12 = aputv %tmp.11 %tmp.9 %tmp.10;
+        %tmp.13 = "sets";
+        %tmp.14 = 3;
+        %tmp.15 = dup %tmp.12;
+        %tmp.16 = aputv %tmp.15 %tmp.13 %tmp.14;
+        %tmp.17 = "repsLow";
+        %tmp.18 = 6;
+        %tmp.19 = dup %tmp.16;
+        %tmp.20 = aputv %tmp.19 %tmp.17 %tmp.18;
+        %tmp.21 = "repsHigh";
+        %tmp.22 = 10;
+        %tmp.23 = dup %tmp.20;
+        %tmp.24 = aputv %tmp.23 %tmp.21 %tmp.22;
+        %tmp.25 = "rir";
+        %tmp.26 = "2";
+        %tmp.27 = dup %tmp.24;
+        %tmp.28 = aputv %tmp.27 %tmp.25 %tmp.26;
+        %tmp.29 = "restSec";
+        %tmp.30 = 150;
+        %tmp.31 = dup %tmp.28;
+        %tmp.32 = aputv %tmp.31 %tmp.29 %tmp.30;
+        %tmp.33 = "lastKg";
+        %tmp.34 = 60.0;
+        %tmp.35 = dup %tmp.32;
+        %tmp.36 = aputv %tmp.35 %tmp.33 %tmp.34;
+        %tmp.37 = "lastReps";
+        %tmp.38 = 9;
+        %tmp.39 = dup %tmp.36;
+        %tmp.40 = aputv %tmp.39 %tmp.37 %tmp.38;
+        %tmp.41 = dup %tmp.7;
+        %tmp.42 = aputv %tmp.41 0 %tmp.40;
+        %tmp.43 = newd 8;
+        %tmp.44 = "name";
+        %tmp.45 = "Shoulder press";
+        %tmp.46 = dup %tmp.43;
+        %tmp.47 = aputv %tmp.46 %tmp.44 %tmp.45;
+        %tmp.48 = "sets";
+        %tmp.49 = 3;
+        %tmp.50 = dup %tmp.47;
+        %tmp.51 = aputv %tmp.50 %tmp.48 %tmp.49;
+        %tmp.52 = "repsLow";
+        %tmp.53 = 6;
+        %tmp.54 = dup %tmp.51;
+        %tmp.55 = aputv %tmp.54 %tmp.52 %tmp.53;
+        %tmp.56 = "repsHigh";
+        %tmp.57 = 10;
+        %tmp.58 = dup %tmp.55;
+        %tmp.59 = aputv %tmp.58 %tmp.56 %tmp.57;
+        %tmp.60 = "rir";
+        %tmp.61 = "1-2";
+        %tmp.62 = dup %tmp.59;
+        %tmp.63 = aputv %tmp.62 %tmp.60 %tmp.61;
+        %tmp.64 = "restSec";
+        %tmp.65 = 150;
+        %tmp.66 = dup %tmp.63;
+        %tmp.67 = aputv %tmp.66 %tmp.64 %tmp.65;
+        %tmp.68 = "lastKg";
+        %tmp.69 = 35.0;
+        %tmp.70 = dup %tmp.67;
+        %tmp.71 = aputv %tmp.70 %tmp.68 %tmp.69;
+        %tmp.72 = "lastReps";
+        %tmp.73 = 8;
+        %tmp.74 = dup %tmp.71;
+        %tmp.75 = aputv %tmp.74 %tmp.72 %tmp.73;
+        %tmp.76 = dup %tmp.42;
+        %tmp.77 = aputv %tmp.76 1 %tmp.75;
+        %tmp.78 = newd 8;
+        %tmp.79 = "name";
+        %tmp.80 = "Lat machine";
+        %tmp.81 = dup %tmp.78;
+        %tmp.82 = aputv %tmp.81 %tmp.79 %tmp.80;
+        %tmp.83 = "sets";
+        %tmp.84 = 3;
+        %tmp.85 = dup %tmp.82;
+        %tmp.86 = aputv %tmp.85 %tmp.83 %tmp.84;
+        %tmp.87 = "repsLow";
+        %tmp.88 = 8;
+        %tmp.89 = dup %tmp.86;
+        %tmp.90 = aputv %tmp.89 %tmp.87 %tmp.88;
+        %tmp.91 = "repsHigh";
+        %tmp.92 = 12;
+        %tmp.93 = dup %tmp.90;
+        %tmp.94 = aputv %tmp.93 %tmp.91 %tmp.92;
+        %tmp.95 = "rir";
+        %tmp.96 = "1-2";
+        %tmp.97 = dup %tmp.94;
+        %tmp.98 = aputv %tmp.97 %tmp.95 %tmp.96;
+        %tmp.99 = "restSec";
+        %tmp.100 = 120;
+        %tmp.101 = dup %tmp.98;
+        %tmp.102 = aputv %tmp.101 %tmp.99 %tmp.100;
+        %tmp.103 = "lastKg";
+        %tmp.104 = 55.0;
+        %tmp.105 = dup %tmp.102;
+        %tmp.106 = aputv %tmp.105 %tmp.103 %tmp.104;
+        %tmp.107 = "lastReps";
+        %tmp.108 = 10;
+        %tmp.109 = dup %tmp.106;
+        %tmp.110 = aputv %tmp.109 %tmp.107 %tmp.108;
+        %tmp.111 = dup %tmp.77;
+        %tmp.112 = aputv %tmp.111 2 %tmp.110;
+        %tmp.113 = dup %tmp.5;
+        %tmp.114 = aputv %tmp.113 %tmp.6 %tmp.112;
+        ret %tmp.114;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutStore_mc_4_27_40_4_stop:
+    }
+}
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc"; @line = 1; ]
+<init> {
+}

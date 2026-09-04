@@ -13,17 +13,20 @@ class WorkoutDelegate extends Ui.InputDelegate {
         var x = xy[0];
         var y = xy[1];
 
-        if (y >= 160 && y < 220) {
+        // Riga KG
+        if (y >= 176 && y < 214) {
             _view.changeKg(x < 195 ? -2.5 : 2.5);
             return true;
         }
 
-        if (y >= 220 && y < 285) {
+        // Riga REPS
+        if (y >= 230 && y < 268) {
             _view.changeReps(x < 195 ? -1 : 1);
             return true;
         }
 
-        if (y >= 285) {
+        // Pulsante principale
+        if (y >= 284 && y < 324) {
             _view.completeSet();
             return true;
         }

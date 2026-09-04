@@ -1,0 +1,56 @@
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 1; @symbol_usingdef<0> = [Toybox,1,6,12]; @symbol_usingdef<1> = [Application,1,13,24]; @symbol_usingAlias = [App,1,28,31]; ]
+using Toybox.Application as :App;
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 2; @symbol_usingdef<0> = [Toybox,2,6,12]; @symbol_usingdef<1> = [WatchUi,2,13,20]; @symbol_usingAlias = [Ui,2,24,26]; ]
+using Toybox.WatchUi as :Ui;
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 4; @symbol_classdef = [SetLogApp,4,6,15]; @symbol_extends<0> = [App,4,24,27]; @symbol_extends<1> = [AppBase,4,28,35]; ]
+class SetLogApp extends App.AppBase {
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 4; ]
+    <init> {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 4; ]
+    static
+    <init> {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 5; @symbol_functiondef = [initialize,5,13,23]; ]
+    function initialize() as Void {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_5_26_7_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 6 8 ]
+        symbol [ AppBase %tmp.2 6 8 15 ];
+        %tmp.2 = getv ? :AppBase;
+        symbol [ initialize %tmp.3 6 16 26 ];
+        %tmp.3 = getv function %tmp.2 :initialize;
+        invoke %tmp.2 %tmp.3();
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_5_26_7_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 9; @symbol_functiondef = [getInitialView,9,13,27]; ]
+    function getInitialView() {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_9_30_12_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 10 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_9_30_12_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_9_30_12_4_stop" ]
+        %view.1 = local;
+        symbol [ view %view.1 10 12 16 ];
+        symbol [ WorkoutView %tmp.4 10 23 34 ];
+        %tmp.4 = getv ? :WorkoutView;
+        %tmp.1 = newc %tmp.4 ();
+        lputv %view.1 %tmp.1;
+        symbol [ view %view.1 10 12 16 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 11 8 ]
+        %tmp.5 = newa 2;
+        %tmp.6 = lgetv %view.1;
+        symbol [ view %tmp.6 11 17 21 ];
+        %tmp.7 = dup %tmp.5;
+        %tmp.8 = aputv %tmp.7 0 %tmp.6;
+        symbol [ WorkoutDelegate %tmp.12 11 27 42 ];
+        %tmp.12 = getv ? :WorkoutDelegate;
+        %tmp.13 = lgetv %view.1;
+        symbol [ view %tmp.13 11 43 47 ];
+        %tmp.9 = newc %tmp.12 (%tmp.13);
+        %tmp.14 = dup %tmp.8;
+        %tmp.15 = aputv %tmp.14 1 %tmp.9;
+        ret %tmp.15;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_9_30_12_4_stop:
+    }
+}
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 1; ]
+<init> {
+}

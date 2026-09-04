@@ -28,6 +28,13 @@ class WorkoutView extends Ui.View {
         return _workout["exercises"][_exerciseIndex];
     }
 
+    function _nextExerciseName() {
+        if ((_exerciseIndex + 1) < _workout["exercises"].size()) {
+            return _workout["exercises"][_exerciseIndex + 1]["name"];
+        }
+        return "Fine workout";
+    }
+
     function _loadCurrentDefaults() {
         var ex = _exercise();
         _kg = ex["lastKg"];
@@ -36,13 +43,17 @@ class WorkoutView extends Ui.View {
 
     function changeKg(delta) {
         _kg += delta;
-        if (_kg < 0) { _kg = 0; }
+        if (_kg < 0) {
+            _kg = 0.0;
+        }
         Ui.requestUpdate();
     }
 
     function changeReps(delta) {
         _reps += delta;
-        if (_reps < 0) { _reps = 0; }
+        if (_reps < 0) {
+            _reps = 0;
+        }
         Ui.requestUpdate();
     }
 
@@ -53,26 +64,29 @@ class WorkoutView extends Ui.View {
         }
 
         var ex = _exercise();
-        if (_setIndex + 1 < ex["sets"]) {
+
+        if ((_setIndex + 1) < ex["sets"]) {
             _setIndex += 1;
             _startRest(ex["restSec"]);
-        } else {
-            if (_exerciseIndex + 1 < _workout["exercises"].size()) {
-                _exerciseIndex += 1;
-                _setIndex = 0;
-                _loadCurrentDefaults();
-            } else {
-                _exerciseIndex = 0;
-                _setIndex = 0;
-                _loadCurrentDefaults();
-            }
-            Ui.requestUpdate();
+            return;
         }
+
+        if ((_exerciseIndex + 1) < _workout["exercises"].size()) {
+            _exerciseIndex += 1;
+        } else {
+            _exerciseIndex = 0;
+        }
+
+        _setIndex = 0;
+        _loadCurrentDefaults();
+        Ui.requestUpdate();
     }
 
     function _startRest(seconds) {
         _restRemaining = seconds;
-        if (_timer != null) { _timer.stop(); }
+        if (_timer != null) {
+            _timer.stop();
+        }
         _timer = new Timer.Timer();
         _timer.start(method(:_tick), 1000, true);
         Ui.requestUpdate();
@@ -87,10 +101,11 @@ class WorkoutView extends Ui.View {
         Ui.requestUpdate();
     }
 
-    function _tick() {
+    function _tick() as Void {
         if (_restRemaining > 0) {
             _restRemaining -= 1;
         }
+
         if (_restRemaining <= 0) {
             _stopRest();
         } else {
@@ -105,61 +120,113 @@ class WorkoutView extends Ui.View {
         return min.toString() + ":" + secText;
     }
 
+    function _formatKg(value) {
+        var halfSteps = (value * 2).toNumber();
+
+        if ((halfSteps % 2) == 0) {
+            return ((halfSteps / 2).toNumber()).toString();
+        }
+
+        return ((((halfSteps - 1) / 2).toNumber()).toString() + ".5");
+    }
+
     function onUpdate(dc) {
         var w = dc.getWidth();
-        var h = dc.getHeight();
 
-        dc.setColor(0x12100e, 0x12100e);
+        var bg = 0x0B1016;
+        var accent = 0x4DA6FF;
+        var accentDark = 0x173A5E;
+        var text = Gfx.COLOR_WHITE;
+        var muted = 0xB7C3CF;
+        var subtle = 0x7A8796;
+
+        dc.setColor(bg, bg);
         dc.clear();
 
-        dc.setColor(0xff6a1a, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(w/2, 25, Gfx.FONT_SMALL, _workout["name"], Gfx.TEXT_JUSTIFY_CENTER);
+        dc.setColor(accent, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(w / 2, 24, Gfx.FONT_SMALL, _workout["name"], Gfx.TEXT_JUSTIFY_CENTER);
 
         if (_restRemaining > 0) {
-            dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
-            dc.drawText(w/2, 105, Gfx.FONT_MEDIUM, "RECUPERO", Gfx.TEXT_JUSTIFY_CENTER);
-            dc.setColor(0xff6a1a, Gfx.COLOR_TRANSPARENT);
-            dc.drawText(w/2, 170, Gfx.FONT_NUMBER_HOT, _restText(), Gfx.TEXT_JUSTIFY_CENTER);
-            dc.setColor(0xb3a897, Gfx.COLOR_TRANSPARENT);
-            dc.drawText(w/2, 285, Gfx.FONT_SMALL, "Tocca per saltare", Gfx.TEXT_JUSTIFY_CENTER);
+            var restEx = _exercise();
+
+            dc.setColor(text, Gfx.COLOR_TRANSPARENT);
+            dc.drawText(w / 2, 88, Gfx.FONT_MEDIUM, "RECUPERO", Gfx.TEXT_JUSTIFY_CENTER);
+
+            dc.setColor(muted, Gfx.COLOR_TRANSPARENT);
+            dc.drawText(w / 2, 122, Gfx.FONT_XTINY, restEx["name"], Gfx.TEXT_JUSTIFY_CENTER);
+
+            dc.setColor(accent, Gfx.COLOR_TRANSPARENT);
+            dc.drawText(w / 2, 176, Gfx.FONT_NUMBER_HOT, _restText(), Gfx.TEXT_JUSTIFY_CENTER);
+
+            dc.setColor(accentDark, accentDark);
+            dc.fillRectangle(60, 248, 270, 36);
+
+            dc.setColor(text, Gfx.COLOR_TRANSPARENT);
+            dc.drawText(w / 2, 272, Gfx.FONT_SMALL, "SALTA RECUPERO", Gfx.TEXT_JUSTIFY_CENTER);
+
+            dc.setColor(subtle, Gfx.COLOR_TRANSPARENT);
+            dc.drawText(w / 2, 322, Gfx.FONT_XTINY, "Prossimo: " + _nextExerciseName(), Gfx.TEXT_JUSTIFY_CENTER);
             return;
         }
 
         var ex = _exercise();
-        var nextName = "Fine";
-        if (_exerciseIndex + 1 < _workout["exercises"].size()) {
-            nextName = _workout["exercises"][_exerciseIndex + 1]["name"];
-        }
 
-        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(w/2, 67, Gfx.FONT_MEDIUM, ex["name"], Gfx.TEXT_JUSTIFY_CENTER);
+        dc.setColor(text, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(w / 2, 68, Gfx.FONT_MEDIUM, ex["name"], Gfx.TEXT_JUSTIFY_CENTER);
 
-        dc.setColor(0xb3a897, Gfx.COLOR_TRANSPARENT);
-        var setLine = "Serie " + (_setIndex + 1).toString() + "/" + ex["sets"].toString()
-                    + "  •  " + ex["repsLow"].toString() + "-" + ex["repsHigh"].toString()
-                    + "  •  RIR " + ex["rir"];
-        dc.drawText(w/2, 111, Gfx.FONT_XTINY, setLine, Gfx.TEXT_JUSTIFY_CENTER);
+        dc.setColor(muted, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(
+            w / 2,
+            100,
+            Gfx.FONT_XTINY,
+            "Serie " + (_setIndex + 1).toString() + "/" + ex["sets"].toString(),
+            Gfx.TEXT_JUSTIFY_CENTER
+        );
 
-        dc.setColor(0x857c6d, Gfx.COLOR_TRANSPARENT);
-        var lastLine = "Ultima: " + ex["lastKg"].toString() + " kg × " + ex["lastReps"].toString();
-        dc.drawText(w/2, 143, Gfx.FONT_XTINY, lastLine, Gfx.TEXT_JUSTIFY_CENTER);
+        dc.drawText(
+            w / 2,
+            122,
+            Gfx.FONT_XTINY,
+            "Target " + ex["repsLow"].toString() + "-" + ex["repsHigh"].toString() + " • RIR " + ex["rir"],
+            Gfx.TEXT_JUSTIFY_CENTER
+        );
 
-        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(w/2, 188, Gfx.FONT_MEDIUM, _kg.toString() + " kg", Gfx.TEXT_JUSTIFY_CENTER);
-        dc.setColor(0xb3a897, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(35, 190, Gfx.FONT_SMALL, "−", Gfx.TEXT_JUSTIFY_CENTER);
-        dc.drawText(w-35, 190, Gfx.FONT_SMALL, "+", Gfx.TEXT_JUSTIFY_CENTER);
+        dc.setColor(subtle, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(
+            w / 2,
+            144,
+            Gfx.FONT_XTINY,
+            "Ultima: " + _formatKg(ex["lastKg"]) + " kg × " + ex["lastReps"].toString(),
+            Gfx.TEXT_JUSTIFY_CENTER
+        );
 
-        dc.setColor(Gfx.COLOR_WHITE, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(w/2, 242, Gfx.FONT_MEDIUM, _reps.toString() + " reps", Gfx.TEXT_JUSTIFY_CENTER);
-        dc.setColor(0xb3a897, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(35, 244, Gfx.FONT_SMALL, "−", Gfx.TEXT_JUSTIFY_CENTER);
-        dc.drawText(w-35, 244, Gfx.FONT_SMALL, "+", Gfx.TEXT_JUSTIFY_CENTER);
+        dc.setColor(muted, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(w / 2, 170, Gfx.FONT_XTINY, "KG OGGI", Gfx.TEXT_JUSTIFY_CENTER);
 
-        dc.setColor(0xff6a1a, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(w/2, 302, Gfx.FONT_SMALL, "COMPLETA SERIE", Gfx.TEXT_JUSTIFY_CENTER);
+        dc.setColor(text, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(w / 2, 198, Gfx.FONT_MEDIUM, _formatKg(_kg) + " kg", Gfx.TEXT_JUSTIFY_CENTER);
 
-        dc.setColor(0x857c6d, Gfx.COLOR_TRANSPARENT);
-        dc.drawText(w/2, 345, Gfx.FONT_XTINY, "Prossimo: " + nextName, Gfx.TEXT_JUSTIFY_CENTER);
+        dc.setColor(accent, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(40, 198, Gfx.FONT_SMALL, "−", Gfx.TEXT_JUSTIFY_CENTER);
+        dc.drawText(w - 40, 198, Gfx.FONT_SMALL, "+", Gfx.TEXT_JUSTIFY_CENTER);
+
+        dc.setColor(muted, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(w / 2, 224, Gfx.FONT_XTINY, "REPS OGGI", Gfx.TEXT_JUSTIFY_CENTER);
+
+        dc.setColor(text, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(w / 2, 252, Gfx.FONT_MEDIUM, _reps.toString() + " reps", Gfx.TEXT_JUSTIFY_CENTER);
+
+        dc.setColor(accent, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(40, 252, Gfx.FONT_SMALL, "−", Gfx.TEXT_JUSTIFY_CENTER);
+        dc.drawText(w - 40, 252, Gfx.FONT_SMALL, "+", Gfx.TEXT_JUSTIFY_CENTER);
+
+        dc.setColor(accentDark, accentDark);
+        dc.fillRectangle(60, 284, 270, 36);
+
+        dc.setColor(text, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(w / 2, 308, Gfx.FONT_SMALL, "COMPLETA", Gfx.TEXT_JUSTIFY_CENTER);
+
+        dc.setColor(subtle, Gfx.COLOR_TRANSPARENT);
+        dc.drawText(w / 2, 344, Gfx.FONT_XTINY, "Prossimo: " + _nextExerciseName(), Gfx.TEXT_JUSTIFY_CENTER);
     }
 }

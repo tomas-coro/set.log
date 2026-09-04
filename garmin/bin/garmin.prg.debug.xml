@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<debugInfo>
+<manifest filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/manifest.xml"/>
+<pcToLineNum>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="1" lineNum="3" parent="globals/WorkoutDelegate" pc="268435460" symbol="&lt;init&gt;"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/bin/gen/006-B4426-00/source/Rez.mcgen" id="2" lineNum="7" parent="globals/Rez" pc="268435472" symbol="&lt;init&gt;"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" id="3" lineNum="4" parent="globals/SetLogApp" pc="268435492" symbol="&lt;init&gt;"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="4" lineNum="5" parent="globals/WorkoutView" pc="268435504" symbol="&lt;init&gt;"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="5" lineNum="6" parent="globals/WorkoutDelegate" pc="268435516" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="5" lineNum="7" parent="globals/WorkoutDelegate" pc="268435518" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="5" lineNum="8" parent="globals/WorkoutDelegate" pc="268435530" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="11" parent="globals/WorkoutDelegate" pc="268435540" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="12" parent="globals/WorkoutDelegate" pc="268435543" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="13" parent="globals/WorkoutDelegate" pc="268435552" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="14" parent="globals/WorkoutDelegate" pc="268435558" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="16" parent="globals/WorkoutDelegate" pc="268435565" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="17" parent="globals/WorkoutDelegate" pc="268435583" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="18" parent="globals/WorkoutDelegate" pc="268435619" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="21" parent="globals/WorkoutDelegate" pc="268435624" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="22" parent="globals/WorkoutDelegate" pc="268435642" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="23" parent="globals/WorkoutDelegate" pc="268435672" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="26" parent="globals/WorkoutDelegate" pc="268435677" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="27" parent="globals/WorkoutDelegate" pc="268435686" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="28" parent="globals/WorkoutDelegate" pc="268435698" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="6" lineNum="31" parent="globals/WorkoutDelegate" pc="268435703" symbol="onTap"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="7" lineNum="34" parent="globals/WorkoutDelegate" pc="268435705" symbol="onKey"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="7" lineNum="35" parent="globals/WorkoutDelegate" pc="268435708" symbol="onKey"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="7" lineNum="36" parent="globals/WorkoutDelegate" pc="268435717" symbol="onKey"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="7" lineNum="37" parent="globals/WorkoutDelegate" pc="268435725" symbol="onKey"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="7" lineNum="38" parent="globals/WorkoutDelegate" pc="268435737" symbol="onKey"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" id="7" lineNum="40" parent="globals/WorkoutDelegate" pc="268435742" symbol="onKey"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc" id="9" lineNum="4" parent="globals/WorkoutStore" pc="268435744" symbol="demoWorkout"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutStore.mc" id="9" lineNum="5" parent="globals/WorkoutStore" pc="268435746" symbol="demoWorkout"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" id="10" lineNum="9" parent="globals/SetLogApp" pc="268435788" symbol="getInitialView"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" id="10" lineNum="10" parent="globals/SetLogApp" pc="268435791" symbol="getInitialView"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" id="10" lineNum="11" parent="globals/SetLogApp" pc="268435811" symbol="getInitialView"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" id="11" lineNum="5" parent="globals/SetLogApp" pc="268435844" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" id="11" lineNum="6" parent="globals/SetLogApp" pc="268435846" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="12" lineNum="27" parent="globals/WorkoutView" pc="268435859" symbol="_exercise"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="12" lineNum="28" parent="globals/WorkoutView" pc="268435861" symbol="_exercise"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="13" lineNum="73" parent="globals/WorkoutView" pc="268435879" symbol="_startRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="13" lineNum="74" parent="globals/WorkoutView" pc="268435881" symbol="_startRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="13" lineNum="75" parent="globals/WorkoutView" pc="268435890" symbol="_startRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="13" lineNum="75" parent="globals/WorkoutView" pc="268435899" symbol="_startRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="13" lineNum="76" parent="globals/WorkoutView" pc="268435914" symbol="_startRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="13" lineNum="77" parent="globals/WorkoutView" pc="268435943" symbol="_startRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="13" lineNum="78" parent="globals/WorkoutView" pc="268435974" symbol="_startRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="14" lineNum="101" parent="globals/WorkoutView" pc="268435986" symbol="_restText"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="14" lineNum="102" parent="globals/WorkoutView" pc="268435989" symbol="_restText"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="14" lineNum="103" parent="globals/WorkoutView" pc="268436005" symbol="_restText"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="14" lineNum="104" parent="globals/WorkoutView" pc="268436021" symbol="_restText"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="14" lineNum="105" parent="globals/WorkoutView" pc="268436054" symbol="_restText"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="15" lineNum="43" parent="globals/WorkoutView" pc="268436071" symbol="changeReps"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="15" lineNum="44" parent="globals/WorkoutView" pc="268436073" symbol="changeReps"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="15" lineNum="45" parent="globals/WorkoutView" pc="268436088" symbol="changeReps"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="15" lineNum="45" parent="globals/WorkoutView" pc="268436098" symbol="changeReps"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="15" lineNum="46" parent="globals/WorkoutView" pc="268436109" symbol="changeReps"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="16" lineNum="37" parent="globals/WorkoutView" pc="268436121" symbol="changeKg"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="16" lineNum="38" parent="globals/WorkoutView" pc="268436123" symbol="changeKg"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="16" lineNum="39" parent="globals/WorkoutView" pc="268436138" symbol="changeKg"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="16" lineNum="39" parent="globals/WorkoutView" pc="268436148" symbol="changeKg"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="16" lineNum="40" parent="globals/WorkoutView" pc="268436159" symbol="changeKg"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="17" lineNum="90" parent="globals/WorkoutView" pc="268436171" symbol="_tick"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="17" lineNum="91" parent="globals/WorkoutView" pc="268436173" symbol="_tick"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="17" lineNum="92" parent="globals/WorkoutView" pc="268436183" symbol="_tick"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="17" lineNum="94" parent="globals/WorkoutView" pc="268436201" symbol="_tick"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="17" lineNum="95" parent="globals/WorkoutView" pc="268436211" symbol="_tick"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="17" lineNum="97" parent="globals/WorkoutView" pc="268436221" symbol="_tick"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="18" lineNum="81" parent="globals/WorkoutView" pc="268436233" symbol="_stopRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="18" lineNum="82" parent="globals/WorkoutView" pc="268436235" symbol="_stopRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="18" lineNum="83" parent="globals/WorkoutView" pc="268436243" symbol="_stopRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="18" lineNum="84" parent="globals/WorkoutView" pc="268436252" symbol="_stopRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="18" lineNum="85" parent="globals/WorkoutView" pc="268436264" symbol="_stopRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="18" lineNum="87" parent="globals/WorkoutView" pc="268436275" symbol="_stopRest"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="19" lineNum="31" parent="globals/WorkoutView" pc="268436287" symbol="_loadCurrentDefaults"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="19" lineNum="32" parent="globals/WorkoutView" pc="268436290" symbol="_loadCurrentDefaults"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="19" lineNum="33" parent="globals/WorkoutView" pc="268436298" symbol="_loadCurrentDefaults"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="19" lineNum="34" parent="globals/WorkoutView" pc="268436313" symbol="_loadCurrentDefaults"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="49" parent="globals/WorkoutView" pc="268436329" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="50" parent="globals/WorkoutView" pc="268436332" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="51" parent="globals/WorkoutView" pc="268436342" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="52" parent="globals/WorkoutView" pc="268436349" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="55" parent="globals/WorkoutView" pc="268436353" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="56" parent="globals/WorkoutView" pc="268436361" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="57" parent="globals/WorkoutView" pc="268436381" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="58" parent="globals/WorkoutView" pc="268436396" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="60" parent="globals/WorkoutView" pc="268436416" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="61" parent="globals/WorkoutView" pc="268436445" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="62" parent="globals/WorkoutView" pc="268436460" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="63" parent="globals/WorkoutView" pc="268436468" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="65" parent="globals/WorkoutView" pc="268436478" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="66" parent="globals/WorkoutView" pc="268436486" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="67" parent="globals/WorkoutView" pc="268436494" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="20" lineNum="69" parent="globals/WorkoutView" pc="268436501" symbol="completeSet"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="21" lineNum="14" parent="globals/WorkoutView" pc="268436513" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="21" lineNum="15" parent="globals/WorkoutView" pc="268436515" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="21" lineNum="16" parent="globals/WorkoutView" pc="268436527" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="21" lineNum="17" parent="globals/WorkoutView" pc="268436558" symbol="initialize"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="22" lineNum="20" parent="globals/WorkoutView" pc="268436566" symbol="onHide"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="22" lineNum="21" parent="globals/WorkoutView" pc="268436568" symbol="onHide"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="22" lineNum="22" parent="globals/WorkoutView" pc="268436577" symbol="onHide"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="22" lineNum="23" parent="globals/WorkoutView" pc="268436589" symbol="onHide"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="108" parent="globals/WorkoutView" pc="268436601" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="109" parent="globals/WorkoutView" pc="268436604" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="110" parent="globals/WorkoutView" pc="268436613" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="112" parent="globals/WorkoutView" pc="268436622" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="113" parent="globals/WorkoutView" pc="268436640" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="115" parent="globals/WorkoutView" pc="268436648" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="116" parent="globals/WorkoutView" pc="268436665" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="118" parent="globals/WorkoutView" pc="268436697" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="119" parent="globals/WorkoutView" pc="268436707" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="120" parent="globals/WorkoutView" pc="268436724" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="121" parent="globals/WorkoutView" pc="268436750" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="122" parent="globals/WorkoutView" pc="268436767" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="123" parent="globals/WorkoutView" pc="268436795" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="124" parent="globals/WorkoutView" pc="268436812" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="125" parent="globals/WorkoutView" pc="268436839" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="128" parent="globals/WorkoutView" pc="268436843" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="129" parent="globals/WorkoutView" pc="268436851" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="130" parent="globals/WorkoutView" pc="268436858" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="131" parent="globals/WorkoutView" pc="268436887" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="134" parent="globals/WorkoutView" pc="268436918" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="135" parent="globals/WorkoutView" pc="268436935" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="137" parent="globals/WorkoutView" pc="268436964" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="138" parent="globals/WorkoutView" pc="268436981" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="141" parent="globals/WorkoutView" pc="268437081" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="143" parent="globals/WorkoutView" pc="268437103" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="144" parent="globals/WorkoutView" pc="268437120" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="145" parent="globals/WorkoutView" pc="268437163" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="147" parent="globals/WorkoutView" pc="268437186" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="148" parent="globals/WorkoutView" pc="268437203" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="149" parent="globals/WorkoutView" pc="268437242" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="150" parent="globals/WorkoutView" pc="268437259" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="151" parent="globals/WorkoutView" pc="268437283" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="153" parent="globals/WorkoutView" pc="268437310" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="154" parent="globals/WorkoutView" pc="268437327" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="155" parent="globals/WorkoutView" pc="268437366" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="156" parent="globals/WorkoutView" pc="268437383" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="157" parent="globals/WorkoutView" pc="268437407" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="159" parent="globals/WorkoutView" pc="268437434" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="160" parent="globals/WorkoutView" pc="268437451" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="162" parent="globals/WorkoutView" pc="268437478" symbol="onUpdate"/>
+<entry filename="/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutView.mc" id="23" lineNum="163" parent="globals/WorkoutView" pc="268437495" symbol="onUpdate"/>
+</pcToLineNum>
+<symbolTable>
+<entry id="8388639" module="true" symbol="Graphics"/>
+<entry id="8388632" method="true" symbol="&lt;init&gt;"/>
+<entry field="true" id="9" symbol="&lt;globals/WorkoutDelegate/&lt;&gt;_view&gt;"/>
+<entry field="true" id="23" symbol="&lt;globals/WorkoutView/&lt;&gt;_workout&gt;"/>
+<entry id="26" method="true" symbol="completeSet"/>
+<entry field="true" id="8388611" module="true" symbol="Toybox"/>
+<entry field="true" id="12" symbol="&lt;globals/WorkoutView/&lt;&gt;_exerciseIndex&gt;"/>
+<entry id="8" object="true" symbol="WorkoutView"/>
+<entry field="true" id="28" symbol="AppName"/>
+<entry id="4" module="true" symbol="globals/Rez/Strings"/>
+<entry id="8388648" module="true" symbol="WatchUi"/>
+<entry id="11" method="true" symbol="_exercise"/>
+<entry id="5" object="true" symbol="SetLogApp"/>
+<entry id="2" module="true" symbol="globals/Rez"/>
+<entry id="24" method="true" symbol="changeKg"/>
+<entry id="8389124" method="true" symbol="onUpdate"/>
+<entry id="8388771" module="true" object="true" symbol="Drawables"/>
+<entry id="25" method="true" symbol="changeReps"/>
+<entry field="true" id="22" symbol="&lt;globals/WorkoutView/&lt;&gt;_timer&gt;"/>
+<entry id="8389098" method="true" symbol="onTap"/>
+<entry id="21" method="true" symbol="_tick"/>
+<entry id="7" object="true" symbol="WorkoutStore"/>
+<entry id="14" method="true" symbol="_loadCurrentDefaults"/>
+<entry id="3" module="true" symbol="globals/Rez/Drawables"/>
+<entry id="8388769" module="true" object="true" symbol="Rez"/>
+<entry field="true" id="18" symbol="&lt;globals/WorkoutView/&lt;&gt;_setIndex&gt;"/>
+<entry field="true" id="16" symbol="&lt;globals/WorkoutView/&lt;&gt;_restRemaining&gt;"/>
+<entry field="true" id="15" symbol="&lt;globals/WorkoutView/&lt;&gt;_reps&gt;"/>
+<entry id="8388640" module="true" symbol="Lang"/>
+<entry id="6" object="true" symbol="WorkoutDelegate"/>
+<entry field="true" id="27" symbol="LauncherIcon"/>
+<entry id="10" method="true" symbol="demoWorkout"/>
+<entry id="8388610" symbol="statics"/>
+<entry field="true" id="13" symbol="&lt;globals/WorkoutView/&lt;&gt;_kg&gt;"/>
+<entry id="8389350" module="true" symbol="globals"/>
+<entry id="8388770" module="true" object="true" symbol="Strings"/>
+<entry id="8388702" method="true" symbol="initialize"/>
+<entry id="17" method="true" symbol="_restText"/>
+<entry id="20" method="true" symbol="_stopRest"/>
+<entry id="19" method="true" symbol="_startRest"/>
+<entry id="8389280" method="true" symbol="getInitialView"/>
+<entry id="8389097" method="true" symbol="onKey"/>
+<entry id="8388646" module="true" object="true" symbol="Timer"/>
+<entry id="8389125" method="true" symbol="onHide"/>
+</symbolTable>
+<localVars>
+<entry arg="true" endPc="268435539" name="view" stackId="1" startPc="268435516"/>
+<entry arg="true" endPc="268435704" name="event" stackId="1" startPc="268435540"/>
+<entry endPc="268435704" name="xy" stackId="2" startPc="268435543"/>
+<entry endPc="268435704" name="x" stackId="3" startPc="268435543"/>
+<entry endPc="268435704" name="y" stackId="4" startPc="268435543"/>
+<entry arg="true" endPc="268435743" name="event" stackId="1" startPc="268435705"/>
+<entry endPc="268435743" name="key" stackId="2" startPc="268435708"/>
+<entry endPc="268435843" name="view" stackId="1" startPc="268435791"/>
+<entry arg="true" endPc="268435985" name="seconds" stackId="1" startPc="268435879"/>
+<entry endPc="268436070" name="min" stackId="1" startPc="268435989"/>
+<entry endPc="268436070" name="sec" stackId="2" startPc="268435989"/>
+<entry endPc="268436070" name="secText" stackId="3" startPc="268435989"/>
+<entry arg="true" endPc="268436120" name="delta" stackId="1" startPc="268436071"/>
+<entry arg="true" endPc="268436170" name="delta" stackId="1" startPc="268436121"/>
+<entry endPc="268436327" name="ex" stackId="1" startPc="268436290"/>
+<entry endPc="268436511" name="ex" stackId="1" startPc="268436332"/>
+<entry arg="true" endPc="268437524" name="dc" stackId="1" startPc="268436601"/>
+<entry endPc="268437523" name="w" stackId="2" startPc="268436604"/>
+<entry endPc="268437523" name="h" stackId="3" startPc="268436604"/>
+<entry endPc="268437523" name="ex" stackId="4" startPc="268436604"/>
+<entry endPc="268437523" name="nextName" stackId="5" startPc="268436604"/>
+<entry endPc="268437523" name="setLine" stackId="6" startPc="268436604"/>
+<entry endPc="268437523" name="lastLine" stackId="7" startPc="268436604"/>
+</localVars>
+<deviceInfo deviceVersion="a331630064dc3043c2508661e93a67218e43d8d4" partNumber="006-B4426-00"/>
+<annotations>
+<annotationEntry annotation="initialized" class="Drawables" module="globals/Rez" symbol="LauncherIcon"/>
+<annotationEntry annotation="initialized" class="Strings" module="globals/Rez" symbol="AppName"/>
+</annotations>
+<dataEntryOffsetMappings>
+<dataEntry label="globals" offset="49" parentId="" symbolId="globals" type="module"/>
+<dataEntry label="globals/WorkoutDelegate" offset="125" parentId="globals" symbolId="WorkoutDelegate" type="class"/>
+<dataEntry label="globals/Rez" offset="196" parentId="globals" symbolId="Rez" type="module"/>
+<dataEntry label="globals/WorkoutStore" offset="240" parentId="globals" symbolId="WorkoutStore" type="class"/>
+<dataEntry label="globals/SetLogApp" offset="293" parentId="globals" symbolId="SetLogApp" type="class"/>
+<dataEntry label="globals/WorkoutView" offset="346" parentId="globals" symbolId="WorkoutView" type="class"/>
+<dataEntry label="globals/Rez/Drawables" offset="552" parentId="Rez" symbolId="Drawables" type="module"/>
+<dataEntry label="globals/Rez/Strings" offset="587" parentId="Rez" symbolId="Strings" type="module"/>
+</dataEntryOffsetMappings>
+<functions>
+<functionEntry accessMode="public" endPc="268435471" name="&lt;init&gt;" parent="WorkoutDelegate" startPc="268435460">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435491" name="&lt;init&gt;" parent="Rez" startPc="268435472">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" name="&lt;init&gt;" parent="WorkoutStore">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435503" name="&lt;init&gt;" parent="SetLogApp" startPc="268435492">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435515" name="&lt;init&gt;" parent="WorkoutView" startPc="268435504">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435539" name="initialize" parent="WorkoutDelegate" startPc="268435516">
+<param id="view"/>
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435704" name="onTap" parent="WorkoutDelegate" startPc="268435540">
+<param id="event"/>
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435743" name="onKey" parent="WorkoutDelegate" startPc="268435705">
+<param id="event"/>
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" name="&lt;init&gt;" parent="Drawables">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" name="&lt;init&gt;" parent="Strings">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" name="initialize" parent="WorkoutStore">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435787" name="demoWorkout" parent="WorkoutStore" startPc="268435744">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435843" name="getInitialView" parent="SetLogApp" startPc="268435788">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435858" name="initialize" parent="SetLogApp" startPc="268435844">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435878" name="_exercise" parent="WorkoutView" startPc="268435859">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268435985" name="_startRest" parent="WorkoutView" startPc="268435879">
+<param id="seconds"/>
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436070" name="_restText" parent="WorkoutView" startPc="268435986">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436120" name="changeReps" parent="WorkoutView" startPc="268436071">
+<param id="delta"/>
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436170" name="changeKg" parent="WorkoutView" startPc="268436121">
+<param id="delta"/>
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436232" name="_tick" parent="WorkoutView" startPc="268436171">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436286" name="_stopRest" parent="WorkoutView" startPc="268436233">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436328" name="_loadCurrentDefaults" parent="WorkoutView" startPc="268436287">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436512" name="completeSet" parent="WorkoutView" startPc="268436329">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436565" name="initialize" parent="WorkoutView" startPc="268436513">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268436600" name="onHide" parent="WorkoutView" startPc="268436566">
+<documentation/>
+</functionEntry>
+<functionEntry accessMode="public" endPc="268437524" name="onUpdate" parent="WorkoutView" startPc="268436601">
+<param id="dc"/>
+<documentation/>
+</functionEntry>
+</functions>
+</debugInfo>
