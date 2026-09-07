@@ -1584,7 +1584,8 @@ function viewSession(){
       <div class="sess-prog"><i style="width:${Math.round(doneCount/a.entries.length*100)}%"></i></div>
     </div>
     ${cards}
-    <div class="row" style="margin-top:16px">
+    <button class="btn ghost block" style="margin-top:16px" onclick="location.href='./sync.html'">⌚ Garmin Sync</button>
+    <div class="row" style="margin-top:10px">
       <button class="btn danger grow" onclick="confirmCancel()">Annulla</button>
       <button class="btn accent grow" onclick="confirmFinish()">Termina &amp; salva</button>
     </div>
