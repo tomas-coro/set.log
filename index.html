@@ -444,53 +444,44 @@ const KEY = "gymapp:v2";
 const uid = () => (crypto.randomUUID ? crypto.randomUUID() : "id"+Date.now()+Math.random().toString(36).slice(2));
 
 function defaultSchema(){
-  // ex(nome, serie, repMin, repMax, rir, recuperoSec, opzioni)
-  // opzioni: {hint, failLast, ss, bilateral} - ss = id gruppo superset (esercizi consecutivi con lo stesso ss)
-  // bilateral: true = esercizio con 2 manubri contemporaneamente, il kg inserito e' di UN manubrio
-  // e il volume (kg*reps) va raddoppiato. NON tocca il carico mostrato in PR/grafici, solo il volume totale.
-  const ex = (name, sets, rl, rh, rir, rest, o={}) => ({
-    id:uid(), name, note:o.hint||"", sets, repsLow:rl, repsHigh:rh, rir, restSec:rest,
-    failLast:!!o.failLast, ss:o.ss||null, bilateral:!!o.bilateral
+  const ex = (id, name, sets, rl, rh, rir, rest, note="") => ({
+    id, name, note, sets, repsLow:rl, repsHigh:rh, rir, restSec:rest,
+    failLast:false, ss:null, bilateral:true
   });
   return {
     rotationIndex: 0,
     days: [
-      { id:uid(), name:"Spinta A", focus:"Petto", exercises:[
-        ex("Panca piana bilanciere",4,6,8,"1-2",150,{hint:"presa poco piu' larga delle spalle"}),
-        ex("Panca inclinata manubri (30°)",3,8,10,"1-2",120,{bilateral:true}),
-        ex("Croci ai cavi in piedi",3,8,12,"0-1",90,{hint:"gomiti morbidi, arco ampio e controllato, zero stress sulla spalla in fondo",failLast:true}),
-        ex("Alzate laterali manubri",3,12,15,"0-1",60,{bilateral:true}),
-        ex("Pushdown ai cavi (corda)",3,10,12,"0-1",0,{ss:"t1",failLast:true}),
-        ex("French press EZ (o manubrio)",3,10,12,"0-1",75,{ss:"t1",failLast:true}),
+      { id:"day-anterior-a", name:"A - Anterior A", focus:"Petto + spalle + quadricipiti + tricipiti", exercises:[
+        ex("incline-press-machine-a","Incline press macchina",3,8,10,"1-2",150),
+        ex("hack-squat-a","Hack squat",3,8,10,"2",150),
+        ex("pec-fly-a","Pec fly / pectoral machine",4,10,15,"1",90),
+        ex("shoulder-press-a","Shoulder press macchina",3,8,10,"1-2",150),
+        ex("lateral-raise-a","Alzate laterali",3,12,20,"1",90),
+        ex("triceps-pushdown-a","Pushdown tricipiti",3,10,15,"1-2",90,"Corda, barra o variante unilaterale con cavigliera/maniglia; mantieni la variante per tutto il blocco."),
       ]},
-      { id:uid(), name:"Tirata A", focus:"Schiena + bicipiti", exercises:[
-        ex("Lat machine presa larga",4,6,8,"1-2",150,{hint:"tirare verso lo sterno, gomiti in basso"}),
-        ex("Rematore bilanciere",3,8,10,"2",120),
-        ex("Pulley basso presa stretta",3,10,12,"1",90),
-        ex("Curl bilanciere EZ",3,8,12,"0-1",0,{ss:"b1",failLast:true}),
-        ex("Curl martello manubri",3,8,12,"0-1",75,{ss:"b1",failLast:true,bilateral:true}),
-        ex("Curl ai cavi (o panca Scott)",2,12,15,"0",60,{hint:"picco bicipite",failLast:true}),
+      { id:"day-posterior-a", name:"B - Posterior A", focus:"Schiena + catena posteriore + deltoide posteriore + bicipiti", exercises:[
+        ex("lat-pulldown-b","Lat machine frontale",3,8,10,"1-2",150),
+        ex("high-row-b","High row / tirata sagittale gomiti stretti",3,8,10,"1-2",150),
+        ex("romanian-deadlift-b","Romanian deadlift",3,8,10,"2",150),
+        ex("reverse-pec-deck-b","Reverse pec deck",3,12,20,"1",90),
+        ex("preacher-curl-b","Preacher curl",3,8,12,"1-2",90,"Esercizio principale di progressione per i bicipiti."),
       ]},
-      { id:uid(), name:"Spinta B", focus:"Spalle + braccia", exercises:[
-        ex("Lento avanti manubri",4,6,8,"1-2",150,{hint:"variante manubri, piu' gentile sulle spalle della bilanciere",bilateral:true}),
-        ex("Alzate laterali manubri",4,12,15,"0",60,{hint:"priorita': spalle larghe",failLast:true,bilateral:true}),
-        ex("Alzate posteriori (rear delt)",3,15,15,"0-1",0,{ss:"s3",failLast:true}),
-        ex("Alzate laterali ai cavi",3,15,15,"0",75,{ss:"s3",failLast:true}),
-        ex("Curl manubri alternato",3,10,12,"0-1",0,{ss:"arm1",failLast:true,bilateral:true}),
-        ex("Pushdown corda ai cavi",3,10,12,"0",75,{ss:"arm1",failLast:true}),
-        ex("Curl concentrato",2,10,12,"0",0,{ss:"arm2",failLast:true}),
-        ex("Kickback ai cavi",2,12,15,"0",60,{ss:"arm2",failLast:true}),
+      { id:"day-anterior-b", name:"C - Anterior B", focus:"Petto + spalle + quadricipiti + tricipiti + abduttori", exercises:[
+        ex("incline-press-machine-c","Incline press macchina",3,8,10,"1-2",150),
+        ex("leg-extension-c","Leg extension",3,10,15,"1-2",90),
+        ex("low-high-fly-c","Croci low-to-high",4,10,15,"1",90),
+        ex("shoulder-press-c","Shoulder press macchina / plate-loaded",3,8,10,"1-2",150),
+        ex("lateral-raise-c","Alzate laterali",3,12,20,"1",90),
+        ex("overhead-triceps-extension-c","Overhead triceps extension",3,10,15,"1-2",90,"Scegli corda, cavo singolo o unilaterale e mantieni la variante per tutto il blocco."),
+        ex("abductor-machine-c","Abductor machine",2,12,20,"1-2",75),
       ]},
-      { id:uid(), name:"Gambe", focus:"Gambe + upper", exercises:[
-        ex("Pressa",4,8,10,"1-2",120,{hint:"quadricipiti + glutei, il main lift della giornata"}),
-        ex("Hack squat",3,8,10,"1-2",120,{hint:"quadricipiti, enfasi separazione"}),
-        ex("Leg extension",3,12,15,"0-1",75,{hint:"quadricipiti - definizione",failLast:true}),
-        ex("Leg curl sdraiato",3,12,15,"0-1",75,{hint:"femorali, bilancia il lavoro quad",failLast:true}),
-        ex("Hip thrust bilanciere",3,10,12,"1",90,{hint:"glutei/femorali anti-strappo"}),
-        ex("Polpacci in piedi",4,12,15,"1",0,{ss:"leg1",hint:"propedeutico corsa"}),
-        ex("Tibiale (tibialis raise)",3,15,20,"1",60,{ss:"leg1",hint:"anti-shin splint"}),
-        ex("Chest press (macchina)",3,10,12,"1",90,{hint:"secondo tocco settimanale per il petto, angolo diverso dalla panca"}),
-        ex("Rematore al cavo",3,10,12,"1",90,{hint:"secondo tocco settimanale per la schiena"}),
+      { id:"day-posterior-b", name:"D - Posterior B", focus:"Schiena + femorali + deltoide posteriore + bicipiti + polpacci", exercises:[
+        ex("lat-pulldown-d","Lat machine frontale",3,8,10,"1-2",150),
+        ex("wide-chest-supported-row-d","Remata chest-supported gomiti larghi",3,8,10,"1-2",150),
+        ex("seated-leg-curl-d","Leg curl seduto",3,10,15,"1-2",90),
+        ex("reverse-pec-deck-d","Reverse pec deck",3,12,20,"1",90),
+        ex("hammer-curl-d","Hammer curl",3,8,12,"1-2",90,"Variante standard per tutto il blocco."),
+        ex("calf-raise-d","Calf raise",3,10,15,"1-2",90),
       ]},
     ]
   };
@@ -881,6 +872,46 @@ function migrateWorkoutV7(){
     ]},
   ];
   DB.migrations.workoutV7 = true;
+  save();
+  return 1;
+}
+
+// Migrazione idempotente Anterior/Posterior V8: sostituisce solo i giorni,
+// conserva la posizione nella rotazione e non tocca sessioni, peso, impostazioni o sessione attiva.
+function migrateAnteriorPosteriorV8(){
+  DB.migrations = DB.migrations || {};
+  if(DB.migrations.anteriorPosteriorV8) return 0;
+  const oldDays = DB.schema.days || [];
+  const oldExercises = oldDays.flatMap(day=>day.exercises||[]);
+  const usedIds = new Set();
+  const aliases = {
+    "hack-squat-a":["Hack squat"],
+    "pec-fly-a":["Pec fly / pectoral machine","Pec deck","Pec deck (croci a macchina)"],
+    "shoulder-press-a":["Shoulder press macchina"],
+    "triceps-pushdown-a":["Pushdown tricipiti","Pushdown ai cavi (corda)","Pushdown corda ai cavi"],
+    "lat-pulldown-b":["Lat machine frontale","Lat machine presa neutra","Lat machine presa larga"],
+    "high-row-b":["High row / tirata sagittale gomiti stretti","High row / lat machine"],
+    "romanian-deadlift-b":["Romanian deadlift"],
+    "reverse-pec-deck-b":["Reverse pec deck"],
+    "leg-extension-c":["Leg extension"],
+    "shoulder-press-c":["Shoulder press macchina / plate-loaded","Shoulder press plate-loaded"],
+    "overhead-triceps-extension-c":["Overhead triceps extension","Estensioni tricipiti overhead al cavo"],
+    "lat-pulldown-d":["Lat machine frontale","Lat machine presa media/larga"],
+    "seated-leg-curl-d":["Leg curl seduto"],
+    "reverse-pec-deck-d":["Reverse pec deck"],
+    "hammer-curl-d":["Hammer curl","Curl martello manubri"],
+    "calf-raise-d":["Calf raise"],
+  };
+  const days = defaultSchema().days;
+  days.forEach((day, dayIndex)=>{
+    if(oldDays[dayIndex]?.id) day.id=oldDays[dayIndex].id;
+    day.exercises.forEach(exercise=>{
+      const previous=oldExercises.find(old=>old.id && !usedIds.has(old.id) && (aliases[exercise.id]||[exercise.name]).includes(old.name));
+      if(previous){ usedIds.add(previous.id); exercise.id=previous.id; }
+    });
+  });
+  DB.schema.days = days;
+  DB.migrations.anteriorPosteriorV8 = true;
   save();
   return 1;
 }
@@ -2143,13 +2174,7 @@ function importData(){
         {okLabel:"Importa e sostituisci", danger:true, onOk:()=>{
           DB={ schema:data.schema, sessions:data.sessions||[], bodyweight:data.bodyweight||[], active:data.active||null,
                migrations:data.migrations||{} };
-          migrateNoPullups();          // un backup vecchio puo' riportare le trazioni
-          migrateChestDipsAndLegs();   // idem per croci ai cavi / leg extension
-          migrateBilateralAndChestSwap();  // rinomina/flag: surgical, non sovrascrive la scheda
-          migrateAddVolumeV4();            // idem, aggiunge esercizi se il backup e' vecchio
-          migrateReorderV5();              // idem, sistema l'ordine se il backup e' vecchio
-          migrateWorkoutV6();              // applica la nuova scheda una sola volta
-          migrateWorkoutV7();              // applica la scheda definitiva una sola volta
+          migrateAnteriorPosteriorV8(); // aggiorna la scheda senza toccare la sessione attiva importata
           save(); render(); toast("Backup importato ✓");
         }});
     };
@@ -2178,14 +2203,7 @@ async function checkForUpdates(){
 
 /* ============ AVVIO ============ */
 ensureSeedList();
-const migrated = migrateNoPullups();
-const migratedExercises = migrateChestDipsAndLegs();
-const migratedSplit = migrateUpperLegsSplit();
-const migratedBilateral = migrateBilateralAndChestSwap();
-const migratedVolume = migrateAddVolumeV4();
-const migratedReorder = migrateReorderV5();
-const migratedWorkout = migrateWorkoutV6();
-const migratedWorkoutV7 = migrateWorkoutV7();
+const migratedAnteriorPosteriorV8 = migrateAnteriorPosteriorV8();
 if(DB.active) wake.enable();   // sessione ripresa dopo reload → riattiva lo schermo acceso
 resumeRestIfAny();             // idem per il recupero tra le serie, se era a meta'
 render();
@@ -2193,14 +2211,7 @@ if(view==="session") requestAnimationFrame(scrollToCurrentSet);
 {
   // un solo toast: chiamate multiple in fila si sovrascrivono a vicenda prima del render
   const notes = [];
-  if(migrated) notes.push(migrated===1 ? "trazioni sostituite con lat machine" : `${migrated} voci “trazioni” sostituite con lat machine`);
-  if(migratedExercises) notes.push("dip petto e leg extension aggiornati");
-  if(migratedSplit) notes.push("scheda ristrutturata: 3 giorni upper + 1 gambe dedicato");
-  if(migratedBilateral) notes.push("dip sostituiti con croci ai cavi, volume manubri corretto");
-  if(migratedVolume) notes.push("tutte le giornate allungate a ~34 serie (75-90 min) con esercizi mirati");
-  if(migratedReorder) notes.push("ordine esercizi sistemato (compound prima, isolamento dopo)");
-  if(migratedWorkout) notes.push("nuova scheda V6 a 4 giorni applicata");
-  if(migratedWorkoutV7) notes.push("scheda definitiva V7 a 4 giorni applicata");
+  if(migratedAnteriorPosteriorV8) notes.push("scheda Anterior / Posterior applicata");
   if(notes.length) toast("Scheda aggiornata: " + notes.join("; "));
 }
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(()=>{}); }
