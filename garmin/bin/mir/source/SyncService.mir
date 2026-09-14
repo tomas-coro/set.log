@@ -1,0 +1,482 @@
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 1; @symbol_usingdef<0> = [Toybox,1,6,12]; @symbol_usingdef<1> = [Communications,1,13,27]; @symbol_usingAlias = [Comm,1,31,35]; ]
+using Toybox.Communications as :Comm;
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 2; @symbol_usingdef<0> = [Toybox,2,6,12]; @symbol_usingdef<1> = [Lang,2,13,17]; @symbol_usingAlias = [Lang,2,21,25]; ]
+using Toybox.Lang as :Lang;
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 3; @symbol_usingdef<0> = [Toybox,3,6,12]; @symbol_usingdef<1> = [PersistedContent,3,13,29]; @symbol_usingAlias = [PersistedContent,3,33,49]; ]
+using Toybox.PersistedContent as :PersistedContent;
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 4; @symbol_usingdef<0> = [Toybox,4,6,12]; @symbol_usingdef<1> = [System,4,13,19]; @symbol_usingAlias = [Sys,4,23,26]; ]
+using Toybox.System as :Sys;
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 6; @symbol_classdef = [SyncService,6,6,17]; ]
+class SyncService {
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 6; ]
+    <init> {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 6; ]
+    static
+    <init> {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 8; @position = 16; @symbol_vardef = [_view,8,16,21]; ]
+    private
+    var _view;
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 10; @symbol_functiondef = [initialize,10,13,23]; @symbol_param<0> = [view,10,24,28]; ]
+    function initialize(view) as Void {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_10_30_12_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 11 8 ]
+        %tmp.1 = lgetv %view;
+        symbol [ view %tmp.1 11 16 20 ];
+        symbol [ _view ? 11 8 13 ];
+        putv self :_view %tmp.1;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_10_30_12_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 14; @symbol_functiondef = [_isConfigured,14,13,26]; ]
+    function _isConfigured() {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_14_29_19_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 15 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_15_15_18_55_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_15_15_17_47_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_15_15_16_50_begin:
+        symbol [ SyncConfig %tmp.2 15 15 25 ];
+        %tmp.2 = getv ? :SyncConfig;
+        symbol [ SUPABASE_URL %tmp.3 15 26 38 ];
+        %tmp.3 = getv %tmp.2 :SUPABASE_URL;
+        %tmp.4 = null;
+        %tmp.5 = ne %tmp.3 %tmp.4;
+        %tmp.6 = dup %tmp.5;
+        bf %tmp.6 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_16_15_16_50_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_16_15_16_50_true:
+        symbol [ SyncConfig %tmp.8 16 15 25 ];
+        %tmp.8 = getv ? :SyncConfig;
+        symbol [ SUPABASE_URL %tmp.9 16 26 38 ];
+        %tmp.9 = getv %tmp.8 :SUPABASE_URL;
+        symbol [ length %tmp.10 16 39 45 ];
+        %tmp.10 = getv function %tmp.9 :length;
+        %tmp.11 = invoke %tmp.9 %tmp.10();
+        %tmp.12 = 0;
+        %tmp.13 = gt %tmp.11 %tmp.12;
+        %tmp.14 = and %tmp.5 %tmp.13;
+        push %tmp.14;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_16_15_16_50_end:
+        %tmp.15 = phi [%tmp.6 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_15_15_16_50_begin] [%tmp.14 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_16_15_16_50_true] [%tmp.15 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_16_15_16_50_end];
+        %tmp.16 = dup %tmp.15;
+        bf %tmp.16 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_17_15_17_47_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_17_15_17_47_true:
+        symbol [ SyncConfig %tmp.18 17 15 25 ];
+        %tmp.18 = getv ? :SyncConfig;
+        symbol [ SUPABASE_ANON_KEY %tmp.19 17 26 43 ];
+        %tmp.19 = getv %tmp.18 :SUPABASE_ANON_KEY;
+        %tmp.20 = null;
+        %tmp.21 = ne %tmp.19 %tmp.20;
+        %tmp.22 = and %tmp.15 %tmp.21;
+        push %tmp.22;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_17_15_17_47_end:
+        %tmp.23 = phi [%tmp.16 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_15_15_17_47_begin] [%tmp.22 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_17_15_17_47_true] [%tmp.23 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_17_15_17_47_end];
+        %tmp.24 = dup %tmp.23;
+        bf %tmp.24 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_18_15_18_55_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_18_15_18_55_true:
+        symbol [ SyncConfig %tmp.26 18 15 25 ];
+        %tmp.26 = getv ? :SyncConfig;
+        symbol [ SUPABASE_ANON_KEY %tmp.27 18 26 43 ];
+        %tmp.27 = getv %tmp.26 :SUPABASE_ANON_KEY;
+        symbol [ length %tmp.28 18 44 50 ];
+        %tmp.28 = getv function %tmp.27 :length;
+        %tmp.29 = invoke %tmp.27 %tmp.28();
+        %tmp.30 = 0;
+        %tmp.31 = gt %tmp.29 %tmp.30;
+        %tmp.32 = and %tmp.23 %tmp.31;
+        push %tmp.32;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_18_15_18_55_end:
+        %tmp.33 = phi [%tmp.24 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_15_15_18_55_begin] [%tmp.32 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_18_15_18_55_true] [%tmp.33 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_18_15_18_55_end];
+        ret %tmp.33;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_14_29_19_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 21; @symbol_functiondef = [_headers,21,13,21]; ]
+    function _headers() {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_21_24_27_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 22 8 ]
+        %tmp.1 = newd 3;
+        %tmp.2 = "Content-Type";
+        symbol [ Comm %tmp.3 23 30 34 ];
+        %tmp.3 = getm $.Toybox.Communications;
+        symbol [ REQUEST_CONTENT_TYPE_JSON %tmp.4 23 35 60 ];
+        %tmp.4 = getv %tmp.3 :REQUEST_CONTENT_TYPE_JSON;
+        %tmp.5 = dup %tmp.1;
+        %tmp.6 = aputv %tmp.5 %tmp.2 %tmp.4;
+        %tmp.7 = "apikey";
+        symbol [ SyncConfig %tmp.9 24 24 34 ];
+        %tmp.9 = getv ? :SyncConfig;
+        symbol [ SUPABASE_ANON_KEY %tmp.10 24 35 52 ];
+        %tmp.10 = getv %tmp.9 :SUPABASE_ANON_KEY;
+        %tmp.11 = dup %tmp.6;
+        %tmp.12 = aputv %tmp.11 %tmp.7 %tmp.10;
+        %tmp.13 = "Authorization";
+        %tmp.14 = "Bearer ";
+        symbol [ SyncConfig %tmp.16 25 43 53 ];
+        %tmp.16 = getv ? :SyncConfig;
+        symbol [ SUPABASE_ANON_KEY %tmp.17 25 54 71 ];
+        %tmp.17 = getv %tmp.16 :SUPABASE_ANON_KEY;
+        %tmp.18 = add %tmp.14 %tmp.17;
+        %tmp.19 = dup %tmp.12;
+        %tmp.20 = aputv %tmp.19 %tmp.13 %tmp.18;
+        ret %tmp.20;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_21_24_27_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 29; @symbol_functiondef = [_pushHeaders,29,13,25]; ]
+    function _pushHeaders() {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_29_28_38_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 30 8 ]
+        %tmp.1 = newd 4;
+        %tmp.2 = "Content-Type";
+        symbol [ Comm %tmp.3 31 30 34 ];
+        %tmp.3 = getm $.Toybox.Communications;
+        symbol [ REQUEST_CONTENT_TYPE_JSON %tmp.4 31 35 60 ];
+        %tmp.4 = getv %tmp.3 :REQUEST_CONTENT_TYPE_JSON;
+        %tmp.5 = dup %tmp.1;
+        %tmp.6 = aputv %tmp.5 %tmp.2 %tmp.4;
+        %tmp.7 = "apikey";
+        symbol [ SyncConfig %tmp.9 32 24 34 ];
+        %tmp.9 = getv ? :SyncConfig;
+        symbol [ SUPABASE_ANON_KEY %tmp.10 32 35 52 ];
+        %tmp.10 = getv %tmp.9 :SUPABASE_ANON_KEY;
+        %tmp.11 = dup %tmp.6;
+        %tmp.12 = aputv %tmp.11 %tmp.7 %tmp.10;
+        %tmp.13 = "Authorization";
+        %tmp.14 = "Bearer ";
+        symbol [ SyncConfig %tmp.16 33 43 53 ];
+        %tmp.16 = getv ? :SyncConfig;
+        symbol [ SUPABASE_ANON_KEY %tmp.17 33 54 71 ];
+        %tmp.17 = getv %tmp.16 :SUPABASE_ANON_KEY;
+        %tmp.18 = add %tmp.14 %tmp.17;
+        %tmp.19 = dup %tmp.12;
+        %tmp.20 = aputv %tmp.19 %tmp.13 %tmp.18;
+        %tmp.21 = "Prefer";
+        %tmp.22 = "return=minimal";
+        %tmp.23 = dup %tmp.20;
+        %tmp.24 = aputv %tmp.23 %tmp.21 %tmp.22;
+        ret %tmp.24;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_29_28_38_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 40; @symbol_functiondef = [pullWorkout,40,13,24]; ]
+    function pullWorkout() {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_40_27_55_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 41 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_41_8_44_8_if_stmt:
+        %tmp.1 = self;
+        symbol [ _isConfigured %tmp.2 41 13 26 ];
+        %tmp.2 = getv function %tmp.1 :_isConfigured;
+        %tmp.3 = invoke %tmp.1 %tmp.2();
+        %tmp.4 = not %tmp.3;
+        bf %tmp.4 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_41_8_44_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_41_8_44_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_41_30_44_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 42 12 ]
+        symbol [ _view %tmp.6 42 12 17 ];
+        %tmp.6 = getv ? :_view;
+        symbol [ onRemoteWorkoutError %tmp.7 42 18 38 ];
+        %tmp.7 = getv function %tmp.6 :onRemoteWorkoutError;
+        %tmp.8 = 900;
+        invoke %tmp.6 %tmp.7(%tmp.8);
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 43 12 ]
+        ret ?;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_41_30_44_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_41_8_44_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_41_8_44_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 46 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_40_27_55_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_40_27_55_4_stop" ]
+        %url.1 = local;
+        symbol [ url %url.1 46 12 15 ];
+        symbol [ SyncConfig %tmp.10 46 18 28 ];
+        %tmp.10 = getv ? :SyncConfig;
+        symbol [ SUPABASE_URL %tmp.11 46 29 41 ];
+        %tmp.11 = getv %tmp.10 :SUPABASE_URL;
+        %tmp.12 = "/rest/v1/rpc/garmin_pull_workout";
+        %tmp.13 = add %tmp.11 %tmp.12;
+        lputv %url.1 %tmp.13;
+        symbol [ url %url.1 46 12 15 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 47 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_40_27_55_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_40_27_55_4_stop" ]
+        %params.2 = local;
+        symbol [ params %params.2 47 12 18 ];
+        %tmp.14 = newd 1;
+        %tmp.15 = "p_token";
+        symbol [ SyncConfig %tmp.17 47 36 46 ];
+        %tmp.17 = getv ? :SyncConfig;
+        symbol [ DEVICE_TOKEN %tmp.18 47 47 59 ];
+        %tmp.18 = getv %tmp.17 :DEVICE_TOKEN;
+        %tmp.19 = dup %tmp.14;
+        %tmp.20 = aputv %tmp.19 %tmp.15 %tmp.18;
+        lputv %params.2 %tmp.20;
+        symbol [ params %params.2 47 12 18 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 48 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_40_27_55_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_40_27_55_4_stop" ]
+        %options.3 = local;
+        symbol [ options %options.3 48 12 19 ];
+        %tmp.21 = newd 3;
+        %tmp.23 = const :method;
+        symbol [ method %tmp.23 49 13 19 const ];
+        symbol [ Comm %tmp.24 49 23 27 ];
+        %tmp.24 = getm $.Toybox.Communications;
+        symbol [ HTTP_REQUEST_METHOD_POST %tmp.25 49 28 52 ];
+        %tmp.25 = getv %tmp.24 :HTTP_REQUEST_METHOD_POST;
+        %tmp.26 = dup %tmp.21;
+        %tmp.27 = aputv %tmp.26 %tmp.23 %tmp.25;
+        %tmp.29 = const :headers;
+        symbol [ headers %tmp.29 50 13 20 const ];
+        %tmp.30 = self;
+        symbol [ _headers %tmp.31 50 24 32 ];
+        %tmp.31 = getv function %tmp.30 :_headers;
+        %tmp.32 = invoke %tmp.30 %tmp.31();
+        %tmp.33 = dup %tmp.27;
+        %tmp.34 = aputv %tmp.33 %tmp.29 %tmp.32;
+        %tmp.36 = const :responseType;
+        symbol [ responseType %tmp.36 51 13 25 const ];
+        symbol [ Comm %tmp.37 51 29 33 ];
+        %tmp.37 = getm $.Toybox.Communications;
+        symbol [ HTTP_RESPONSE_CONTENT_TYPE_JSON %tmp.38 51 34 65 ];
+        %tmp.38 = getv %tmp.37 :HTTP_RESPONSE_CONTENT_TYPE_JSON;
+        %tmp.39 = dup %tmp.34;
+        %tmp.40 = aputv %tmp.39 %tmp.36 %tmp.38;
+        lputv %options.3 %tmp.40;
+        symbol [ options %options.3 48 12 19 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 54 8 ]
+        symbol [ Comm %tmp.41 54 8 12 ];
+        %tmp.41 = getm $.Toybox.Communications;
+        symbol [ makeWebRequest %tmp.42 54 13 27 ];
+        %tmp.42 = getv function %tmp.41 :makeWebRequest;
+        %tmp.43 = lgetv %url.1;
+        symbol [ url %tmp.43 54 28 31 ];
+        %tmp.44 = lgetv %params.2;
+        symbol [ params %tmp.44 54 33 39 ];
+        %tmp.45 = lgetv %options.3;
+        symbol [ options %tmp.45 54 41 48 ];
+        %tmp.46 = self;
+        symbol [ method %tmp.47 54 50 56 ];
+        %tmp.47 = getv function %tmp.46 :method;
+        %tmp.49 = const :_onPull;
+        symbol [ _onPull %tmp.49 54 58 65 const ];
+        %tmp.50 = invoke %tmp.46 %tmp.47(%tmp.49);
+        invoke %tmp.41 %tmp.42(%tmp.43, %tmp.44, %tmp.45, %tmp.50);
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_40_27_55_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 57; @symbol_functiondef = [_onPull,57,13,20]; @symbol_param<0> = [code,57,21,25]; @symbol_param<0>_type<0> = [Lang,57,29,33]; @symbol_param<0>_type<1> = [Number,57,34,40]; @symbol_param<1> = [data,57,42,46]; @symbol_param<1>_type<0> = [Lang,57,58,62]; @symbol_param<1>_type<1> = [Dictionary,57,63,73]; @symbol_param<1>_type<2> = [Lang,57,77,81]; @symbol_param<1>_type<3> = [String,57,82,88]; @symbol_param<1>_type<4> = [PersistedContent,57,92,108]; @symbol_param<1>_type<5> = [Iterator,57,109,117]; ]
+    function _onPull(code as Lang.Number, data as Null or Lang.Dictionary or Lang.String or PersistedContent.Iterator) as Void {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_57_127_63_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 58 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_8_62_8_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_12_58_35_begin:
+        %tmp.1 = lgetv %code;
+        symbol [ code %tmp.1 58 12 16 ];
+        %tmp.2 = 200;
+        %tmp.3 = eq %tmp.1 %tmp.2;
+        bf %tmp.3 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_8_62_8_if_else_false;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_27_58_35_true:
+        %tmp.4 = lgetv %data;
+        symbol [ data %tmp.4 58 27 31 ];
+        %tmp.5 = null;
+        %tmp.6 = ne %tmp.4 %tmp.5;
+        push %tmp.6;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_27_58_35_end:
+        %tmp.7 = phi [%tmp.3 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_12_58_35_begin] [%tmp.6 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_27_58_35_true] [%tmp.7 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_27_58_35_end];
+        bf %tmp.7 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_8_62_8_if_else_false;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_8_62_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_41_60_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 59 12 ]
+        symbol [ _view %tmp.9 59 12 17 ];
+        %tmp.9 = getv ? :_view;
+        symbol [ onRemoteWorkout %tmp.10 59 18 33 ];
+        %tmp.10 = getv function %tmp.9 :onRemoteWorkout;
+        %tmp.11 = lgetv %data;
+        symbol [ data %tmp.11 59 34 38 ];
+        %tmp.12 = as %tmp.11 { (!Null) };
+        invoke %tmp.9 %tmp.10(%tmp.12);
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_41_60_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_8_62_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_8_62_8_if_else_false:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_60_15_62_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 61 12 ]
+        symbol [ _view %tmp.14 61 12 17 ];
+        %tmp.14 = getv ? :_view;
+        symbol [ onRemoteWorkoutError %tmp.15 61 18 38 ];
+        %tmp.15 = getv function %tmp.14 :onRemoteWorkoutError;
+        %tmp.16 = lgetv %code;
+        symbol [ code %tmp.16 61 39 43 ];
+        invoke %tmp.14 %tmp.15(%tmp.16);
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_60_15_62_8_stop:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_58_8_62_8_if_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_57_127_63_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 65; @symbol_functiondef = [pushResult,65,13,23]; @symbol_param<0> = [payload,65,24,31]; ]
+    function pushResult(payload) {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_65_33_85_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 66 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_66_8_69_8_if_stmt:
+        %tmp.1 = self;
+        symbol [ _isConfigured %tmp.2 66 13 26 ];
+        %tmp.2 = getv function %tmp.1 :_isConfigured;
+        %tmp.3 = invoke %tmp.1 %tmp.2();
+        %tmp.4 = not %tmp.3;
+        bf %tmp.4 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_66_8_69_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_66_8_69_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_66_30_69_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 67 12 ]
+        symbol [ _view %tmp.6 67 12 17 ];
+        %tmp.6 = getv ? :_view;
+        symbol [ onResultPushed %tmp.7 67 18 32 ];
+        %tmp.7 = getv function %tmp.6 :onResultPushed;
+        %tmp.8 = 900;
+        invoke %tmp.6 %tmp.7(%tmp.8);
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 68 12 ]
+        ret ?;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_66_30_69_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_66_8_69_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_66_8_69_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 71 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_65_33_85_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_65_33_85_4_stop" ]
+        %url.1 = local;
+        symbol [ url %url.1 71 12 15 ];
+        symbol [ SyncConfig %tmp.10 71 18 28 ];
+        %tmp.10 = getv ? :SyncConfig;
+        symbol [ SUPABASE_URL %tmp.11 71 29 41 ];
+        %tmp.11 = getv %tmp.10 :SUPABASE_URL;
+        %tmp.12 = "/rest/v1/rpc/garmin_push_result";
+        %tmp.13 = add %tmp.11 %tmp.12;
+        lputv %url.1 %tmp.13;
+        symbol [ url %url.1 71 12 15 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 72 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_65_33_85_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_65_33_85_4_stop" ]
+        %params.2 = local;
+        symbol [ params %params.2 72 12 18 ];
+        %tmp.14 = newd 2;
+        %tmp.15 = "p_token";
+        symbol [ SyncConfig %tmp.17 73 25 35 ];
+        %tmp.17 = getv ? :SyncConfig;
+        symbol [ DEVICE_TOKEN %tmp.18 73 36 48 ];
+        %tmp.18 = getv %tmp.17 :DEVICE_TOKEN;
+        %tmp.19 = dup %tmp.14;
+        %tmp.20 = aputv %tmp.19 %tmp.15 %tmp.18;
+        %tmp.21 = "p_result";
+        %tmp.22 = lgetv %payload;
+        symbol [ payload %tmp.22 74 26 33 ];
+        %tmp.23 = dup %tmp.20;
+        %tmp.24 = aputv %tmp.23 %tmp.21 %tmp.22;
+        lputv %params.2 %tmp.24;
+        symbol [ params %params.2 72 12 18 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 76 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_65_33_85_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_65_33_85_4_stop" ]
+        %options.3 = local;
+        symbol [ options %options.3 76 12 19 ];
+        %tmp.25 = newd 2;
+        %tmp.27 = const :method;
+        symbol [ method %tmp.27 77 13 19 const ];
+        symbol [ Comm %tmp.28 77 23 27 ];
+        %tmp.28 = getm $.Toybox.Communications;
+        symbol [ HTTP_REQUEST_METHOD_POST %tmp.29 77 28 52 ];
+        %tmp.29 = getv %tmp.28 :HTTP_REQUEST_METHOD_POST;
+        %tmp.30 = dup %tmp.25;
+        %tmp.31 = aputv %tmp.30 %tmp.27 %tmp.29;
+        %tmp.33 = const :headers;
+        symbol [ headers %tmp.33 78 13 20 const ];
+        %tmp.34 = self;
+        symbol [ _pushHeaders %tmp.35 78 24 36 ];
+        %tmp.35 = getv function %tmp.34 :_pushHeaders;
+        %tmp.36 = invoke %tmp.34 %tmp.35();
+        %tmp.37 = dup %tmp.31;
+        %tmp.38 = aputv %tmp.37 %tmp.33 %tmp.36;
+        lputv %options.3 %tmp.38;
+        symbol [ options %options.3 76 12 19 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 84 8 ]
+        symbol [ Comm %tmp.39 84 8 12 ];
+        %tmp.39 = getm $.Toybox.Communications;
+        symbol [ makeWebRequest %tmp.40 84 13 27 ];
+        %tmp.40 = getv function %tmp.39 :makeWebRequest;
+        %tmp.41 = lgetv %url.1;
+        symbol [ url %tmp.41 84 28 31 ];
+        %tmp.42 = lgetv %params.2;
+        symbol [ params %tmp.42 84 33 39 ];
+        %tmp.43 = lgetv %options.3;
+        symbol [ options %tmp.43 84 41 48 ];
+        %tmp.44 = self;
+        symbol [ method %tmp.45 84 50 56 ];
+        %tmp.45 = getv function %tmp.44 :method;
+        %tmp.47 = const :_onPush;
+        symbol [ _onPush %tmp.47 84 58 65 const ];
+        %tmp.48 = invoke %tmp.44 %tmp.45(%tmp.47);
+        invoke %tmp.39 %tmp.40(%tmp.41, %tmp.42, %tmp.43, %tmp.48);
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_65_33_85_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 87; @symbol_functiondef = [_onPush,87,13,20]; @symbol_param<0> = [code,87,21,25]; @symbol_param<0>_type<0> = [Lang,87,29,33]; @symbol_param<0>_type<1> = [Number,87,34,40]; @symbol_param<1> = [data,87,42,46]; @symbol_param<1>_type<0> = [Lang,87,58,62]; @symbol_param<1>_type<1> = [Dictionary,87,63,73]; @symbol_param<1>_type<2> = [Lang,87,77,81]; @symbol_param<1>_type<3> = [String,87,82,88]; @symbol_param<1>_type<4> = [PersistedContent,87,92,108]; @symbol_param<1>_type<5> = [Iterator,87,109,117]; ]
+    function _onPush(code as Lang.Number, data as Null or Lang.Dictionary or Lang.String or PersistedContent.Iterator) as Void {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_87_127_102_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 88 8 ]
+        symbol [ Sys %tmp.1 88 8 11 ];
+        %tmp.1 = getm $.Toybox.System;
+        symbol [ println %tmp.2 88 12 19 ];
+        %tmp.2 = getv function %tmp.1 :println;
+        %tmp.3 = "SETLOG PUSH HTTP ";
+        %tmp.4 = lgetv %code;
+        symbol [ code %tmp.4 88 42 46 ];
+        symbol [ toString %tmp.5 88 47 55 ];
+        %tmp.5 = getv function %tmp.4 :toString;
+        %tmp.6 = invoke %tmp.4 %tmp.5();
+        %tmp.7 = add %tmp.3 %tmp.6;
+        invoke %tmp.1 %tmp.2(%tmp.7);
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 89 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_89_8_91_8_if_stmt:
+        %tmp.8 = lgetv %data;
+        symbol [ data %tmp.8 89 12 16 ];
+        %tmp.9 = null;
+        %tmp.10 = ne %tmp.8 %tmp.9;
+        bf %tmp.10 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_89_8_91_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_89_8_91_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_89_26_91_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 90 12 ]
+        symbol [ Sys %tmp.11 90 12 15 ];
+        %tmp.11 = getm $.Toybox.System;
+        symbol [ println %tmp.12 90 16 23 ];
+        %tmp.12 = getv function %tmp.11 :println;
+        %tmp.13 = "SETLOG PUSH RESPONSE: ";
+        %tmp.14 = lgetv %data;
+        symbol [ data %tmp.14 90 51 55 ];
+        %tmp.15 = as %tmp.14 { (!Null) };
+        symbol [ toString %tmp.16 90 56 64 ];
+        %tmp.16 = getv function %tmp.15 :toString;
+        %tmp.17 = invoke %tmp.15 %tmp.16();
+        %tmp.18 = add %tmp.13 %tmp.17;
+        invoke %tmp.11 %tmp.12(%tmp.18);
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_89_26_91_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_89_8_91_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_89_8_91_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 96 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_96_8_99_8_if_stmt:
+        %tmp.19 = lgetv %code;
+        symbol [ code %tmp.19 96 12 16 ];
+        %tmp.20 = -400;
+        %tmp.21 = eq %tmp.19 %tmp.20;
+        bf %tmp.21 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_96_8_99_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_96_8_99_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_96_26_99_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 97 12 ]
+        symbol [ _view %tmp.23 97 12 17 ];
+        %tmp.23 = getv ? :_view;
+        symbol [ onResultPushed %tmp.24 97 18 32 ];
+        %tmp.24 = getv function %tmp.23 :onResultPushed;
+        %tmp.25 = 204;
+        invoke %tmp.23 %tmp.24(%tmp.25);
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 98 12 ]
+        ret ?;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_96_26_99_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_96_8_99_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_96_8_99_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc" 101 8 ]
+        symbol [ _view %tmp.27 101 8 13 ];
+        %tmp.27 = getv ? :_view;
+        symbol [ onResultPushed %tmp.28 101 14 28 ];
+        %tmp.28 = getv function %tmp.27 :onResultPushed;
+        %tmp.29 = lgetv %code;
+        symbol [ code %tmp.29 101 29 33 ];
+        invoke %tmp.27 %tmp.28(%tmp.29);
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SyncService_mc_87_127_102_4_stop:
+    }
+}
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncService.mc"; @line = 1; ]
+<init> {
+}

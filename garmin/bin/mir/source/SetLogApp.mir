@@ -11,44 +11,50 @@ class SetLogApp extends App.AppBase {
     static
     <init> {
     }
-    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 5; @symbol_functiondef = [initialize,5,13,23]; ]
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 6; @symbol_functiondef = [initialize,6,13,23]; ]
     function initialize() as Void {
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_5_26_7_4_start:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 6 8 ]
-        symbol [ AppBase %tmp.2 6 8 15 ];
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_6_26_8_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 7 8 ]
+        symbol [ AppBase %tmp.2 7 8 15 ];
         %tmp.2 = getv ? :AppBase;
-        symbol [ initialize %tmp.3 6 16 26 ];
+        symbol [ initialize %tmp.3 7 16 26 ];
         %tmp.3 = getv function %tmp.2 :initialize;
         invoke %tmp.2 %tmp.3();
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_5_26_7_4_stop:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_6_26_8_4_stop:
     }
-    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 9; @symbol_functiondef = [getInitialView,9,13,27]; ]
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 10; @symbol_functiondef = [onStart,10,13,20]; @symbol_param<0> = [state,10,21,26]; ]
+    function onStart(state) {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 13; @symbol_functiondef = [onStop,13,13,19]; @symbol_param<0> = [state,13,20,25]; ]
+    function onStop(state) {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 16; @symbol_functiondef = [getInitialView,16,13,27]; ]
     function getInitialView() {
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_9_30_12_4_start:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 10 8 ]
-        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_9_30_12_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_9_30_12_4_stop" ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_16_30_19_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 17 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_16_30_19_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_16_30_19_4_stop" ]
         %view.1 = local;
-        symbol [ view %view.1 10 12 16 ];
-        symbol [ WorkoutView %tmp.4 10 23 34 ];
+        symbol [ view %view.1 17 12 16 ];
+        symbol [ WorkoutView %tmp.4 17 23 34 ];
         %tmp.4 = getv ? :WorkoutView;
         %tmp.1 = newc %tmp.4 ();
         lputv %view.1 %tmp.1;
-        symbol [ view %view.1 10 12 16 ];
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 11 8 ]
+        symbol [ view %view.1 17 12 16 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc" 18 8 ]
         %tmp.5 = newa 2;
         %tmp.6 = lgetv %view.1;
-        symbol [ view %tmp.6 11 17 21 ];
+        symbol [ view %tmp.6 18 16 20 ];
         %tmp.7 = dup %tmp.5;
         %tmp.8 = aputv %tmp.7 0 %tmp.6;
-        symbol [ WorkoutDelegate %tmp.12 11 27 42 ];
+        symbol [ WorkoutDelegate %tmp.12 18 26 41 ];
         %tmp.12 = getv ? :WorkoutDelegate;
         %tmp.13 = lgetv %view.1;
-        symbol [ view %tmp.13 11 43 47 ];
+        symbol [ view %tmp.13 18 42 46 ];
         %tmp.9 = newc %tmp.12 (%tmp.13);
         %tmp.14 = dup %tmp.8;
         %tmp.15 = aputv %tmp.14 1 %tmp.9;
         ret %tmp.15;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_9_30_12_4_stop:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_SetLogApp_mc_16_30_19_4_stop:
     }
 }
 [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SetLogApp.mc"; @line = 1; ]

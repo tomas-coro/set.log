@@ -28,210 +28,1356 @@ _Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDeleg
         putv self :_view %tmp.4;
 _Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_6_30_9_4_stop:
     }
-    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc"; @line = 11; @symbol_functiondef = [onTap,11,13,18]; @symbol_param<0> = [event,11,19,24]; ]
-    function onTap(event) {
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_26_35_4_start:
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc"; @line = 11; @symbol_functiondef = [_insideCircle,11,13,26]; @symbol_param<0> = [x,11,27,28]; @symbol_param<1> = [y,11,30,31]; @symbol_param<2> = [cx,11,33,35]; @symbol_param<3> = [cy,11,37,39]; @symbol_param<4> = [radius,11,41,47]; ]
+    function _insideCircle(x, y, cx, cy, radius) {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_49_15_4_start:
 [ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 12 8 ]
-        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_26_35_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_26_35_4_stop" ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_49_15_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_49_15_4_stop" ]
+        %dx.1 = local;
+        symbol [ dx %dx.1 12 12 14 ];
+        %tmp.1 = lgetv %x;
+        symbol [ x %tmp.1 12 17 18 ];
+        %tmp.2 = lgetv %cx;
+        symbol [ cx %tmp.2 12 21 23 ];
+        %tmp.3 = sub %tmp.1 %tmp.2;
+        lputv %dx.1 %tmp.3;
+        symbol [ dx %dx.1 12 12 14 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 13 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_49_15_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_49_15_4_stop" ]
+        %dy.2 = local;
+        symbol [ dy %dy.2 13 12 14 ];
+        %tmp.4 = lgetv %y;
+        symbol [ y %tmp.4 13 17 18 ];
+        %tmp.5 = lgetv %cy;
+        symbol [ cy %tmp.5 13 21 23 ];
+        %tmp.6 = sub %tmp.4 %tmp.5;
+        lputv %dy.2 %tmp.6;
+        symbol [ dy %dy.2 13 12 14 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 14 8 ]
+        %tmp.7 = lgetv %dx.1;
+        symbol [ dx %tmp.7 14 17 19 ];
+        %tmp.8 = lgetv %dx.1;
+        symbol [ dx %tmp.8 14 22 24 ];
+        %tmp.9 = mul %tmp.7 %tmp.8;
+        %tmp.10 = lgetv %dy.2;
+        symbol [ dy %tmp.10 14 29 31 ];
+        %tmp.11 = lgetv %dy.2;
+        symbol [ dy %tmp.11 14 34 36 ];
+        %tmp.12 = mul %tmp.10 %tmp.11;
+        %tmp.13 = add %tmp.9 %tmp.12;
+        %tmp.14 = lgetv %radius;
+        symbol [ radius %tmp.14 14 43 49 ];
+        %tmp.15 = lgetv %radius;
+        symbol [ radius %tmp.15 14 52 58 ];
+        %tmp.16 = mul %tmp.14 %tmp.15;
+        %tmp.17 = lte %tmp.13 %tmp.16;
+        ret %tmp.17;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_49_15_4_stop:
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc"; @line = 17; @symbol_functiondef = [onTap,17,13,18]; @symbol_param<0> = [event,17,19,24]; ]
+    function onTap(event) {
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 18 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_stop" ]
         %xy.1 = local;
-        symbol [ xy %xy.1 12 12 14 ];
+        symbol [ xy %xy.1 18 12 14 ];
         %tmp.1 = lgetv %event;
-        symbol [ event %tmp.1 12 17 22 ];
-        symbol [ getCoordinates %tmp.2 12 23 37 ];
+        symbol [ event %tmp.1 18 17 22 ];
+        symbol [ getCoordinates %tmp.2 18 23 37 ];
         %tmp.2 = getv function %tmp.1 :getCoordinates;
         %tmp.3 = invoke %tmp.1 %tmp.2();
         lputv %xy.1 %tmp.3;
-        symbol [ xy %xy.1 12 12 14 ];
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 13 8 ]
-        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_26_35_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_26_35_4_stop" ]
+        symbol [ xy %xy.1 18 12 14 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 19 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_stop" ]
         %x.2 = local;
-        symbol [ x %x.2 13 12 13 ];
+        symbol [ x %x.2 19 12 13 ];
         %tmp.4 = lgetv %xy.1;
-        symbol [ xy %tmp.4 13 16 18 ];
+        symbol [ xy %tmp.4 19 16 18 ];
         %tmp.5 = 0;
         %tmp.6 = agetv %tmp.4 %tmp.5;
         lputv %x.2 %tmp.6;
-        symbol [ x %x.2 13 12 13 ];
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 14 8 ]
-        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_26_35_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_26_35_4_stop" ]
+        symbol [ x %x.2 19 12 13 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 20 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_stop" ]
         %y.3 = local;
-        symbol [ y %y.3 14 12 13 ];
+        symbol [ y %y.3 20 12 13 ];
         %tmp.7 = lgetv %xy.1;
-        symbol [ xy %tmp.7 14 16 18 ];
+        symbol [ xy %tmp.7 20 16 18 ];
         %tmp.8 = 1;
         %tmp.9 = agetv %tmp.7 %tmp.8;
         lputv %y.3 %tmp.9;
-        symbol [ y %y.3 14 12 13 ];
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 17 8 ]
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_8_20_8_if_stmt:
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_12_17_28_begin:
-        %tmp.10 = lgetv %y.3;
-        symbol [ y %tmp.10 17 12 13 ];
-        %tmp.11 = 176;
-        %tmp.12 = gte %tmp.10 %tmp.11;
-        bf %tmp.12 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_8_20_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_24_17_28_true:
-        %tmp.13 = lgetv %y.3;
-        symbol [ y %tmp.13 17 24 25 ];
-        %tmp.14 = 214;
-        %tmp.15 = lt %tmp.13 %tmp.14;
-        push %tmp.15;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_24_17_28_end:
-        %tmp.16 = phi [%tmp.12 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_12_17_28_begin] [%tmp.15 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_24_17_28_true] [%tmp.16 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_24_17_28_end];
-        bf %tmp.16 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_8_20_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_8_20_8_if_true:
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_33_20_8_start:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 18 12 ]
-        symbol [ _view %tmp.18 18 12 17 ];
-        %tmp.18 = getv ? :_view;
-        symbol [ changeKg %tmp.19 18 18 26 ];
-        %tmp.19 = getv function %tmp.18 :changeKg;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_begin:
-        %tmp.20 = lgetv %x.2;
-        symbol [ x %tmp.20 18 27 28 ];
-        %tmp.21 = 195;
-        %tmp.22 = lt %tmp.20 %tmp.21;
-        bf %tmp.22 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_else_false;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_true:
-        %tmp.23 = -2.5;
-        push %tmp.23;
-        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_else_false:
-        %tmp.24 = 2.5;
-        push %tmp.24;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_end:
-        %tmp.25 = phi [%tmp.22 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_begin] [%tmp.23 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_true] [%tmp.24 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_else_false] [%tmp.25 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_18_27_18_44_end];
-        invoke %tmp.18 %tmp.19(%tmp.25);
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 19 12 ]
-        %tmp.26 = true;
-        ret %tmp.26;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_33_20_8_stop:
-        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_8_20_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_8_20_8_if_end:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 23 8 ]
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_8_26_8_if_stmt:
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_12_23_28_begin:
-        %tmp.27 = lgetv %y.3;
-        symbol [ y %tmp.27 23 12 13 ];
-        %tmp.28 = 230;
-        %tmp.29 = gte %tmp.27 %tmp.28;
-        bf %tmp.29 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_8_26_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_24_23_28_true:
-        %tmp.30 = lgetv %y.3;
-        symbol [ y %tmp.30 23 24 25 ];
-        %tmp.31 = 268;
-        %tmp.32 = lt %tmp.30 %tmp.31;
-        push %tmp.32;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_24_23_28_end:
-        %tmp.33 = phi [%tmp.29 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_12_23_28_begin] [%tmp.32 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_24_23_28_true] [%tmp.33 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_24_23_28_end];
-        bf %tmp.33 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_8_26_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_8_26_8_if_true:
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_33_26_8_start:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 24 12 ]
-        symbol [ _view %tmp.35 24 12 17 ];
-        %tmp.35 = getv ? :_view;
-        symbol [ changeReps %tmp.36 24 18 28 ];
-        %tmp.36 = getv function %tmp.35 :changeReps;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_begin:
-        %tmp.37 = lgetv %x.2;
-        symbol [ x %tmp.37 24 29 30 ];
-        %tmp.38 = 195;
-        %tmp.39 = lt %tmp.37 %tmp.38;
-        bf %tmp.39 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_else_false;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_true:
-        %tmp.40 = -1;
-        push %tmp.40;
-        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_else_false:
-        %tmp.41 = 1;
-        push %tmp.41;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_end:
-        %tmp.42 = phi [%tmp.39 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_begin] [%tmp.40 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_true] [%tmp.41 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_else_false] [%tmp.42 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_29_24_44_end];
-        invoke %tmp.35 %tmp.36(%tmp.42);
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 25 12 ]
-        %tmp.43 = true;
-        ret %tmp.43;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_33_26_8_stop:
-        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_8_26_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_8_26_8_if_end:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 29 8 ]
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_8_32_8_if_stmt:
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_12_29_28_begin:
-        %tmp.44 = lgetv %y.3;
-        symbol [ y %tmp.44 29 12 13 ];
-        %tmp.45 = 284;
-        %tmp.46 = gte %tmp.44 %tmp.45;
-        bf %tmp.46 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_8_32_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_24_29_28_true:
-        %tmp.47 = lgetv %y.3;
-        symbol [ y %tmp.47 29 24 25 ];
-        %tmp.48 = 324;
-        %tmp.49 = lt %tmp.47 %tmp.48;
-        push %tmp.49;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_24_29_28_end:
-        %tmp.50 = phi [%tmp.46 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_12_29_28_begin] [%tmp.49 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_24_29_28_true] [%tmp.50 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_24_29_28_end];
-        bf %tmp.50 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_8_32_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_8_32_8_if_true:
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_33_32_8_start:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 30 12 ]
-        symbol [ _view %tmp.52 30 12 17 ];
-        %tmp.52 = getv ? :_view;
-        symbol [ completeSet %tmp.53 30 18 29 ];
-        %tmp.53 = getv function %tmp.52 :completeSet;
-        invoke %tmp.52 %tmp.53();
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 31 12 ]
-        %tmp.54 = true;
+        symbol [ y %y.3 20 12 13 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 22 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_22_8_41_8_if_stmt:
+        symbol [ _view %tmp.11 22 12 17 ];
+        %tmp.11 = getv ? :_view;
+        symbol [ isResting %tmp.12 22 18 27 ];
+        %tmp.12 = getv function %tmp.11 :isResting;
+        %tmp.13 = invoke %tmp.11 %tmp.12();
+        bf %tmp.13 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_22_8_41_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_22_8_41_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_22_31_41_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 23 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_12_38_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_16_23_33_begin:
+        %tmp.14 = lgetv %y.3;
+        symbol [ y %tmp.14 23 16 17 ];
+        %tmp.15 = 270;
+        %tmp.16 = gte %tmp.14 %tmp.15;
+        bf %tmp.16 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_12_38_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_28_23_33_true:
+        %tmp.17 = lgetv %y.3;
+        symbol [ y %tmp.17 23 28 29 ];
+        %tmp.18 = 330;
+        %tmp.19 = lte %tmp.17 %tmp.18;
+        push %tmp.19;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_28_23_33_end:
+        %tmp.20 = phi [%tmp.16 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_16_23_33_begin] [%tmp.19 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_28_23_33_true] [%tmp.20 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_28_23_33_end];
+        bf %tmp.20 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_12_38_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_12_38_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_38_38_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 24 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_16_27_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_20_24_35_begin:
+        %tmp.21 = lgetv %x.2;
+        symbol [ x %tmp.21 24 20 21 ];
+        %tmp.22 = 40;
+        %tmp.23 = gte %tmp.21 %tmp.22;
+        bf %tmp.23 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_16_27_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_31_24_35_true:
+        %tmp.24 = lgetv %x.2;
+        symbol [ x %tmp.24 24 31 32 ];
+        %tmp.25 = 134;
+        %tmp.26 = lt %tmp.24 %tmp.25;
+        push %tmp.26;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_31_24_35_end:
+        %tmp.27 = phi [%tmp.23 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_20_24_35_begin] [%tmp.26 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_31_24_35_true] [%tmp.27 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_31_24_35_end];
+        bf %tmp.27 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_16_27_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_16_27_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_40_27_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 25 20 ]
+        symbol [ _view %tmp.29 25 20 25 ];
+        %tmp.29 = getv ? :_view;
+        symbol [ subtractRest15 %tmp.30 25 26 40 ];
+        %tmp.30 = getv function %tmp.29 :subtractRest15;
+        invoke %tmp.29 %tmp.30();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 26 20 ]
+        %tmp.31 = true;
+        ret %tmp.31;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_40_27_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_16_27_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_24_16_27_16_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 29 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_16_32_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_20_29_36_begin:
+        %tmp.32 = lgetv %x.2;
+        symbol [ x %tmp.32 29 20 21 ];
+        %tmp.33 = 134;
+        %tmp.34 = gte %tmp.32 %tmp.33;
+        bf %tmp.34 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_16_32_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_32_29_36_true:
+        %tmp.35 = lgetv %x.2;
+        symbol [ x %tmp.35 29 32 33 ];
+        %tmp.36 = 224;
+        %tmp.37 = lt %tmp.35 %tmp.36;
+        push %tmp.37;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_32_29_36_end:
+        %tmp.38 = phi [%tmp.34 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_20_29_36_begin] [%tmp.37 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_32_29_36_true] [%tmp.38 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_32_29_36_end];
+        bf %tmp.38 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_16_32_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_16_32_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_41_32_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 30 20 ]
+        symbol [ _view %tmp.40 30 20 25 ];
+        %tmp.40 = getv ? :_view;
+        symbol [ addRest15 %tmp.41 30 26 35 ];
+        %tmp.41 = getv function %tmp.40 :addRest15;
+        invoke %tmp.40 %tmp.41();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 31 20 ]
+        %tmp.42 = true;
+        ret %tmp.42;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_41_32_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_16_32_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_16_32_16_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 34 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_16_37_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_20_34_37_begin:
+        %tmp.43 = lgetv %x.2;
+        symbol [ x %tmp.43 34 20 21 ];
+        %tmp.44 = 224;
+        %tmp.45 = gte %tmp.43 %tmp.44;
+        bf %tmp.45 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_16_37_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_32_34_37_true:
+        %tmp.46 = lgetv %x.2;
+        symbol [ x %tmp.46 34 32 33 ];
+        %tmp.47 = 350;
+        %tmp.48 = lte %tmp.46 %tmp.47;
+        push %tmp.48;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_32_34_37_end:
+        %tmp.49 = phi [%tmp.45 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_20_34_37_begin] [%tmp.48 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_32_34_37_true] [%tmp.49 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_32_34_37_end];
+        bf %tmp.49 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_16_37_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_16_37_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_42_37_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 35 20 ]
+        symbol [ _view %tmp.51 35 20 25 ];
+        %tmp.51 = getv ? :_view;
+        symbol [ skipRest %tmp.52 35 26 34 ];
+        %tmp.52 = getv function %tmp.51 :skipRest;
+        invoke %tmp.51 %tmp.52();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 36 20 ]
+        %tmp.53 = true;
+        ret %tmp.53;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_42_37_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_16_37_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_34_16_37_16_if_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_38_38_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_12_38_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_23_12_38_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 40 12 ]
+        %tmp.54 = false;
         ret %tmp.54;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_33_32_8_stop:
-        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_8_32_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_29_8_32_8_if_end:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 34 8 ]
-        %tmp.55 = false;
-        ret %tmp.55;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_11_26_35_4_stop:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_22_31_41_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_22_8_41_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_22_8_41_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 43 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_stop" ]
+        %screen.4 = local;
+        symbol [ screen %screen.4 43 12 18 ];
+        symbol [ _view %tmp.56 43 21 26 ];
+        %tmp.56 = getv ? :_view;
+        symbol [ getScreen %tmp.57 43 27 36 ];
+        %tmp.57 = getv function %tmp.56 :getScreen;
+        %tmp.58 = invoke %tmp.56 %tmp.57();
+        lputv %screen.4 %tmp.58;
+        symbol [ screen %screen.4 43 12 18 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 46 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_46_8_52_8_if_stmt:
+        %tmp.59 = lgetv %screen.4;
+        symbol [ screen %tmp.59 46 12 18 ];
+        %tmp.60 = 0;
+        %tmp.61 = eq %tmp.59 %tmp.60;
+        bf %tmp.61 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_46_8_52_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_46_8_52_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_46_25_52_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 47 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_12_50_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_16_47_33_begin:
+        %tmp.62 = lgetv %y.3;
+        symbol [ y %tmp.62 47 16 17 ];
+        %tmp.63 = 270;
+        %tmp.64 = gte %tmp.62 %tmp.63;
+        bf %tmp.64 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_12_50_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_28_47_33_true:
+        %tmp.65 = lgetv %y.3;
+        symbol [ y %tmp.65 47 28 29 ];
+        %tmp.66 = 338;
+        %tmp.67 = lte %tmp.65 %tmp.66;
+        push %tmp.67;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_28_47_33_end:
+        %tmp.68 = phi [%tmp.64 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_16_47_33_begin] [%tmp.67 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_28_47_33_true] [%tmp.68 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_28_47_33_end];
+        bf %tmp.68 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_12_50_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_12_50_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_38_50_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 48 16 ]
+        symbol [ _view %tmp.70 48 16 21 ];
+        %tmp.70 = getv ? :_view;
+        symbol [ openReps %tmp.71 48 22 30 ];
+        %tmp.71 = getv function %tmp.70 :openReps;
+        invoke %tmp.70 %tmp.71();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 49 16 ]
+        %tmp.72 = true;
+        ret %tmp.72;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_38_50_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_12_50_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_47_12_50_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 51 12 ]
+        %tmp.73 = false;
+        ret %tmp.73;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_46_25_52_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_46_8_52_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_46_8_52_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 55 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_55_8_79_8_if_stmt:
+        %tmp.74 = lgetv %screen.4;
+        symbol [ screen %tmp.74 55 12 18 ];
+        %tmp.75 = 1;
+        %tmp.76 = eq %tmp.74 %tmp.75;
+        bf %tmp.76 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_55_8_79_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_55_8_79_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_55_25_79_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 56 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_56_12_59_12_if_stmt:
+        %tmp.77 = self;
+        symbol [ _insideCircle %tmp.78 56 16 29 ];
+        %tmp.78 = getv function %tmp.77 :_insideCircle;
+        %tmp.79 = lgetv %x.2;
+        symbol [ x %tmp.79 56 30 31 ];
+        %tmp.80 = lgetv %y.3;
+        symbol [ y %tmp.80 56 33 34 ];
+        %tmp.81 = 82;
+        %tmp.82 = 198;
+        %tmp.83 = 44;
+        %tmp.84 = invoke %tmp.77 %tmp.78(%tmp.79, %tmp.80, %tmp.81, %tmp.82, %tmp.83);
+        bf %tmp.84 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_56_12_59_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_56_12_59_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_56_50_59_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 57 16 ]
+        symbol [ _view %tmp.86 57 16 21 ];
+        %tmp.86 = getv ? :_view;
+        symbol [ changeReps %tmp.87 57 22 32 ];
+        %tmp.87 = getv function %tmp.86 :changeReps;
+        %tmp.88 = -1;
+        invoke %tmp.86 %tmp.87(%tmp.88);
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 58 16 ]
+        %tmp.89 = true;
+        ret %tmp.89;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_56_50_59_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_56_12_59_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_56_12_59_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 61 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_61_12_64_12_if_stmt:
+        %tmp.90 = self;
+        symbol [ _insideCircle %tmp.91 61 16 29 ];
+        %tmp.91 = getv function %tmp.90 :_insideCircle;
+        %tmp.92 = lgetv %x.2;
+        symbol [ x %tmp.92 61 30 31 ];
+        %tmp.93 = lgetv %y.3;
+        symbol [ y %tmp.93 61 33 34 ];
+        %tmp.94 = 308;
+        %tmp.95 = 198;
+        %tmp.96 = 44;
+        %tmp.97 = invoke %tmp.90 %tmp.91(%tmp.92, %tmp.93, %tmp.94, %tmp.95, %tmp.96);
+        bf %tmp.97 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_61_12_64_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_61_12_64_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_61_51_64_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 62 16 ]
+        symbol [ _view %tmp.99 62 16 21 ];
+        %tmp.99 = getv ? :_view;
+        symbol [ changeReps %tmp.100 62 22 32 ];
+        %tmp.100 = getv function %tmp.99 :changeReps;
+        %tmp.101 = 1;
+        invoke %tmp.99 %tmp.100(%tmp.101);
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 63 16 ]
+        %tmp.102 = true;
+        ret %tmp.102;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_61_51_64_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_61_12_64_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_61_12_64_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 66 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_12_76_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_16_66_33_begin:
+        %tmp.103 = lgetv %y.3;
+        symbol [ y %tmp.103 66 16 17 ];
+        %tmp.104 = 276;
+        %tmp.105 = gte %tmp.103 %tmp.104;
+        bf %tmp.105 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_12_76_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_28_66_33_true:
+        %tmp.106 = lgetv %y.3;
+        symbol [ y %tmp.106 66 28 29 ];
+        %tmp.107 = 340;
+        %tmp.108 = lte %tmp.106 %tmp.107;
+        push %tmp.108;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_28_66_33_end:
+        %tmp.109 = phi [%tmp.105 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_16_66_33_begin] [%tmp.108 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_28_66_33_true] [%tmp.109 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_28_66_33_end];
+        bf %tmp.109 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_12_76_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_12_76_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_38_76_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 67 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_16_70_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_20_67_35_begin:
+        %tmp.110 = lgetv %x.2;
+        symbol [ x %tmp.110 67 20 21 ];
+        %tmp.111 = 42;
+        %tmp.112 = gte %tmp.110 %tmp.111;
+        bf %tmp.112 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_16_70_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_31_67_35_true:
+        %tmp.113 = lgetv %x.2;
+        symbol [ x %tmp.113 67 31 32 ];
+        %tmp.114 = 112;
+        %tmp.115 = lt %tmp.113 %tmp.114;
+        push %tmp.115;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_31_67_35_end:
+        %tmp.116 = phi [%tmp.112 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_20_67_35_begin] [%tmp.115 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_31_67_35_true] [%tmp.116 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_31_67_35_end];
+        bf %tmp.116 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_16_70_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_16_70_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_40_70_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 68 20 ]
+        symbol [ _view %tmp.118 68 20 25 ];
+        %tmp.118 = getv ? :_view;
+        symbol [ backStep %tmp.119 68 26 34 ];
+        %tmp.119 = getv function %tmp.118 :backStep;
+        invoke %tmp.118 %tmp.119();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 69 20 ]
+        %tmp.120 = true;
+        ret %tmp.120;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_40_70_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_16_70_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_67_16_70_16_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 72 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_16_75_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_20_72_37_begin:
+        %tmp.121 = lgetv %x.2;
+        symbol [ x %tmp.121 72 20 21 ];
+        %tmp.122 = 110;
+        %tmp.123 = gte %tmp.121 %tmp.122;
+        bf %tmp.123 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_16_75_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_32_72_37_true:
+        %tmp.124 = lgetv %x.2;
+        symbol [ x %tmp.124 72 32 33 ];
+        %tmp.125 = 286;
+        %tmp.126 = lte %tmp.124 %tmp.125;
+        push %tmp.126;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_32_72_37_end:
+        %tmp.127 = phi [%tmp.123 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_20_72_37_begin] [%tmp.126 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_32_72_37_true] [%tmp.127 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_32_72_37_end];
+        bf %tmp.127 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_16_75_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_16_75_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_42_75_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 73 20 ]
+        symbol [ _view %tmp.129 73 20 25 ];
+        %tmp.129 = getv ? :_view;
+        symbol [ openWeight %tmp.130 73 26 36 ];
+        %tmp.130 = getv function %tmp.129 :openWeight;
+        invoke %tmp.129 %tmp.130();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 74 20 ]
+        %tmp.131 = true;
+        ret %tmp.131;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_42_75_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_16_75_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_72_16_75_16_if_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_38_76_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_12_76_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_66_12_76_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 78 12 ]
+        %tmp.132 = false;
+        ret %tmp.132;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_55_25_79_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_55_8_79_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_55_8_79_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 82 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_82_8_112_8_if_stmt:
+        %tmp.133 = lgetv %screen.4;
+        symbol [ screen %tmp.133 82 12 18 ];
+        %tmp.134 = 2;
+        %tmp.135 = eq %tmp.133 %tmp.134;
+        bf %tmp.135 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_82_8_112_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_82_8_112_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_82_25_112_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 83 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_83_12_86_12_if_stmt:
+        %tmp.136 = self;
+        symbol [ _insideCircle %tmp.137 83 16 29 ];
+        %tmp.137 = getv function %tmp.136 :_insideCircle;
+        %tmp.138 = lgetv %x.2;
+        symbol [ x %tmp.138 83 30 31 ];
+        %tmp.139 = lgetv %y.3;
+        symbol [ y %tmp.139 83 33 34 ];
+        %tmp.140 = 82;
+        %tmp.141 = 198;
+        %tmp.142 = 44;
+        %tmp.143 = invoke %tmp.136 %tmp.137(%tmp.138, %tmp.139, %tmp.140, %tmp.141, %tmp.142);
+        bf %tmp.143 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_83_12_86_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_83_12_86_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_83_50_86_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 84 16 ]
+        symbol [ _view %tmp.145 84 16 21 ];
+        %tmp.145 = getv ? :_view;
+        symbol [ changeKg %tmp.146 84 22 30 ];
+        %tmp.146 = getv function %tmp.145 :changeKg;
+        %tmp.147 = -2.5;
+        invoke %tmp.145 %tmp.146(%tmp.147);
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 85 16 ]
+        %tmp.148 = true;
+        ret %tmp.148;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_83_50_86_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_83_12_86_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_83_12_86_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 88 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_88_12_91_12_if_stmt:
+        %tmp.149 = self;
+        symbol [ _insideCircle %tmp.150 88 16 29 ];
+        %tmp.150 = getv function %tmp.149 :_insideCircle;
+        %tmp.151 = lgetv %x.2;
+        symbol [ x %tmp.151 88 30 31 ];
+        %tmp.152 = lgetv %y.3;
+        symbol [ y %tmp.152 88 33 34 ];
+        %tmp.153 = 308;
+        %tmp.154 = 198;
+        %tmp.155 = 44;
+        %tmp.156 = invoke %tmp.149 %tmp.150(%tmp.151, %tmp.152, %tmp.153, %tmp.154, %tmp.155);
+        bf %tmp.156 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_88_12_91_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_88_12_91_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_88_51_91_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 89 16 ]
+        symbol [ _view %tmp.158 89 16 21 ];
+        %tmp.158 = getv ? :_view;
+        symbol [ changeKg %tmp.159 89 22 30 ];
+        %tmp.159 = getv function %tmp.158 :changeKg;
+        %tmp.160 = 2.5;
+        invoke %tmp.158 %tmp.159(%tmp.160);
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 90 16 ]
+        %tmp.161 = true;
+        ret %tmp.161;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_88_51_91_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_88_12_91_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_88_12_91_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 94 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_12_97_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_16_94_57_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_16_94_45_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_16_94_33_begin:
+        %tmp.162 = lgetv %x.2;
+        symbol [ x %tmp.162 94 16 17 ];
+        %tmp.163 = 125;
+        %tmp.164 = gte %tmp.162 %tmp.163;
+        bf %tmp.164 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_12_97_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_28_94_33_true:
+        %tmp.165 = lgetv %x.2;
+        symbol [ x %tmp.165 94 28 29 ];
+        %tmp.166 = 265;
+        %tmp.167 = lte %tmp.165 %tmp.166;
+        push %tmp.167;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_28_94_33_end:
+        %tmp.168 = phi [%tmp.164 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_16_94_33_begin] [%tmp.167 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_28_94_33_true] [%tmp.168 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_28_94_33_end];
+        bf %tmp.168 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_12_97_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_40_94_45_true:
+        %tmp.169 = lgetv %y.3;
+        symbol [ y %tmp.169 94 40 41 ];
+        %tmp.170 = 145;
+        %tmp.171 = gte %tmp.169 %tmp.170;
+        push %tmp.171;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_40_94_45_end:
+        %tmp.172 = phi [%tmp.168 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_16_94_45_begin] [%tmp.171 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_40_94_45_true] [%tmp.172 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_40_94_45_end];
+        bf %tmp.172 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_12_97_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_52_94_57_true:
+        %tmp.173 = lgetv %y.3;
+        symbol [ y %tmp.173 94 52 53 ];
+        %tmp.174 = 245;
+        %tmp.175 = lte %tmp.173 %tmp.174;
+        push %tmp.175;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_52_94_57_end:
+        %tmp.176 = phi [%tmp.172 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_16_94_57_begin] [%tmp.175 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_52_94_57_true] [%tmp.176 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_52_94_57_end];
+        bf %tmp.176 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_12_97_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_12_97_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_62_97_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 95 16 ]
+        symbol [ _view %tmp.178 95 16 21 ];
+        %tmp.178 = getv ? :_view;
+        symbol [ openKgKeypad %tmp.179 95 22 34 ];
+        %tmp.179 = getv function %tmp.178 :openKgKeypad;
+        invoke %tmp.178 %tmp.179();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 96 16 ]
+        %tmp.180 = true;
+        ret %tmp.180;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_62_97_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_12_97_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_94_12_97_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 99 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_12_109_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_16_99_33_begin:
+        %tmp.181 = lgetv %y.3;
+        symbol [ y %tmp.181 99 16 17 ];
+        %tmp.182 = 276;
+        %tmp.183 = gte %tmp.181 %tmp.182;
+        bf %tmp.183 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_12_109_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_28_99_33_true:
+        %tmp.184 = lgetv %y.3;
+        symbol [ y %tmp.184 99 28 29 ];
+        %tmp.185 = 340;
+        %tmp.186 = lte %tmp.184 %tmp.185;
+        push %tmp.186;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_28_99_33_end:
+        %tmp.187 = phi [%tmp.183 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_16_99_33_begin] [%tmp.186 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_28_99_33_true] [%tmp.187 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_28_99_33_end];
+        bf %tmp.187 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_12_109_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_12_109_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_38_109_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 100 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_16_103_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_20_100_35_begin:
+        %tmp.188 = lgetv %x.2;
+        symbol [ x %tmp.188 100 20 21 ];
+        %tmp.189 = 42;
+        %tmp.190 = gte %tmp.188 %tmp.189;
+        bf %tmp.190 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_16_103_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_31_100_35_true:
+        %tmp.191 = lgetv %x.2;
+        symbol [ x %tmp.191 100 31 32 ];
+        %tmp.192 = 112;
+        %tmp.193 = lt %tmp.191 %tmp.192;
+        push %tmp.193;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_31_100_35_end:
+        %tmp.194 = phi [%tmp.190 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_20_100_35_begin] [%tmp.193 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_31_100_35_true] [%tmp.194 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_31_100_35_end];
+        bf %tmp.194 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_16_103_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_16_103_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_40_103_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 101 20 ]
+        symbol [ _view %tmp.196 101 20 25 ];
+        %tmp.196 = getv ? :_view;
+        symbol [ backStep %tmp.197 101 26 34 ];
+        %tmp.197 = getv function %tmp.196 :backStep;
+        invoke %tmp.196 %tmp.197();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 102 20 ]
+        %tmp.198 = true;
+        ret %tmp.198;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_40_103_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_16_103_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_100_16_103_16_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 105 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_16_108_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_20_105_37_begin:
+        %tmp.199 = lgetv %x.2;
+        symbol [ x %tmp.199 105 20 21 ];
+        %tmp.200 = 110;
+        %tmp.201 = gte %tmp.199 %tmp.200;
+        bf %tmp.201 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_16_108_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_32_105_37_true:
+        %tmp.202 = lgetv %x.2;
+        symbol [ x %tmp.202 105 32 33 ];
+        %tmp.203 = 286;
+        %tmp.204 = lte %tmp.202 %tmp.203;
+        push %tmp.204;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_32_105_37_end:
+        %tmp.205 = phi [%tmp.201 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_20_105_37_begin] [%tmp.204 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_32_105_37_true] [%tmp.205 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_32_105_37_end];
+        bf %tmp.205 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_16_108_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_16_108_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_42_108_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 106 20 ]
+        symbol [ _view %tmp.207 106 20 25 ];
+        %tmp.207 = getv ? :_view;
+        symbol [ openConfirm %tmp.208 106 26 37 ];
+        %tmp.208 = getv function %tmp.207 :openConfirm;
+        invoke %tmp.207 %tmp.208();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 107 20 ]
+        %tmp.209 = true;
+        ret %tmp.209;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_42_108_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_16_108_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_105_16_108_16_if_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_38_109_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_12_109_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_99_12_109_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 111 12 ]
+        %tmp.210 = false;
+        ret %tmp.210;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_82_25_112_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_82_8_112_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_82_8_112_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 115 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_115_8_129_8_if_stmt:
+        %tmp.211 = lgetv %screen.4;
+        symbol [ screen %tmp.211 115 12 18 ];
+        %tmp.212 = 3;
+        %tmp.213 = eq %tmp.211 %tmp.212;
+        bf %tmp.213 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_115_8_129_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_115_8_129_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_115_25_129_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 116 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_12_126_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_16_116_33_begin:
+        %tmp.214 = lgetv %y.3;
+        symbol [ y %tmp.214 116 16 17 ];
+        %tmp.215 = 264;
+        %tmp.216 = gte %tmp.214 %tmp.215;
+        bf %tmp.216 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_12_126_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_28_116_33_true:
+        %tmp.217 = lgetv %y.3;
+        symbol [ y %tmp.217 116 28 29 ];
+        %tmp.218 = 326;
+        %tmp.219 = lte %tmp.217 %tmp.218;
+        push %tmp.219;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_28_116_33_end:
+        %tmp.220 = phi [%tmp.216 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_16_116_33_begin] [%tmp.219 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_28_116_33_true] [%tmp.220 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_28_116_33_end];
+        bf %tmp.220 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_12_126_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_12_126_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_38_126_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 117 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_16_120_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_20_117_35_begin:
+        %tmp.221 = lgetv %x.2;
+        symbol [ x %tmp.221 117 20 21 ];
+        %tmp.222 = 42;
+        %tmp.223 = gte %tmp.221 %tmp.222;
+        bf %tmp.223 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_16_120_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_31_117_35_true:
+        %tmp.224 = lgetv %x.2;
+        symbol [ x %tmp.224 117 31 32 ];
+        %tmp.225 = 196;
+        %tmp.226 = lt %tmp.224 %tmp.225;
+        push %tmp.226;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_31_117_35_end:
+        %tmp.227 = phi [%tmp.223 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_20_117_35_begin] [%tmp.226 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_31_117_35_true] [%tmp.227 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_31_117_35_end];
+        bf %tmp.227 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_16_120_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_16_120_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_40_120_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 118 20 ]
+        symbol [ _view %tmp.229 118 20 25 ];
+        %tmp.229 = getv ? :_view;
+        symbol [ editFromConfirm %tmp.230 118 26 41 ];
+        %tmp.230 = getv function %tmp.229 :editFromConfirm;
+        invoke %tmp.229 %tmp.230();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 119 20 ]
+        %tmp.231 = true;
+        ret %tmp.231;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_40_120_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_16_120_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_117_16_120_16_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 122 16 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_16_125_16_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_20_122_37_begin:
+        %tmp.232 = lgetv %x.2;
+        symbol [ x %tmp.232 122 20 21 ];
+        %tmp.233 = 196;
+        %tmp.234 = gte %tmp.232 %tmp.233;
+        bf %tmp.234 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_16_125_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_32_122_37_true:
+        %tmp.235 = lgetv %x.2;
+        symbol [ x %tmp.235 122 32 33 ];
+        %tmp.236 = 348;
+        %tmp.237 = lte %tmp.235 %tmp.236;
+        push %tmp.237;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_32_122_37_end:
+        %tmp.238 = phi [%tmp.234 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_20_122_37_begin] [%tmp.237 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_32_122_37_true] [%tmp.238 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_32_122_37_end];
+        bf %tmp.238 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_16_125_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_16_125_16_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_42_125_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 123 20 ]
+        symbol [ _view %tmp.240 123 20 25 ];
+        %tmp.240 = getv ? :_view;
+        symbol [ saveSet %tmp.241 123 26 33 ];
+        %tmp.241 = getv function %tmp.240 :saveSet;
+        invoke %tmp.240 %tmp.241();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 124 20 ]
+        %tmp.242 = true;
+        ret %tmp.242;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_42_125_16_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_16_125_16_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_122_16_125_16_if_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_38_126_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_12_126_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_116_12_126_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 128 12 ]
+        %tmp.243 = false;
+        ret %tmp.243;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_115_25_129_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_115_8_129_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_115_8_129_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 132 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_8_164_8_if_stmt:
+        %tmp.244 = lgetv %screen.4;
+        symbol [ screen %tmp.244 132 12 18 ];
+        %tmp.245 = 4;
+        %tmp.246 = eq %tmp.244 %tmp.245;
+        bf %tmp.246 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_8_164_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_8_164_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_25_164_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 133 12 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_25_164_8_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_25_164_8_stop" ]
+        %xs.5 = local;
+        symbol [ xs %xs.5 133 16 18 ];
+        %tmp.247 = newa 3;
+        %tmp.248 = 124;
+        %tmp.249 = dup %tmp.247;
+        %tmp.250 = aputv %tmp.249 0 %tmp.248;
+        %tmp.251 = 195;
+        %tmp.252 = dup %tmp.250;
+        %tmp.253 = aputv %tmp.252 1 %tmp.251;
+        %tmp.254 = 266;
+        %tmp.255 = dup %tmp.253;
+        %tmp.256 = aputv %tmp.255 2 %tmp.254;
+        lputv %xs.5 %tmp.256;
+        symbol [ xs %xs.5 133 16 18 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 134 12 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_25_164_8_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_25_164_8_stop" ]
+        %ys.6 = local;
+        symbol [ ys %ys.6 134 16 18 ];
+        %tmp.257 = newa 4;
+        %tmp.258 = 124;
+        %tmp.259 = dup %tmp.257;
+        %tmp.260 = aputv %tmp.259 0 %tmp.258;
+        %tmp.261 = 174;
+        %tmp.262 = dup %tmp.260;
+        %tmp.263 = aputv %tmp.262 1 %tmp.261;
+        %tmp.264 = 224;
+        %tmp.265 = dup %tmp.263;
+        %tmp.266 = aputv %tmp.265 2 %tmp.264;
+        %tmp.267 = 274;
+        %tmp.268 = dup %tmp.266;
+        %tmp.269 = aputv %tmp.268 3 %tmp.267;
+        lputv %ys.6 %tmp.269;
+        symbol [ ys %ys.6 134 16 18 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 135 12 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_25_164_8_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_25_164_8_stop" ]
+        %labels.7 = local;
+        symbol [ labels %labels.7 135 16 22 ];
+        %tmp.270 = newa 4;
+        %tmp.271 = newa 3;
+        %tmp.272 = "1";
+        %tmp.273 = dup %tmp.271;
+        %tmp.274 = aputv %tmp.273 0 %tmp.272;
+        %tmp.275 = "2";
+        %tmp.276 = dup %tmp.274;
+        %tmp.277 = aputv %tmp.276 1 %tmp.275;
+        %tmp.278 = "3";
+        %tmp.279 = dup %tmp.277;
+        %tmp.280 = aputv %tmp.279 2 %tmp.278;
+        %tmp.281 = dup %tmp.270;
+        %tmp.282 = aputv %tmp.281 0 %tmp.280;
+        %tmp.283 = newa 3;
+        %tmp.284 = "4";
+        %tmp.285 = dup %tmp.283;
+        %tmp.286 = aputv %tmp.285 0 %tmp.284;
+        %tmp.287 = "5";
+        %tmp.288 = dup %tmp.286;
+        %tmp.289 = aputv %tmp.288 1 %tmp.287;
+        %tmp.290 = "6";
+        %tmp.291 = dup %tmp.289;
+        %tmp.292 = aputv %tmp.291 2 %tmp.290;
+        %tmp.293 = dup %tmp.282;
+        %tmp.294 = aputv %tmp.293 1 %tmp.292;
+        %tmp.295 = newa 3;
+        %tmp.296 = "7";
+        %tmp.297 = dup %tmp.295;
+        %tmp.298 = aputv %tmp.297 0 %tmp.296;
+        %tmp.299 = "8";
+        %tmp.300 = dup %tmp.298;
+        %tmp.301 = aputv %tmp.300 1 %tmp.299;
+        %tmp.302 = "9";
+        %tmp.303 = dup %tmp.301;
+        %tmp.304 = aputv %tmp.303 2 %tmp.302;
+        %tmp.305 = dup %tmp.294;
+        %tmp.306 = aputv %tmp.305 2 %tmp.304;
+        %tmp.307 = newa 3;
+        %tmp.308 = ".";
+        %tmp.309 = dup %tmp.307;
+        %tmp.310 = aputv %tmp.309 0 %tmp.308;
+        %tmp.311 = "0";
+        %tmp.312 = dup %tmp.310;
+        %tmp.313 = aputv %tmp.312 1 %tmp.311;
+        %tmp.314 = "<";
+        %tmp.315 = dup %tmp.313;
+        %tmp.316 = aputv %tmp.315 2 %tmp.314;
+        %tmp.317 = dup %tmp.306;
+        %tmp.318 = aputv %tmp.317 3 %tmp.316;
+        lputv %labels.7 %tmp.318;
+        symbol [ labels %labels.7 135 16 22 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 142 12 ]
+        for @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_test @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_incr @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_init:
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_begin" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_end" ]
+        %r.8 = local;
+        symbol [ r %r.8 142 21 22 ];
+        %tmp.319 = 0;
+        lputv %r.8 %tmp.319;
+        symbol [ r %r.8 142 21 22 ];
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_test:
+        %tmp.320 = lgetv %r.8;
+        symbol [ r %tmp.320 142 28 29 ];
+        %tmp.321 = 4;
+        %tmp.322 = lt %tmp.320 %tmp.321;
+        bf %tmp.322 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_43_156_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 143 16 ]
+        for @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_test @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_incr @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_init:
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_begin" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_end" ]
+        %c.9 = local;
+        symbol [ c %c.9 143 25 26 ];
+        %tmp.323 = 0;
+        lputv %c.9 %tmp.323;
+        symbol [ c %c.9 143 25 26 ];
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_test:
+        %tmp.324 = lgetv %c.9;
+        symbol [ c %tmp.324 143 32 33 ];
+        %tmp.325 = 3;
+        %tmp.326 = lt %tmp.324 %tmp.325;
+        bf %tmp.326 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_47_155_16_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 144 20 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_20_154_20_if_stmt:
+        %tmp.327 = self;
+        symbol [ _insideCircle %tmp.328 144 24 37 ];
+        %tmp.328 = getv function %tmp.327 :_insideCircle;
+        %tmp.329 = lgetv %x.2;
+        symbol [ x %tmp.329 144 38 39 ];
+        %tmp.330 = lgetv %y.3;
+        symbol [ y %tmp.330 144 41 42 ];
+        %tmp.331 = lgetv %xs.5;
+        symbol [ xs %tmp.331 144 44 46 ];
+        %tmp.332 = lgetv %c.9;
+        symbol [ c %tmp.332 144 47 48 ];
+        %tmp.333 = agetv %tmp.331 %tmp.332;
+        %tmp.334 = lgetv %ys.6;
+        symbol [ ys %tmp.334 144 51 53 ];
+        %tmp.335 = lgetv %r.8;
+        symbol [ r %tmp.335 144 54 55 ];
+        %tmp.336 = agetv %tmp.334 %tmp.335;
+        %tmp.337 = 26;
+        %tmp.338 = invoke %tmp.327 %tmp.328(%tmp.329, %tmp.330, %tmp.333, %tmp.336, %tmp.337);
+        bf %tmp.338 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_20_154_20_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_20_154_20_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_63_154_20_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 145 24 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_63_154_20_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_63_154_20_stop" ]
+        %label.10 = local;
+        symbol [ label %label.10 145 28 33 ];
+        %tmp.339 = lgetv %labels.7;
+        symbol [ labels %tmp.339 145 36 42 ];
+        %tmp.340 = lgetv %r.8;
+        symbol [ r %tmp.340 145 43 44 ];
+        %tmp.341 = agetv %tmp.339 %tmp.340;
+        %tmp.342 = lgetv %c.9;
+        symbol [ c %tmp.342 145 46 47 ];
+        %tmp.343 = agetv %tmp.341 %tmp.342;
+        lputv %label.10 %tmp.343;
+        symbol [ label %label.10 145 28 33 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 147 24 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_147_24_151_24_if_stmt:
+        %tmp.344 = lgetv %label.10;
+        symbol [ label %tmp.344 147 28 33 ];
+        symbol [ equals %tmp.345 147 34 40 ];
+        %tmp.345 = getv function %tmp.344 :equals;
+        %tmp.346 = "<";
+        %tmp.347 = invoke %tmp.344 %tmp.345(%tmp.346);
+        bf %tmp.347 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_147_24_151_24_if_else_false;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_147_24_151_24_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_147_47_149_24_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 148 28 ]
+        symbol [ _view %tmp.349 148 28 33 ];
+        %tmp.349 = getv ? :_view;
+        symbol [ keypadDelete %tmp.350 148 34 46 ];
+        %tmp.350 = getv function %tmp.349 :keypadDelete;
+        invoke %tmp.349 %tmp.350();
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_147_47_149_24_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_147_24_151_24_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_147_24_151_24_if_else_false:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_149_31_151_24_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 150 28 ]
+        symbol [ _view %tmp.352 150 28 33 ];
+        %tmp.352 = getv ? :_view;
+        symbol [ keypadAppend %tmp.353 150 34 46 ];
+        %tmp.353 = getv function %tmp.352 :keypadAppend;
+        %tmp.354 = lgetv %label.10;
+        symbol [ label %tmp.354 150 47 52 ];
+        invoke %tmp.352 %tmp.353(%tmp.354);
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_149_31_151_24_stop:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_147_24_151_24_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 153 24 ]
+        %tmp.355 = true;
+        ret %tmp.355;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_63_154_20_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_20_154_20_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_144_20_154_20_if_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_47_155_16_stop:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_incr:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 143 ]
+        %tmp.356 = lgetv %c.9;
+        symbol [ c %tmp.356 143 39 40 ];
+        %tmp.357 = 1;
+        %tmp.358 = add %tmp.356 %tmp.357;
+        lputv %c.9 %tmp.358;
+        symbol [ c %c.9 143 39 40 ];
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_test;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_143_16_155_16_for_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_43_156_12_stop:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_incr:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 142 ]
+        %tmp.359 = lgetv %r.8;
+        symbol [ r %tmp.359 142 35 36 ];
+        %tmp.360 = 1;
+        %tmp.361 = add %tmp.359 %tmp.360;
+        lputv %r.8 %tmp.361;
+        symbol [ r %r.8 142 35 36 ];
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_test;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_142_12_156_12_for_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 158 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_12_161_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_16_158_57_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_16_158_45_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_16_158_33_begin:
+        %tmp.362 = lgetv %x.2;
+        symbol [ x %tmp.362 158 16 17 ];
+        %tmp.363 = 132;
+        %tmp.364 = gte %tmp.362 %tmp.363;
+        bf %tmp.364 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_12_161_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_28_158_33_true:
+        %tmp.365 = lgetv %x.2;
+        symbol [ x %tmp.365 158 28 29 ];
+        %tmp.366 = 258;
+        %tmp.367 = lte %tmp.365 %tmp.366;
+        push %tmp.367;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_28_158_33_end:
+        %tmp.368 = phi [%tmp.364 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_16_158_33_begin] [%tmp.367 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_28_158_33_true] [%tmp.368 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_28_158_33_end];
+        bf %tmp.368 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_12_161_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_40_158_45_true:
+        %tmp.369 = lgetv %y.3;
+        symbol [ y %tmp.369 158 40 41 ];
+        %tmp.370 = 310;
+        %tmp.371 = gte %tmp.369 %tmp.370;
+        push %tmp.371;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_40_158_45_end:
+        %tmp.372 = phi [%tmp.368 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_16_158_45_begin] [%tmp.371 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_40_158_45_true] [%tmp.372 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_40_158_45_end];
+        bf %tmp.372 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_12_161_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_52_158_57_true:
+        %tmp.373 = lgetv %y.3;
+        symbol [ y %tmp.373 158 52 53 ];
+        %tmp.374 = 366;
+        %tmp.375 = lte %tmp.373 %tmp.374;
+        push %tmp.375;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_52_158_57_end:
+        %tmp.376 = phi [%tmp.372 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_16_158_57_begin] [%tmp.375 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_52_158_57_true] [%tmp.376 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_52_158_57_end];
+        bf %tmp.376 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_12_161_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_12_161_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_62_161_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 159 16 ]
+        symbol [ _view %tmp.378 159 16 21 ];
+        %tmp.378 = getv ? :_view;
+        symbol [ keypadConfirm %tmp.379 159 22 35 ];
+        %tmp.379 = getv function %tmp.378 :keypadConfirm;
+        invoke %tmp.378 %tmp.379();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 160 16 ]
+        %tmp.380 = true;
+        ret %tmp.380;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_62_161_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_12_161_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_158_12_161_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 163 12 ]
+        %tmp.381 = false;
+        ret %tmp.381;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_25_164_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_8_164_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_132_8_164_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 167 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_167_8_173_8_if_stmt:
+        %tmp.382 = lgetv %screen.4;
+        symbol [ screen %tmp.382 167 12 18 ];
+        %tmp.383 = 5;
+        %tmp.384 = eq %tmp.382 %tmp.383;
+        bf %tmp.384 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_167_8_173_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_167_8_173_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_167_25_173_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 168 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_12_171_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_16_168_33_begin:
+        %tmp.385 = lgetv %y.3;
+        symbol [ y %tmp.385 168 16 17 ];
+        %tmp.386 = 290;
+        %tmp.387 = gte %tmp.385 %tmp.386;
+        bf %tmp.387 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_12_171_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_28_168_33_true:
+        %tmp.388 = lgetv %y.3;
+        symbol [ y %tmp.388 168 28 29 ];
+        %tmp.389 = 350;
+        %tmp.390 = lte %tmp.388 %tmp.389;
+        push %tmp.390;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_28_168_33_end:
+        %tmp.391 = phi [%tmp.387 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_16_168_33_begin] [%tmp.390 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_28_168_33_true] [%tmp.391 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_28_168_33_end];
+        bf %tmp.391 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_12_171_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_12_171_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_38_171_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 169 16 ]
+        symbol [ _view %tmp.393 169 16 21 ];
+        %tmp.393 = getv ? :_view;
+        symbol [ finishWorkout %tmp.394 169 22 35 ];
+        %tmp.394 = getv function %tmp.393 :finishWorkout;
+        invoke %tmp.393 %tmp.394();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 170 16 ]
+        %tmp.395 = true;
+        ret %tmp.395;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_38_171_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_12_171_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_168_12_171_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 172 12 ]
+        %tmp.396 = false;
+        ret %tmp.396;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_167_25_173_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_167_8_173_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_167_8_173_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 175 8 ]
+        %tmp.397 = false;
+        ret %tmp.397;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_17_26_176_4_stop:
     }
-    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc"; @line = 37; @symbol_functiondef = [onKey,37,13,18]; @symbol_param<0> = [event,37,19,24]; ]
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc"; @line = 178; @symbol_functiondef = [onKey,178,13,18]; @symbol_param<0> = [event,178,19,24]; ]
     function onKey(event) {
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_37_26_44_4_start:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 38 8 ]
-        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_37_26_44_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_37_26_44_4_stop" ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_178_26_235_4_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 179 8 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_178_26_235_4_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_178_26_235_4_stop" ]
         %key.1 = local;
-        symbol [ key %key.1 38 12 15 ];
+        symbol [ key %key.1 179 12 15 ];
         %tmp.1 = lgetv %event;
-        symbol [ event %tmp.1 38 18 23 ];
-        symbol [ getKey %tmp.2 38 24 30 ];
+        symbol [ event %tmp.1 179 18 23 ];
+        symbol [ getKey %tmp.2 179 24 30 ];
         %tmp.2 = getv function %tmp.1 :getKey;
         %tmp.3 = invoke %tmp.1 %tmp.2();
         lputv %key.1 %tmp.3;
-        symbol [ key %key.1 38 12 15 ];
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 39 8 ]
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_39_8_42_8_if_stmt:
+        symbol [ key %key.1 179 12 15 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 181 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_8_218_8_if_stmt:
         %tmp.4 = lgetv %key.1;
-        symbol [ key %tmp.4 39 12 15 ];
-        symbol [ Ui %tmp.5 39 19 21 ];
+        symbol [ key %tmp.4 181 12 15 ];
+        symbol [ Ui %tmp.5 181 19 21 ];
         %tmp.5 = getm $.Toybox.WatchUi;
-        symbol [ KEY_ENTER %tmp.6 39 22 31 ];
+        symbol [ KEY_ENTER %tmp.6 181 22 31 ];
         %tmp.6 = getv %tmp.5 :KEY_ENTER;
         %tmp.7 = eq %tmp.4 %tmp.6;
-        bf %tmp.7 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_39_8_42_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_39_8_42_8_if_true:
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_39_33_42_8_start:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 40 12 ]
-        symbol [ _view %tmp.9 40 12 17 ];
+        bf %tmp.7 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_8_218_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_8_218_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_33_218_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 182 12 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_33_218_8_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_33_218_8_stop" ]
+        %screen.2 = local;
+        symbol [ screen %screen.2 182 16 22 ];
+        symbol [ _view %tmp.9 182 25 30 ];
         %tmp.9 = getv ? :_view;
-        symbol [ completeSet %tmp.10 40 18 29 ];
-        %tmp.10 = getv function %tmp.9 :completeSet;
-        invoke %tmp.9 %tmp.10();
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 41 12 ]
-        %tmp.11 = true;
-        ret %tmp.11;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_39_33_42_8_stop:
-        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_39_8_42_8_if_end;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_39_8_42_8_if_end:
-[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 43 8 ]
-        %tmp.12 = false;
-        ret %tmp.12;
-_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_37_26_44_4_stop:
+        symbol [ getScreen %tmp.10 182 31 40 ];
+        %tmp.10 = getv function %tmp.9 :getScreen;
+        %tmp.11 = invoke %tmp.9 %tmp.10();
+        lputv %screen.2 %tmp.11;
+        symbol [ screen %screen.2 182 16 22 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 184 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_184_12_187_12_if_stmt:
+        symbol [ _view %tmp.13 184 16 21 ];
+        %tmp.13 = getv ? :_view;
+        symbol [ isResting %tmp.14 184 22 31 ];
+        %tmp.14 = getv function %tmp.13 :isResting;
+        %tmp.15 = invoke %tmp.13 %tmp.14();
+        bf %tmp.15 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_184_12_187_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_184_12_187_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_184_35_187_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 185 16 ]
+        symbol [ _view %tmp.17 185 16 21 ];
+        %tmp.17 = getv ? :_view;
+        symbol [ skipRest %tmp.18 185 22 30 ];
+        %tmp.18 = getv function %tmp.17 :skipRest;
+        invoke %tmp.17 %tmp.18();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 186 16 ]
+        %tmp.19 = true;
+        ret %tmp.19;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_184_35_187_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_184_12_187_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_184_12_187_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 189 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_189_12_192_12_if_stmt:
+        %tmp.20 = lgetv %screen.2;
+        symbol [ screen %tmp.20 189 16 22 ];
+        %tmp.21 = 0;
+        %tmp.22 = eq %tmp.20 %tmp.21;
+        bf %tmp.22 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_189_12_192_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_189_12_192_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_189_29_192_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 190 16 ]
+        symbol [ _view %tmp.24 190 16 21 ];
+        %tmp.24 = getv ? :_view;
+        symbol [ openReps %tmp.25 190 22 30 ];
+        %tmp.25 = getv function %tmp.24 :openReps;
+        invoke %tmp.24 %tmp.25();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 191 16 ]
+        %tmp.26 = true;
+        ret %tmp.26;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_189_29_192_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_189_12_192_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_189_12_192_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 194 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_194_12_197_12_if_stmt:
+        %tmp.27 = lgetv %screen.2;
+        symbol [ screen %tmp.27 194 16 22 ];
+        %tmp.28 = 1;
+        %tmp.29 = eq %tmp.27 %tmp.28;
+        bf %tmp.29 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_194_12_197_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_194_12_197_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_194_29_197_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 195 16 ]
+        symbol [ _view %tmp.31 195 16 21 ];
+        %tmp.31 = getv ? :_view;
+        symbol [ openWeight %tmp.32 195 22 32 ];
+        %tmp.32 = getv function %tmp.31 :openWeight;
+        invoke %tmp.31 %tmp.32();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 196 16 ]
+        %tmp.33 = true;
+        ret %tmp.33;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_194_29_197_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_194_12_197_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_194_12_197_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 199 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_199_12_202_12_if_stmt:
+        %tmp.34 = lgetv %screen.2;
+        symbol [ screen %tmp.34 199 16 22 ];
+        %tmp.35 = 2;
+        %tmp.36 = eq %tmp.34 %tmp.35;
+        bf %tmp.36 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_199_12_202_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_199_12_202_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_199_29_202_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 200 16 ]
+        symbol [ _view %tmp.38 200 16 21 ];
+        %tmp.38 = getv ? :_view;
+        symbol [ openConfirm %tmp.39 200 22 33 ];
+        %tmp.39 = getv function %tmp.38 :openConfirm;
+        invoke %tmp.38 %tmp.39();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 201 16 ]
+        %tmp.40 = true;
+        ret %tmp.40;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_199_29_202_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_199_12_202_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_199_12_202_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 204 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_204_12_207_12_if_stmt:
+        %tmp.41 = lgetv %screen.2;
+        symbol [ screen %tmp.41 204 16 22 ];
+        %tmp.42 = 3;
+        %tmp.43 = eq %tmp.41 %tmp.42;
+        bf %tmp.43 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_204_12_207_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_204_12_207_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_204_29_207_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 205 16 ]
+        symbol [ _view %tmp.45 205 16 21 ];
+        %tmp.45 = getv ? :_view;
+        symbol [ saveSet %tmp.46 205 22 29 ];
+        %tmp.46 = getv function %tmp.45 :saveSet;
+        invoke %tmp.45 %tmp.46();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 206 16 ]
+        %tmp.47 = true;
+        ret %tmp.47;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_204_29_207_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_204_12_207_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_204_12_207_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 209 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_209_12_212_12_if_stmt:
+        %tmp.48 = lgetv %screen.2;
+        symbol [ screen %tmp.48 209 16 22 ];
+        %tmp.49 = 4;
+        %tmp.50 = eq %tmp.48 %tmp.49;
+        bf %tmp.50 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_209_12_212_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_209_12_212_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_209_29_212_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 210 16 ]
+        symbol [ _view %tmp.52 210 16 21 ];
+        %tmp.52 = getv ? :_view;
+        symbol [ keypadConfirm %tmp.53 210 22 35 ];
+        %tmp.53 = getv function %tmp.52 :keypadConfirm;
+        invoke %tmp.52 %tmp.53();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 211 16 ]
+        %tmp.54 = true;
+        ret %tmp.54;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_209_29_212_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_209_12_212_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_209_12_212_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 214 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_214_12_217_12_if_stmt:
+        %tmp.55 = lgetv %screen.2;
+        symbol [ screen %tmp.55 214 16 22 ];
+        %tmp.56 = 5;
+        %tmp.57 = eq %tmp.55 %tmp.56;
+        bf %tmp.57 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_214_12_217_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_214_12_217_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_214_29_217_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 215 16 ]
+        symbol [ _view %tmp.59 215 16 21 ];
+        %tmp.59 = getv ? :_view;
+        symbol [ finishWorkout %tmp.60 215 22 35 ];
+        %tmp.60 = getv function %tmp.59 :finishWorkout;
+        invoke %tmp.59 %tmp.60();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 216 16 ]
+        %tmp.61 = true;
+        ret %tmp.61;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_214_29_217_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_214_12_217_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_214_12_217_12_if_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_33_218_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_8_218_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_181_8_218_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 220 8 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_8_232_8_if_stmt:
+        %tmp.62 = lgetv %key.1;
+        symbol [ key %tmp.62 220 12 15 ];
+        symbol [ Ui %tmp.63 220 19 21 ];
+        %tmp.63 = getm $.Toybox.WatchUi;
+        symbol [ KEY_ESC %tmp.64 220 22 29 ];
+        %tmp.64 = getv %tmp.63 :KEY_ESC;
+        %tmp.65 = eq %tmp.62 %tmp.64;
+        bf %tmp.65 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_8_232_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_8_232_8_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_31_232_8_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 221 12 ]
+        [ "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_31_232_8_start" "_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_31_232_8_stop" ]
+        %current.3 = local;
+        symbol [ current %current.3 221 16 23 ];
+        symbol [ _view %tmp.67 221 26 31 ];
+        %tmp.67 = getv ? :_view;
+        symbol [ getScreen %tmp.68 221 32 41 ];
+        %tmp.68 = getv function %tmp.67 :getScreen;
+        %tmp.69 = invoke %tmp.67 %tmp.68();
+        lputv %current.3 %tmp.69;
+        symbol [ current %current.3 221 16 23 ];
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 223 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_223_12_226_12_if_stmt:
+        %tmp.70 = lgetv %current.3;
+        symbol [ current %tmp.70 223 16 23 ];
+        %tmp.71 = 4;
+        %tmp.72 = eq %tmp.70 %tmp.71;
+        bf %tmp.72 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_223_12_226_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_223_12_226_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_223_30_226_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 224 16 ]
+        symbol [ _view %tmp.74 224 16 21 ];
+        %tmp.74 = getv ? :_view;
+        symbol [ keypadCancel %tmp.75 224 22 34 ];
+        %tmp.75 = getv function %tmp.74 :keypadCancel;
+        invoke %tmp.74 %tmp.75();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 225 16 ]
+        %tmp.76 = true;
+        ret %tmp.76;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_223_30_226_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_223_12_226_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_223_12_226_12_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 228 12 ]
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_12_231_12_if_stmt:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_16_228_59_begin:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_16_228_43_begin:
+        %tmp.77 = lgetv %current.3;
+        symbol [ current %tmp.77 228 16 23 ];
+        %tmp.78 = 1;
+        %tmp.79 = eq %tmp.77 %tmp.78;
+        bt %tmp.79 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_12_231_12_if_true;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_32_228_43_false:
+        %tmp.80 = lgetv %current.3;
+        symbol [ current %tmp.80 228 32 39 ];
+        %tmp.81 = 2;
+        %tmp.82 = eq %tmp.80 %tmp.81;
+        push %tmp.82;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_32_228_43_end:
+        %tmp.83 = phi [%tmp.79 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_16_228_43_begin] [%tmp.82 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_32_228_43_false] [%tmp.83 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_32_228_43_end];
+        bt %tmp.83 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_12_231_12_if_true;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_48_228_59_false:
+        %tmp.84 = lgetv %current.3;
+        symbol [ current %tmp.84 228 48 55 ];
+        %tmp.85 = 3;
+        %tmp.86 = eq %tmp.84 %tmp.85;
+        push %tmp.86;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_48_228_59_end:
+        %tmp.87 = phi [%tmp.83 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_16_228_59_begin] [%tmp.86 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_48_228_59_false] [%tmp.87 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_48_228_59_end];
+        bf %tmp.87 @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_12_231_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_12_231_12_if_true:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_62_231_12_start:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 229 16 ]
+        symbol [ _view %tmp.89 229 16 21 ];
+        %tmp.89 = getv ? :_view;
+        symbol [ backStep %tmp.90 229 22 30 ];
+        %tmp.90 = getv function %tmp.89 :backStep;
+        invoke %tmp.89 %tmp.90();
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 230 16 ]
+        %tmp.91 = true;
+        ret %tmp.91;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_62_231_12_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_12_231_12_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_228_12_231_12_if_end:
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_31_232_8_stop:
+        goto @_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_8_232_8_if_end;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_220_8_232_8_if_end:
+[ "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc" 234 8 ]
+        %tmp.92 = false;
+        ret %tmp.92;
+_Users_skafiskafnjak_Desktop_claude_personale_gym_app_garmin_source_WorkoutDelegate_mc_178_26_235_4_stop:
     }
 }
 [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/WorkoutDelegate.mc"; @line = 1; ]
