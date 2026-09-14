@@ -15,3 +15,8 @@ garmin/bin/gen/
 garmin/garmin.prg
 garmin/garmin.prg.debug.xml
 *.code-workspace
+
+# contengono il DEVICE_TOKEN Supabase in chiaro - repo pubblico, mai committarli
+garmin/source/SyncConfig.mc
+garmin/bin/mir/source/SyncConfig.mir
+README_SYNC.txt
