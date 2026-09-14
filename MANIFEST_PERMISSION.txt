@@ -1,0 +1,13 @@
+SET.LOG GARMIN — MANIFEST
+
+Nel manifest.xml esistente deve essere presente il permesso Communications.
+
+Dentro <iq:application ...> usa/aggiungi:
+
+<iq:permissions>
+    <iq:uses-permission id="Communications"/>
+</iq:permissions>
+
+IMPORTANTE:
+- non sostituire il manifest con un template generico;
+- se esiste già <iq:permissions>, aggiungi SOLO la riga uses-permission.

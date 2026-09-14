@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<!-- Set.Log Garmin - vívoactive 5 -->
+<iq:manifest version="3" xmlns:iq="http://www.garmin.com/xml/connectiq">
+    <iq:application
+        id="ee4df0df7061433cbaa5aec212879b03"
+        type="watch-app"
+        name="@Strings.AppName"
+        entry="SetLogApp"
+        launcherIcon="@Drawables.LauncherIcon"
+        minSdkVersion="4.2.0"
+        version="2.3.0">
+
+        <iq:products>
+            <iq:product id="vivoactive5"/>
+        </iq:products>
+
+        <iq:permissions>
+            <iq:uses-permission id="Communications"/>
+        </iq:permissions>
+
+        <iq:languages>
+            <iq:language>ita</iq:language>
+            <iq:language>eng</iq:language>
+        </iq:languages>
+
+        <iq:barrels/>
+    </iq:application>
+</iq:manifest>

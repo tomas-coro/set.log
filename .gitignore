@@ -3,3 +3,15 @@
 .playwright-mcp/
 mockups/
 scratchpad/
+.vscode/
+node_modules/
+android/app/build/
+ios/App/App.xcodeproj/
+ios/App/CapApp-SPM/
+garmin/gen/
+garmin/internal-mir/
+garmin/mir/
+garmin/bin/gen/
+garmin/garmin.prg
+garmin/garmin.prg.debug.xml
+*.code-workspace
