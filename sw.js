@@ -1,5 +1,5 @@
 // Service worker: cache l'app shell cosi' funziona offline (palestra con poca rete).
-const CACHE = "palestra-v2";
+const CACHE = "palestra-v3-anterior-posterior";
 const ASSETS = [
   "./",
   "./index.html",
