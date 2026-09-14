@@ -1,0 +1,15 @@
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncConfig.mc"; @line = 1; @symbol_moduledef = [SyncConfig,1,7,17]; ]
+module SyncConfig {
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncConfig.mc"; @line = 1; ]
+    <init> {
+    }
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncConfig.mc"; @line = 3; @position = 10; @symbol_constdef = [SUPABASE_URL,3,10,22]; ]
+    const SUPABASE_URL = "https://jrhqmbftxxaynerqmkjc.supabase.co";
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncConfig.mc"; @line = 4; @position = 10; @symbol_constdef = [SUPABASE_ANON_KEY,4,10,27]; ]
+    const SUPABASE_ANON_KEY = "sb_publishable_WoLyioeg87APsNE_rM_jmw_kS7uzi2C";
+    [ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncConfig.mc"; @line = 7; @position = 10; @symbol_constdef = [DEVICE_TOKEN,7,10,22]; ]
+    const DEVICE_TOKEN = "ttkt0BIQPRvyxNfETU_O9IaFuJ5Mm2Qeh7nMk3rCP-8";
+}
+[ @file = "/Users/skafiskafnjak/Desktop/claude/personale/gym-app/garmin/source/SyncConfig.mc"; @line = 1; ]
+<init> {
+}
